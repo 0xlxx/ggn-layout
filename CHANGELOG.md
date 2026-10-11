@@ -14,7 +14,6 @@
   同时给全部 `src/**` 文件补 SPDX 头（ELK 衍生 → `EPL-2.0`、GGN 自有 → `MIT`）、给每个
   `dist` 产物加归属 banner，并新增 `check:license` 门禁（CI + `prepublishOnly`）防止新增文件漏标。
 - 发布工程加固：`prepublishOnly` 末尾追加打包产物冒烟（`smoke:pack`）；显式声明
-- 发布工程加固：`prepublishOnly` 末尾追加打包产物冒烟（`smoke:pack`）；显式声明
   `publishConfig`（`registry=https://registry.npmjs.org/`、`access=public`）；CI 中的
   `publint` 与 `@arethetypeswrong/cli` 锁定到具体版本。
 - 第三方许可声明补全：`THIRD_PARTY_NOTICES.md` 增加 ELK 版权归属、SPDX 标识
