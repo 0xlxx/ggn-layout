@@ -45,7 +45,7 @@ GGN 新增的整合代码（例如对外 API 组装、worker 外壳），但它�
 
 - **源文件**：`src/**` 与 `shared/**` 的每个 `.ts` 文件首部都带
   `SPDX-License-Identifier: EPL-2.0` 与 ELK 归属行；无法承载注释头的
-  `src/api/layout-input.schema.json` 在上文「来源范围」登记。
+  `schema/layout-input.schema.json` 在上文「来源范围」登记。
   `scripts/check-license-headers.mjs` 在 CI 中强制校验（漏标、错标、未登记的非 `.ts`
   文件都会让 CI 变红），并顺带校验 `dist/**` 产物 banner 与许可口径文件的一致性。
 - **发布产物**：`dist/**` 每个 chunk 顶部带归属 banner（由 `tsdown.config.ts` 的 `banner`

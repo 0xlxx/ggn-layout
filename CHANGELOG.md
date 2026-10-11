@@ -5,6 +5,28 @@
 
 ## [Unreleased]
 
+## [0.1.2]
+
+### 变更（无破坏性改动）
+
+- **LayoutInput JSON Schema 迁出 `src/`**：源码由 `src/api/layout-input.schema.json` 移到
+  `schema/layout-input.schema.json`。公开子路径 `ggn-layout/layout-input.schema.json` 与内容
+  都不变，只是把它从「实现代码目录」挪到「机器可读契约目录」——schema 不是 ELK 移植实现，
+  放在 `src/**` 里会被许可头扫描当成 EPL-2.0 实现文件登记，语义错位。`files` 白名单、
+  `check:license` 的扫描范围（新增 `schema/`）与文档中的路径同步更新。
+- `ggn-layout/core` 子路径的源文件由 `src/internal.ts` 改名为 `src/core.ts`，`exports` 目标
+  随之由 `dist/internal.*` 变为 `dist/core.*`。公开子路径名、导出符号集合、ESM/CJS/类型三者
+  的对外形态都不变（由 `verify:public-api` 与契约测试覆盖）。此举只消除「对外叫 core、实现
+  文件叫 internal」的命名错位。深度导入 `ggn-layout/dist/internal.js` 属未承诺路径。
+- 构建配置显式声明 `sourcemap: false`，不再依赖工具默认值。取舍与理由写进 README 的「开发」
+  一节：发布产物不含 `.map`，避免把整份 ELK 衍生源码与绝对路径打进 tarball。
+
+### 修复
+
+- 发布产物归属 banner 补两行版权声明：GGN 侧 `Copyright (c) 2026 GGN contributors.`，上游侧
+  `Copyright (c) Kiel University and others`。0.1.1 的 banner 只有许可标识与来源说明，缺版权
+  持有人行——EPL-2.0 §3.1 与 REUSE 惯例都要求版权声明随制品分发。
+
 ## [0.1.1]
 
 ### 变更
@@ -102,5 +124,6 @@
   `ModelOrderBarycenterHeuristic` 的传递关联记录方向与 ELK Java 相反（见 `docs/PORTING.md` §6.17）。
 
 [Unreleased]: https://github.com/0xlxx/ggn-layout/compare/v0.1.0...HEAD
+[0.1.2]: https://github.com/0xlxx/ggn-layout/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/0xlxx/ggn-layout/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/0xlxx/ggn-layout/releases/tag/v0.1.0

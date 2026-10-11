@@ -1,6 +1,6 @@
 {
   "name": "ggn-layout",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "ELK Layered 1:1 TypeScript 移植 (模型/算法/变量名与 ELK 源码一致)",
   "type": "module",
   "exports": {
@@ -26,12 +26,12 @@
     },
     "./core": {
       "import": {
-        "types": "./dist/internal.d.ts",
-        "default": "./dist/internal.js"
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.js"
       },
       "require": {
-        "types": "./dist/internal.d.cts",
-        "default": "./dist/internal.cjs"
+        "types": "./dist/core.d.cts",
+        "default": "./dist/core.cjs"
       }
     },
     "./options": {
@@ -64,7 +64,7 @@
         "default": "./dist/layout-worker.cjs"
       }
     },
-    "./layout-input.schema.json": "./src/api/layout-input.schema.json",
+    "./layout-input.schema.json": "./schema/layout-input.schema.json",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
@@ -79,7 +79,7 @@
     "examples",
     "llms.txt",
     "THIRD_PARTY_NOTICES.md",
-    "src/api/layout-input.schema.json",
+    "schema/layout-input.schema.json",
     "CHANGELOG.md",
     "LICENSES"
   ],

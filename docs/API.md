@@ -144,7 +144,7 @@ ggn-layout/layered（仅分层算法）和 ggn-layout/layout-worker（Web Worker
 与 `.d.cts` 承载。
 
 机器可读的 LayoutInput JSON Schema 通过 `ggn-layout/layout-input.schema.json`
-子路径导出（源码位于 src/api/layout-input.schema.json），遵循 JSON Schema draft-07，
+子路径导出（源码位于 schema/layout-input.schema.json），遵循 JSON Schema draft-07，
 覆盖递归 children、单源单目标 edges、端口/标签和开放扩展字段。
 运行时契约以 validateLayoutInput 为准，schema 供工具与 AI agent 消费。
 

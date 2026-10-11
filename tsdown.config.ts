@@ -12,8 +12,10 @@ const { license: LICENSE_SPDX } = JSON.parse(
 const LICENSE_BANNER = `/**
  * ggn-layout — TypeScript port of the Eclipse Layout Kernel (ELK) layered layout algorithms.
  *
- * Portions derived from ELK (https://github.com/eclipse/elk) are licensed under the
- * Eclipse Public License 2.0 (EPL-2.0); GGN-original portions are licensed under MIT.
+ * Copyright (c) 2026 GGN contributors.
+ * Portions derived from ELK (https://github.com/eclipse/elk), Copyright (c) Kiel University
+ * and others, are licensed under the Eclipse Public License 2.0 (EPL-2.0);
+ * GGN-original portions are licensed under MIT.
  * See LICENSES/EPL-2.0.txt, LICENSE and THIRD_PARTY_NOTICES.md.
  *
  * SPDX-License-Identifier: ${LICENSE_SPDX}
@@ -90,13 +92,18 @@ const GGN_DEFINE = Object.fromEntries([
 ])
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/api/index.ts', 'src/api/layered.ts', 'src/internal.ts', 'src/options.ts', 'src/layout-worker.ts'],
+  entry: ['src/index.ts', 'src/api/index.ts', 'src/api/layered.ts', 'src/core.ts', 'src/options.ts', 'src/layout-worker.ts'],
   format: ['esm', 'cjs'],
   dts: true,
   fixedExtension: false,
   clean: true,
   minify: true,
   banner: LICENSE_BANNER,
+  // 刻意不发 sourcemap：本包是 ELK 的 1:1 移植，.map 会把整份上游衍生源码连同绝对路径
+  // 一起塞进 npm tarball（体积翻数倍，且把移植过程暴露在制品里）。调试需求由仓库内
+  // 源码 + `bun run build` 本地重建满足。tsdown 默认即不产出，这里显式写死以免将来
+  // 有人改默认值时静默翻转（对应 `files` 白名单里也没有任何 `*.map` 兜底）。
+  sourcemap: false,
   // 注意: package.json 不得声明「白名单式」的 sideEffects 数组 —— 构建期 rolldown 会据此把
   // 其他模块判为无副作用, 从而把 src/api/index.ts 的裸副作用 `import './register-all.js'`
   // 整块摇掉, 完整入口退化成 layered 入口 (非 layered 算法全部「未注册」). 该回归由

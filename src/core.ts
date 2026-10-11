@@ -9,11 +9,11 @@
  * License text: LICENSES/EPL-2.0.txt.
  */
 /**
- * 内部移植模型入口，不对外承诺兼容。
+ * 引擎核心模型入口（对外暴露为子路径 `ggn-layout/core`）。
  *
  * 这里保留算法移植所需的 LGraph/LNode 等模型、provider、枚举和内部 options。
- * 消费方与 AI agent 应优先从 `public.ts` 使用标准 JSON API；本入口的符号可能
- * 随移植实现演进而调整。
+ * 消费方与 AI agent 应优先从根入口或 `ggn-layout/api` 使用标准 JSON API；
+ * 本入口属于引擎级接口，稳定性低于 `api`，符号可能随移植实现演进而调整。
  */
 
 // ── 属性系统 (org.eclipse.elk.graph.properties) ──

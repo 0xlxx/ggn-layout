@@ -5,7 +5,7 @@
  * 运行：bun scripts/verify-public-api.mjs
  * 断言：
  *   1. public.ts 的值导出 == manifest.publicValues；
- *   2. internal.ts ⊇ manifest.internalValues；
+ *   2. core.ts ⊇ manifest.internalValues；
  *   3. index.ts 兼容层 ⊇ public ∪ internal 的旧根导出；
  *   4. options.ts 的值导出 == manifest.optionsValues；
  *   5. root 兼容层包含公共、内部以及 options 门面中属于旧根内部边界的符号。
@@ -17,7 +17,7 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const manifest = JSON.parse(readFileSync(new URL('../docs/api-manifest.json', import.meta.url), 'utf8'))
 
 const publicMod = await import(new URL('../src/public.ts', import.meta.url).href)
-const internalMod = await import(new URL('../src/internal.ts', import.meta.url).href)
+const coreMod = await import(new URL('../src/core.ts', import.meta.url).href)
 const optionsMod = await import(new URL('../src/options.ts', import.meta.url).href)
 const rootMod = await import(new URL('../src/index.ts', import.meta.url).href)
 
@@ -27,7 +27,7 @@ const keys = (moduleNamespace) => Object.keys(moduleNamespace)
 const sort = (values) => [...new Set(values)].sort()
 
 const pKeys = keys(publicMod)
-const iKeys = keys(internalMod)
+const iKeys = keys(coreMod)
 const oKeys = keys(optionsMod)
 const rKeys = keys(rootMod)
 const checks = []
@@ -58,7 +58,7 @@ check('options-values-exact', JSON.stringify(oKeys) === JSON.stringify(sort(mani
 })
 
 // HIERARCHY_HANDLING is the only options value intentionally retained by the
-// historical root through internal.ts. Algorithm helpers remain options-only.
+// historical root through core.ts. Algorithm helpers remain options-only.
 const rootRequired = sort([
   ...manifest.publicValues,
   ...manifest.internalValues,

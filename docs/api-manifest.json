@@ -121,7 +121,7 @@
   ],
   "subpaths": {
     "api": "./src/api/index.ts",
-    "core": "./src/internal.ts",
+    "core": "./src/core.ts",
     "options": "./src/options.ts"
   }
 }

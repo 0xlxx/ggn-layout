@@ -17,14 +17,14 @@ const manifestFrom = ({ publicModule, internalModule, optionsModule }) => ({
   optionsValues: keys(optionsModule),
   subpaths: {
     api: './src/api/index.ts',
-    core: './src/internal.ts',
+    core: './src/core.ts',
     options: './src/options.ts',
   },
 })
 
 const modules = {
   publicModule: await import(new URL('../src/public.ts', import.meta.url).href),
-  internalModule: await import(new URL('../src/internal.ts', import.meta.url).href),
+  internalModule: await import(new URL('../src/core.ts', import.meta.url).href),
   optionsModule: await import(new URL('../src/options.ts', import.meta.url).href),
 }
 const manifest = manifestFrom(modules)

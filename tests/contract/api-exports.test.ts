@@ -3,12 +3,12 @@
  *
  * 断言：
  *   1. public.ts（消费方入口）只含高层 API，不含低层原语（buildGraph/extractGraph/LGraph...）；
- *   2. internal.ts（引擎入口）含内部模型与低层组装原语；
+ *   2. core.ts（引擎入口）含内部模型与低层组装原语；
  *   3. index.ts（历史兼容入口）保留 520db4d 旧根入口的全部值导出。
  */
 import { describe, expect, it } from 'vitest'
 import * as publicApi from '../../src/public.js'
-import * as internalApi from '../../src/internal.js'
+import * as coreApi from '../../src/core.js'
 import * as rootApi from '../../src/index.js'
 
 const keys = (m: object): string[] => Object.keys(m).filter((k) => k !== 'default').sort()
@@ -38,9 +38,9 @@ describe('public.ts（消费方入口）', () => {
   })
 })
 
-describe('internal.ts（引擎入口）', () => {
+describe('core.ts（引擎入口）', () => {
   it('含内部模型与低层组装原语', () => {
-    const internalKeys = keys(internalApi)
+    const internalKeys = keys(coreApi)
     for (const symbol of ['LGraph', 'LNode', 'LPort', 'LEdge', 'Property', 'LayeredLayoutProvider', 'buildGraph', 'extractGraph']) {
       expect(internalKeys).toContain(symbol)
     }

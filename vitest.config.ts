@@ -10,7 +10,7 @@ export default defineConfig({
     alias: [
       { find: 'ggn-layout/options', replacement: src('options.ts') },
       { find: 'ggn-layout/api', replacement: src('api/index.ts') },
-      { find: 'ggn-layout/core', replacement: src('internal.ts') },
+      { find: 'ggn-layout/core', replacement: src('core.ts') },
       { find: 'ggn-layout/layered', replacement: src('api/layered.ts') },
       { find: 'ggn-layout/layout-worker', replacement: src('layout-worker.ts') },
       { find: 'ggn-layout', replacement: src('index.ts') },

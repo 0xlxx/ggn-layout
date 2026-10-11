@@ -49,8 +49,8 @@ npm 包侧（Settings → Trusted Publisher）需要登记：
 ```sh
 # 1. 更新 CHANGELOG.md，提交并在 main 上通过 CI
 # 2. 打 tag 触发 release.yml（Trusted Publishing + provenance）
-git tag -a v0.1.1 -m "ggn-layout 0.1.1"
-git push origin v0.1.1
+git tag -a v0.1.2 -m "ggn-layout 0.1.2"
+git push origin v0.1.2
 ```
 
 `release.yml` 会先跑完所有门禁，并校验「tag 名 == package.json 版本」。

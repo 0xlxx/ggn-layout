@@ -68,6 +68,10 @@ bun run smoke:pack   # 打包产物门禁: 装进临时消费方跑完整/layere
 和契约测试。完整测试可用 `bun run test:run`。第二套引擎（JavaScriptCore/Bun）用
 `bun run test:cross-engine`；包元数据用 `npx publint` 与 `npx @arethetypeswrong/cli --pack .` 检查。
 
+发布产物**不含 sourcemap**（`tsdown.config.ts` 显式 `sourcemap: false`，不依赖工具默认值）。
+本包是 ELK 的 1:1 移植，`.map` 会把整份上游衍生源码连同绝对路径一起塞进 tarball（体积翻数倍，
+且把移植过程暴露在制品里）；调试需求由仓库内源码加本地 `bun run build` 满足。
+
 ## 发布
 
 ```sh

@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import type { ElkLayoutOptions } from 'ggn-layout/options'
 
-const schema = JSON.parse(readFileSync(new URL('../../src/api/layout-input.schema.json', import.meta.url), 'utf8')) as {
+const schema = JSON.parse(readFileSync(new URL('../../schema/layout-input.schema.json', import.meta.url), 'utf8')) as {
   $schema?: string
   properties?: Record<string, any>
   required?: string[]

@@ -13,7 +13,7 @@
  *
  * 普通任务只需要 `layoutElkJson`：传入标准 JSON 图，得到带节点几何与边
  * sections 的新 JSON。低层组装原语（buildGraph / extractGraph / LGraph 模型）
- * 不属于公共契约——需要引擎级能力请用 `internal.ts` 或历史兼容入口。
+ * 不属于公共契约——需要引擎级能力请用 `core.ts` 或历史兼容入口。
  */
 export { layoutElkJson } from './api/index.js'
 export type {

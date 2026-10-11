@@ -13,7 +13,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ELK from 'elkjs/lib/main.js'
 import { buildGraph } from '../dist/api/index.js'
-import { LayeredLayoutProvider } from '../dist/internal.js'
+import { LayeredLayoutProvider } from '../dist/core.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const INPUT_DIR = join(here, '../bench-results/compare-input')

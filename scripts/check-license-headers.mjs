@@ -17,7 +17,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
-const SOURCE_DIRS = ['src', 'shared']
+const SOURCE_DIRS = ['src', 'shared', 'schema']
 const SPDX_SOURCE = 'SPDX-License-Identifier: EPL-2.0'
 const ATTRIBUTION = 'Portions derived from the Eclipse Layout Kernel (ELK)'
 // 许可口径的单一真源是 package.json 的 `license` 字段：banner / LICENSE / README /
@@ -33,7 +33,7 @@ const DIST_EXTS = ['.js', '.cjs', '.d.ts', '.d.cts']
  */
 const NON_TS_SOURCES = new Map([
   [
-    'src/api/layout-input.schema.json',
+    'schema/layout-input.schema.json',
     'JSON 无注释语法；归属与许可按 src/** 同一口径（EPL-2.0）在 THIRD_PARTY_NOTICES.md 登记',
   ],
 ])
