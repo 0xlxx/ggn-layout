@@ -54,6 +54,8 @@ console.log(output.children, output.edges?.[0]?.sections)
 
 ## 开发
 
+构建需要 Node ≥ 22.18（`tsdown` 的 engines 要求）；库本身运行在 Node ≥ 20，CI 在 Node 20/22 上跑测试。
+
 ```sh
 bun install
 bun run typecheck

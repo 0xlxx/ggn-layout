@@ -13,11 +13,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 运行时就绪性: engines.node 声明的低支持线 (20) 与排序行为曾出现差异的 22 都跑测试.
+  # 构建 (tsdown) 自身要求 Node ≥ 22.18 (见其 engines), 故 build/打包门禁单列 package job.
   verify:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # 覆盖 engines.node 声明的低支持线 (20) 与曾在排序行为上出现过差异的 22.
       matrix:
         node: [20, 22]
     steps:
@@ -31,11 +32,8 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run test:ci
-      - run: bun run build
-      # 产物级门禁: 打包 → 安装到干净消费方 → 全入口 ESM/CJS 冒烟 + layered 体积分层断言.
-      - run: bun run smoke:pack
 
-  # 包元数据 (exports 条件 / types 解析 / sideEffects) 门禁: 类型与入口只在打包后才成立.
+  # 产物 + 包元数据门禁: 类型与入口只在打包后才成立, 且必须验证「下游打包器」消费形态.
   package-lint:
     runs-on: ubuntu-latest
     steps:
@@ -48,8 +46,11 @@ jobs:
           node-version: 22
       - run: bun install --frozen-lockfile
       - run: bun run build
+      # 产物级门禁: 打包 → 安装到干净消费方 → 全入口 ESM/CJS 冒烟 + layered 体积分层 + 下游 bundler 冒烟.
+      - run: bun run smoke:pack
       - run: npx --yes publint
-      - run: npx --yes @arethetypeswrong/cli --pack .
+      # node10 列 (EOL, 且 engines.node >= 20) 对子路径 exports 一律解析失败, 不属于本包支持的形态.
+      - run: npx --yes @arethetypeswrong/cli --pack . --ignore-rules no-resolution
 
   # 第二套 JS 引擎 (JavaScriptCore) 复跑纯算法单测: 比较器不自洽 / 依赖 Array#sort 引擎特性
   # 这类缺陷只在双引擎下暴露 (docs/PORTING.md §6.17)。elkjs 差分测试需要 Worker, Bun 不支持,
