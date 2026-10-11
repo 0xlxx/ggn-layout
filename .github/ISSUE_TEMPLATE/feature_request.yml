@@ -1,0 +1,46 @@
+name: 功能请求
+description: 希望新增/调整布局能力、API 或打包行为
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        本包是 ELK 的 1:1 移植，默认行为要与上游 ELK 保持一致；偏离上游的改动会被当作
+        「有意差异」记录在 `CHANGELOG.md`。请先说清是**上游 ELK 已有但本包缺失**，
+        还是**上游也没有的新需求**。
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 类别
+      options:
+        - 上游 ELK 已有、但本包未移植（移植缺口）
+        - 上游 ELK 没有的新需求（API/包装层）
+        - 打包/类型/子路径入口等发布形态
+        - 文档
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+      description: 说明场景与现在的做法，而不是直接给实现方案
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望的行为
+      description: 如果能对应到 ELK 的类/选项/算法，请直接写出名字
+    validations:
+      required: true
+
+  - type: input
+    id: upstream
+    attributes:
+      label: 上游依据（可选）
+      description: ELK 的类名、选项 id 或文档链接
+    validations:
+      required: false

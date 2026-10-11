@@ -38,6 +38,14 @@ CI 在 Node 20/22 矩阵与 Bun 上复跑这些门禁；提 PR 前本地跑一�
 
 ## 发布流程（维护者）
 
+`release.yml` 走 npm **Trusted Publishing（OIDC）**，不需要、也不应配置长期 npm token。
+npm 包侧（Settings → Trusted Publisher）需要登记：
+
+- Publisher: GitHub Actions
+- Repository: `0xlxx/ggn-layout`
+- Workflow: `.github/workflows/release.yml`
+- Environment: `npm`（与 `release.yml` 的 `environment: npm` 一致）
+
 ```sh
 # 1. 更新 CHANGELOG.md，提交并在 main 上通过 CI
 # 2. 打 tag 触发 release.yml（Trusted Publishing + provenance）
@@ -45,7 +53,15 @@ git tag -a v0.1.1 -m "ggn-layout 0.1.1"
 git push origin v0.1.1
 ```
 
-`release.yml` 会先跑完所有门禁，并校验「tag 名 == package.json 版本」「该版本尚未发布」，两者不满足则拒绝发布。
+`release.yml` 会先跑完所有门禁，并校验「tag 名 == package.json 版本」。
+
+若该版本**已在 registry**：工作流会比对 registry 里的 `gitHead` 与当前提交 —— 一致则跳过
+`npm publish`、只补建 GitHub Release（用于给历史版本补 tag）；不一致则直接失败，避免产出一张
+「Release 指向的提交与 npm 内容不符」的记录。`v*` tag 另有 tag ruleset 保护，禁止移动与删除。
+
+`workflow_dispatch` 的 dry-run 只演练构建、打包与 `npm publish --dry-run --provenance`：
+它**不**与 npm 交互、不校验 Trusted Publisher 绑定、不产生 attestation。dry-run 绿不等于
+发布链可用 —— 首次真实 tag 发布才是 OIDC 的第一次实测。
 
 手工发布（仅 Actions 不可用时）：
 

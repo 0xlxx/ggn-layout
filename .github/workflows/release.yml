@@ -16,10 +16,15 @@ permissions:
   contents: write
   id-token: write
 
-# 发布不可并发: 同 ref 排队而非取消.
+# 发布不可并发: tag push 与 main 上的 workflow_dispatch 属于不同 ref, 必须按仓库串行,
+# 否则同一版本的两条流水线可能同时 npm publish.
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ github.repository }}
   cancel-in-progress: false
+
+env:
+  # 固定 npm 版本: 该 job 持有 id-token / contents 写权限, 不能使用浮动 `@latest`.
+  NPM_VERSION: 12.2.0
 
 jobs:
   publish:
@@ -53,7 +58,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
-        run: npm install -g npm@latest && npm --version
+        run: npm install -g "npm@${NPM_VERSION}" && npm --version
 
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
@@ -75,6 +80,24 @@ jobs:
           else
             echo "found=false" >> "$GITHUB_OUTPUT"
           fi
+
+      # 已发布版本的重跑只允许「补建 Release」。必须证明 registry 里的内容就是当前 tag
+      # 指向的提交，否则会生成一张与 npm 不符的 Release。
+      - name: 校验已发布版本的 gitHead 与当前提交一致
+        if: steps.published.outputs.found == 'true' && github.event_name == 'push'
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          head="$(npm view "ggn-layout@${version}" gitHead 2>/dev/null || true)"
+          if [ -z "${head}" ]; then
+            echo "registry 未记录 ggn-layout@${version} 的 gitHead —— 无法证明与当前提交一致, 拒绝建 Release"
+            exit 1
+          fi
+          if [ "${head}" != "${GITHUB_SHA}" ]; then
+            echo "registry gitHead=${head} != 当前提交 ${GITHUB_SHA}"
+            echo "该 tag 指向的提交与已发布内容不一致 —— 拒绝建 Release"
+            exit 1
+          fi
+          echo "gitHead 与当前提交一致: ${head}"
 
       - name: Publish (dry run)
         if: github.event_name == 'workflow_dispatch' && inputs.dry-run

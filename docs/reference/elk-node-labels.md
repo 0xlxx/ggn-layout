@@ -22,7 +22,7 @@
 
 | 建议 | GGN 实现 | 符合度 |
 | :--- | :--- | :--- |
-| R1 | 组容器同时设 `nodeLabels.placement: [INSIDE, H_CENTER, V_TOP]` + `nodeSize.constraints: [NODE_LABELS]`（`packages/kernel/src/layout/elk-service.ts`） | ✅ |
+| R1 | 组容器同时设 `nodeLabels.placement: [INSIDE, H_CENTER, V_TOP]` + `nodeSize.constraints: [NODE_LABELS]`（宿主应用的布局服务层） | ✅ |
 | R2 | **不适用**：node/edge 的标签由 kernel 预测量（`measureNode` / `measureEdgeLabelSize`）后以显式 `width/height` 传入，ELK 不做字体度量（ADR 0001） | ⚪ 有意的另一条路 |
 | R3 | 不适用：容器用 `H_CENTER`，本就不产生对称留白；若未来改 `H_LEFT`，子节点可开 `ASYMMETRICAL`（移植层已实现：`src/common/node-micro-layout.ts`） | ⚪ N/A |
 | R4 | 白盒 layered 依赖 ELK 原生预留；6 种 black-box（box/force/radial/stress/rectpacking/topdownpacking）由 kernel 注入 `padding.top` 手动预留 | ✅ 与 R4 一致 |
@@ -40,7 +40,7 @@ group-renderer（kernel）                      →  实际绘制：标题（左
 
 - 为什么这么做：一行里要放「标题 + 状态 + 事实计数」，第二行还要放徽标——ELK 的单标签模型无法表达，而且我们要求 SVG 输出完全自控（框架无关）。
 - 代价：ELK 只保证「预留 ≥ 我们给的 box」，**真实文字宽度必须 ≤ 该 box**。因此需要两条保障：
-  1. **P1-b 文本实测注入**（2026-09-10）：`LayoutSceneInput.labelMeasurer` —— surface 用 canvas `measureText` 实测（`@ggn/vanilla-next` 的 `CanvasTextMeasurer`），布局按真实字宽预留，消除估算偏差；
+  1. **P1-b 文本实测注入**（2026-09-10）：`LayoutSceneInput.labelMeasurer` —— surface 用 canvas `measureText` 实测（宿主应用注入的 `labelMeasurer`），布局按真实字宽预留，消除估算偏差；
   2. **P3 字符级截断**（2026-09-10）：`MAX_LABEL_CHARS = 24` / `MAX_BADGE_CHARS = 16`——纯函数、与测量器无关，保证布局与渲染拿到同一字符串；被截断时挂 `<title>` 提供全文悬停提示，`SelectionContext` 仍返回全文。
 - 维护约束：**不要**把 `nodeLabels.placement` 当成"实际标签位置"去改渲染；改标题行几何时同步改 `group-metrics.ts`（单一来源）。
 
@@ -54,11 +54,14 @@ group-renderer（kernel）                      →  实际绘制：标题（左
 
 ## 5. 相关实现与测试
 
-- 预留计算：`packages/kernel/src/compile/group-metrics.ts`（`groupTitleRowWidth` / `groupBadgeRowWidth` / `groupHeaderHeight`）
-- 布局接线：`packages/kernel/src/layout/elk-service.ts`（`groupLabelBox` / `groupTitleMetrics` / `reserveBlackBoxTitleWidthInPlace`）
-- 渲染：`packages/kernel/src/compile/group-renderer.ts`、`node-renderer.ts`
-- 实测注入：`packages/vanilla-next/src/text-measure.ts`（`CanvasTextMeasurer`）→ `flush({ labelMeasurer })` → `layoutScene`
-- 测试：`packages/kernel/tests/elk-service.test.ts`、`packages/kernel/tests/measure.test.ts`、`packages/vanilla-next/tests/module-hierarchy.test.ts`
+- 预留计算：`groupTitleRowWidth` / `groupBadgeRowWidth` / `groupHeaderHeight`（宿主应用的组几何模块）
+- 布局接线：`groupLabelBox` / `groupTitleMetrics` / `reserveBlackBoxTitleWidthInPlace`（宿主应用的布局服务层）
+- 渲染：组渲染器与节点渲染器由宿主应用实现
+- 实测注入：`labelMeasurer` → `flush(...)` → `layoutScene`
+- 测试：宿主应用的布局服务、度量与模块层级测试
+
+> 第 2-5 节的实现均在宿主应用（GGN kernel）内，不随本包发布；本包只提供 layered 布局本身
+> 以及标签预留所需的几何输入。
 
 ## 6. 遗留
 

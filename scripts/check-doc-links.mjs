@@ -52,4 +52,35 @@ if (broken.length > 0) {
   process.exit(1)
 }
 
-console.log(`✓ 随包文档链接检查通过（${markdown.length} 个 markdown 文件，0 处包内断链）`)
+// 随包文档不得出现本机绝对路径或宿主 monorepo 内部路径：对包使用者无意义，
+// 且会泄露本机/内部工程结构（历史上 docs/reference/** 混进来过）。
+const FORBIDDEN = [
+  { pattern: /\/Users\//, hint: '本机绝对路径' },
+  { pattern: /\/opt\/homebrew/, hint: '本机 Homebrew 路径' },
+  { pattern: /\/tmp\/ggn/, hint: '临时文件路径' },
+  { pattern: /packages\//, hint: '宿主 monorepo 内部路径' },
+  { pattern: /@ggn\//, hint: '宿主 monorepo 内部包名' },
+]
+const leaks = []
+for (const file of markdown) {
+  readFileSync(file, 'utf8')
+    .split('\n')
+    .forEach((line, index) => {
+      for (const { pattern, hint } of FORBIDDEN) {
+        if (pattern.test(line)) {
+          leaks.push(`${file}:${index + 1}  [${hint}]  ${line.trim().slice(0, 120)}`)
+        }
+      }
+    })
+}
+
+if (leaks.length > 0) {
+  console.error(`✗ 随包文档含 ${leaks.length} 处本机/内部路径：`)
+  for (const entry of leaks) console.error(`  - ${entry}`)
+  console.error('  修法：改成中性表述（如「宿主应用」）或删掉这些路径。')
+  process.exit(1)
+}
+
+console.log(
+  `✓ 随包文档链接检查通过（${markdown.length} 个 markdown 文件，0 处包内断链，0 处本机/内部路径）`,
+)

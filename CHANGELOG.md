@@ -22,6 +22,21 @@
   294 个文件的上游版权年代统一改写成 `2010, 2015`（上游逐文件不同），改为声明持有人 + 来源登记。
 - 补 `shared/**` 的归属登记与门禁覆盖：`shared/elkgraph-builder.ts`（ELK `ElkGraphImporter` /
   `LGraphUtil` 建图逻辑移植）此前既无 SPDX 头也不在 CI 扫描范围内，而它确实进入发布产物。
+- **发布链路加固（复审整改）**：
+  - npm 工具链固定为 `NPM_VERSION`（CI 与 `release.yml` 同步），不再用浮动 `npm@latest` ——
+    发布 job 持有 `id-token` / `contents` 写权限，工具链必须可复现。
+  - 「版本已发布则跳过 publish」的分支新增一致性校验：registry 记录的 `gitHead` 必须等于当前
+    提交，否则拒绝创建 GitHub Release，避免产出与 npm 内容不符的发布记录。
+  - `concurrency.group` 由 `github.ref` 改为 `github.repository`：tag push 与 main 上的
+    `workflow_dispatch` 属于不同 ref，原先可能并发发布同一版本。
+  - 仓库侧配套：`v*` tag 加 ruleset（禁移动/删除）、开启 `sha_pinning_required`、
+    `npm` environment 增加必审 reviewer 与分支策略（`main` + `v*`）。
+- **随包文档清理与门禁**：`docs/reference/**` 中残留的宿主 monorepo 内部路径与开发者本机
+  绝对路径改为中性表述（如「宿主应用」、`<input.json>`）；`check:doc-links` 增加这两类
+  模式的门禁（具体匹配规则写在脚本里），防止再次混进 npm 包。
+- 治理文件补齐：新增 feature request issue 模板与 `config.yml`；`CONTRIBUTING.md` 的发布说明
+  改写为与 `release.yml` 实际行为一致，并写明 Trusted Publisher 的登记项与 dry-run 的能力边界
+  （dry-run 不校验 OIDC 绑定、不产生 attestation）。
 - 发布工程加固：`prepublishOnly` 末尾追加打包产物冒烟（`smoke:pack`）；显式声明
   `publishConfig`（`registry=https://registry.npmjs.org/`、`access=public`）；CI 中的
   `publint` 与 `@arethetypeswrong/cli` 锁定到具体版本。

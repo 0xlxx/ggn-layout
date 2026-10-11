@@ -27,7 +27,7 @@
 
 ### 3.1 方法
 
-1. 从 Viewer `GET /api/events` 抓取 `run_ggn_project_feedback` 全量事件，用 `@ggn/agent` reducer 重放成场景元素；
+1. 从 Viewer `GET /api/events` 抓取 `run_ggn_project_feedback` 全量事件，用宿主应用的 event reducer 重放成场景元素；
 2. 用 kernel `measureNode()` 计算节点尺寸，导出标准 ELK JSON（19 边 / 12 节点 / `json.shapeCoords=ROOT`）；
 3. **同一份 JSON** 分别跑：
    - 本仓库：`src/api/index.ts` 的 `layoutElkJson()`
@@ -138,7 +138,7 @@
 
 改造后宿主图仍是同一套 layered 语义（`rel_*` 依赖在容器内部参与分层），只是层次不再用长边表达。
 
-**已实施（2026-09-10）**：`@ggn/agent` 归约器不再发 `contains` 边——有子模块的 module 直接渲染成
+**已实施（2026-09-10）**：宿主应用的归约器不再发 `contains` 边——有子模块的 module 直接渲染成
 `group` 容器（children = 子模块），容器自身承载标题 / 状态行 / 进度条（kernel group-renderer）。
 同口径复测（`layoutScene` 前后对照，`run_ggn_project_feedback` 63 事件快照）：
 
@@ -186,22 +186,19 @@
 
 ```text
 1) 抓事件      GET http://127.0.0.1:5198/api/events → 过滤 runId
-2) 重放        @ggn/agent reduceAgentEvents → createScene/updateElements → 元素集
+2) 重放        宿主应用 reducer → createScene/updateElements → 元素集
 3) 量尺寸      kernel measureNode() → 节点 width/height
 4) 导 ELK JSON  id + children(size) + edges(sources/targets) + layoutOptions（ROOT 坐标 + NETWORK_SIMPLEX + edgeNodeBetweenLayers=14）
 5) 双侧跑布局   ggn-layout layoutElkJson()  vs  Java oracle（同一份 JSON）
 6) 比指标      逐边折点/端点（ε=0.01）+ 弯点数 + 总边长 + 交叉对
 ```
 
-本次产物（临时文件，可复跑但会随 `/tmp` 清理）：`/tmp/ggn-edge-input.json`（19 边样本）、
-`/tmp/ggn-edge-output-ggn.json`、`/tmp/ggn-edge-java-raw.txt`、`/tmp/ggn-vs-java-edge-metrics.json`。
+本次产物为一次会话内的临时文件（19 边输入样本、双侧输出、逐边指标），未入库、也未随包发布。
 
-Java oracle 命令（ELK 0.12.0 + 未签名 layered jar）：
+Java oracle 命令（ELK 0.12.0 + 未签名 layered jar；`LayoutJsonMain` 是一次会话内的临时探针程序）：
 
 ```bash
-/opt/homebrew/opt/openjdk@21/bin/java -cp \
-  "scripts/elk-java-debug/out-edge:scripts/elk-java-debug/lib/*" \
-  LayoutJsonMain /tmp/ggn-edge-input.json > /tmp/ggn-edge-java-raw.txt
+java -cp "<probe-out>:<elk-jars>/*" LayoutJsonMain <input.json> > <java-raw.txt>
 ```
 
 > 长期回归建议：把「层次包含 vs contains 长边」两个样本收敛为 `本仓库` 的测试用例

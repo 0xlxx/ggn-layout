@@ -8,6 +8,12 @@ on:
 permissions:
   contents: read
 
+# 发布链路用的 npm 版本必须**固定**：npm 大版本会改 `npm pack --json` 输出结构与打包行为，
+# 浮动 `@latest` 等于把带 id-token/contents 写权限的发布 job 交给不可复现的工具链。
+# 升级请走显式 PR，并同步 release.yml 的 NPM_VERSION。
+env:
+  NPM_VERSION: 12.2.0
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -55,7 +61,7 @@ jobs:
       # 包元数据门禁: publint + 严格类型解析 (仅豁免 node10/EOL 列) + 随包文档链接.
       - run: bun run check:pkg
 
-  # release.yml 走 Node 24 + `npm install -g npm@latest`; npm 大版本会改 `npm pack --json`
+  # release.yml 走 Node 24 + 固定版本的 npm (env.NPM_VERSION); npm 大版本会改 `npm pack --json`
   # 的输出结构与打包行为. 这里用「发布同款环境」复跑产物门禁, 避免 CI 绿而 release 红.
   # (2026-10-11 实测: npm 12 把该输出从数组改成按包名索引的对象, 曾让 release 卡在 smoke:pack.)
   pack-npm-latest:
@@ -68,7 +74,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24
-      - run: npm install -g npm@latest && npm --version
+      - run: npm install -g "npm@${NPM_VERSION}" && npm --version
       - run: bun install --frozen-lockfile
       - run: bun run build
       - run: bun run smoke:pack

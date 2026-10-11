@@ -156,5 +156,5 @@ TS 侧对应：
 
 - [ELK 布局选项接口参考](./elk-layout-options.md) — 选项键 / TS Property / 默认值
 - `docs/API.md` / `API-QUICKREF.md` — `layoutElkJson` 使用契约
-- `docs/PORTING.md` — 移植陷阱表（含管线顺序类陷阱）
-- `docs/MODULES.tsv` — 模块 ↔ Java 类 ↔ 观测点清单
+- `PORTING.md` — 移植陷阱表（含管线顺序类陷阱）；`MODULES.tsv` — 模块 ↔ Java 类 ↔ 观测点清单。
+  两者只存在于源码仓库，不随 npm 包发布。
