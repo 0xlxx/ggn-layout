@@ -62,9 +62,9 @@ git push origin v0.1.2
   **不**装依赖、**不**跑构建脚本，只对上面那个 tarball 调 `npm publish <tgz> --provenance`。
   npm 按 tarball 发布时不会执行包内的 lifecycle 脚本，故 OIDC 身份不会经手仓库代码。
 
-发布前的门禁在 `build` 里跑：`check:workflows`（两份工作流的 `NPM_VERSION` 必须一致且为精确版本）、
-`typecheck`、`verify:public-api`（导出集合与 `docs/api-manifest.json` 对账）、`test:ci`、`build`、
-`smoke:pack`。
+发布前的门禁在 `build` 里跑：`check:workflows`（两份工作流的 `NPM_VERSION` 必须一致且为精确版本；
+并断言 `publish` job 不 checkout、只有它持有 `id-token`）、`typecheck`、`verify:public-api`
+（导出集合与 `docs/api-manifest.json` 对账）、`test:ci`、`build`、`smoke:pack`。
 
 tag 路径另有两道校验：
 
@@ -72,9 +72,17 @@ tag 路径另有两道校验：
 - 「被打 tag 的提交是 `origin/main` 的祖先」—— `ci.yml` 只监听 main 上的 push/PR，从侧分支打一个
   `v*` tag 本来可以绕过全部门禁，这道校验把该路径封掉。
 
-若该版本**已在 registry**：工作流会比对 registry 里的 `gitHead` 与当前提交 —— 一致则跳过
-`npm publish`、只补建 GitHub Release（用于给历史版本补 tag）；不一致则直接失败，避免产出一张
-「Release 指向的提交与 npm 内容不符」的记录。`v*` tag 另有 tag ruleset 保护，禁止移动与删除。
+若该版本**已在 registry**：工作流先取「来源提交」，与当前提交比对 —— 一致则跳过 `npm publish`、
+只补建 GitHub Release（用于给历史版本补 tag）；不一致则直接失败，避免产出一张「Release 指向的
+提交与 npm 内容不符」的记录。来源提交按可信度取两个源：
+
+- 优先读 **SLSA provenance**（由 GitHub OIDC 签发、签名不可伪造）。发布 job 不 checkout 源码，
+  npm 无从推断 `gitHead`，`npm publish <tarball>` 产出的版本 `gitHead` 为空（`0.1.2` 实测）——
+  此时 provenance 的 `resolvedDependencies[].digest.gitCommit` 是唯一还能证明来源的字段。
+- 没有 provenance 时，回退到未签名的 `gitHead`（`0.1.0` 属此类）。
+
+该校验逻辑**内联**在工作流里、不调用仓库脚本 —— 发布 job 持有 `id-token`，执行仓库存放的脚本
+等于把 npm 身份交给该提交的代码。`v*` tag 另有 tag ruleset 保护，禁止移动与删除。
 
 `workflow_dispatch` 的 dry-run 只演练构建、打包与 `npm publish --dry-run --provenance`：
 它**不**与 npm 交互、不校验 Trusted Publisher 绑定、不产生 attestation。dry-run 绿不等于

@@ -5,6 +5,16 @@
 
 ## [Unreleased]
 
+### 工程 / 发布链路（不影响制品内容）
+
+- `release.yml` 校验「已发布版本来源提交」时改为**优先读签名的 SLSA provenance**
+  （`resolvedDependencies[].digest.gitCommit`），`gitHead` 仅作无 provenance 时的兜底。发布 job
+  与 checkout 解耦后 npm 无从推断 `gitHead`，`0.1.2` 在 registry 上的 `gitHead` 因此为空；只认
+  `gitHead` 会让「已发布版本重跑只补建 Release」这条防线对该版本永久失效。该校验改为**内联**
+  脚本，避免发布 job 为运行脚本而 checkout 仓库代码（否则 OIDC 身份会经手仓库代码）。
+- 新增 `check-release-isolation` 门禁（并入 `check:workflows`）：断言 `publish` job 不出现
+  `actions/checkout`、且只有它声明 `id-token: write`，防止上面这条 OIDC 隔离前提被无声改掉。
+
 ## [0.1.2]
 
 ### 变更（无破坏性改动）
