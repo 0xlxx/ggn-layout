@@ -124,7 +124,7 @@ client.dispose()  // 终止 worker
 ## 7. 验证命令
 
 ```bash
-cd packages/layout
+cd <本仓库根>
 ./node_modules/.bin/vitest run tests/api/interactive-seed.test.ts tests/api/worker.test.ts tests/unit/InteractiveLayererTest.test.ts
 # 浏览器 demo (增量 Playground, 主线程/Worker 切换): pnpm demo  (vite demo-vite, http://localhost:5199)
 ```

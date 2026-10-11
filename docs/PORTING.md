@@ -33,8 +33,8 @@ description: layout 移植标准 (SSOT=ELK Java 0.12.0, 方法论=Bun-in-Rust / 
 
 ## 2.1 门禁运行约定
 
-- **一律 `cd packages/layout` 再跑 vitest** (package vitest config `globals:true`; 仓库根跑会
-  `describe is not defined` 假失败, R66)。
+- **一律在本仓库根目录跑 vitest** (vitest config `globals:true`; 本仓库根即包根,
+  不再有 R66 那种「在 monorepo 根跑导致 `describe is not defined` 假失败」的问题)。
 - **门禁范围** = `tests/api/` + `tests/bdd/` + `tests/unit/` + `tests/core/` + `tests/oracle/`;
   `tests/debug/` 是一次性调试探针 (模块轨迹/src-dist 对照/依赖 /tmp 产物), 已从默认
   `vitest run` 排除 (R71), 需要时显式 `npx vitest run tests/debug/<file>`。

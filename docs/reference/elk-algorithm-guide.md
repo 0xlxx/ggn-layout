@@ -7,7 +7,7 @@
 
 ## 1. 背景与来源（为什么有这份文档）
 
-`packages/layout` 是 ELK Java 0.12.0（`org.eclipse.elk`）的 1:1 TypeScript 移植。ELK 官方文档中，
+`本仓库` 是 ELK Java 0.12.0（`org.eclipse.elk`）的 1:1 TypeScript 移植。ELK 官方文档中，
 **算法开发者指南**（algorithm developers）与**工具开发者指南**（tool developers）是理解其接口设计的权威来源：
 
 - `documentation/algorithmdevelopers/algorithmimplementation/algorithmstructure.md`（「Structuring Algorithms」）
@@ -16,8 +16,8 @@
 本指南把这两份文档**移植并做针对性修改**：原文档面向 Java（`ILayoutPhase` / `ILayoutProcessor` /
 `AlgorithmAssembler` / `AbstractLayoutProvider`），本文映射到本仓库的 TS 实现，并注明差异（见 §8）。
 
-> 配套：[ELK 布局选项接口参考](./elk-layout-options.md)（选项键 / 默认值）、[API 文档](../../packages/layout/docs/API.md)、
-> 模块清单 `packages/layout/docs/MODULES.tsv`。
+> 配套：[ELK 布局选项接口参考](./elk-layout-options.md)（选项键 / 默认值）、[API 文档](../docs/API.md)、
+> 模块清单 `docs/MODULES.tsv`。
 
 ## 2. 核心概念：布局阶段 vs 中间处理器
 
@@ -74,7 +74,7 @@ function runModule(name: string, hooks: LayoutPhaseHooks | undefined, graph: LGr
 ```
 
 `LayoutPhaseHooks`（`beforeModule` / `afterModule` / `afterPhase`）等价于 Java 进度监控器的子任务划分，
-用于探针调试与可观测性（对应 `packages/layout/docs/MODULES.tsv` 的「观测点」列）。
+用于探针调试与可观测性（对应 `docs/MODULES.tsv` 的「观测点」列）。
 
 ## 5. 阶段 → 处理器依赖（LayoutProcessorConfiguration）
 
@@ -136,7 +136,7 @@ TS 侧对应：
 | layout options 配置 | `layoutOptions`（`org.eclipse.elk.*` / `elk.*`） | 见 [选项接口参考](./elk-layout-options.md) |
 | 高层纯 Java 用法（RecursiveGraphLayoutEngine） | `layoutElkJson(input, options?)` | 消费方推荐入口：`JSON → buildGraph → provider → extractGraph → JSON` |
 
-对普通消费方：**首选 `layoutElkJson`**，不要直接组装 `LGraph`（`packages/layout/llms.txt` 同此约定）。
+对普通消费方：**首选 `layoutElkJson`**，不要直接组装 `LGraph`（`llms.txt` 同此约定）。
 `layoutElkJson` 支持 `layoutJsonBatch`（批量 + 逐项隔离）、`diffLayout` / `layoutJsonDiff`（布局差异）、
 `control: { signal, onProgress }`（进度事件 + 取消）——分别对应 Java 侧的批量/进度/取消能力。
 
@@ -155,6 +155,6 @@ TS 侧对应：
 ## 9. 相关文档
 
 - [ELK 布局选项接口参考](./elk-layout-options.md) — 选项键 / TS Property / 默认值
-- `packages/layout/docs/API.md` / `API-QUICKREF.md` — `layoutElkJson` 使用契约
-- `packages/layout/docs/PORTING.md` — 移植陷阱表（含管线顺序类陷阱）
-- `packages/layout/docs/MODULES.tsv` — 模块 ↔ Java 类 ↔ 观测点清单
+- `docs/API.md` / `API-QUICKREF.md` — `layoutElkJson` 使用契约
+- `docs/PORTING.md` — 移植陷阱表（含管线顺序类陷阱）
+- `docs/MODULES.tsv` — 模块 ↔ Java 类 ↔ 观测点清单

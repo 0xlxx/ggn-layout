@@ -10,7 +10,7 @@
 ELK 官方文档 `documentation/tooldevelopers/graphdatastructure/layoutoptions.md` 解释了布局选项的
 **底层机制**：属性（properties）如何定义、如何挂到图元素上、缺省值从哪来、同 id 不同默认值的语义、
 内部属性与用户选项的区别。本文把该指南**移植并做针对性修改**，对应到本仓库的属性系统实现
-（`packages/layout/src/graph/properties.ts`）。
+（`src/graph/properties.ts`）。
 
 > 配套：[ELK 布局选项接口参考](./elk-layout-options.md)（选项键 / 默认值清单）是「有哪些选项」，
 > 本文是「选项这套机制怎么工作」。两者一起看：机制见本文，目录见参考表。
@@ -100,4 +100,4 @@ ELK 文档的约定在本仓库同样成立：
 
 - [ELK 布局选项接口参考](./elk-layout-options.md) — 选项键 / TS Property / 默认值清单
 - [ELK 算法实现指南](./elk-algorithm-guide.md) — 阶段 / 处理器 / 装配 / Provider 接口
-- `packages/layout/docs/API.md` — `layoutElkJson` 使用契约与校验
+- `docs/API.md` — `layoutElkJson` 使用契约与校验

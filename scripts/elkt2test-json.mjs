@@ -98,7 +98,7 @@ describe('elkt 生成 (P3 JSON): ${name}', () => {
       }
       return
     }
-    const oracle = JSON.parse(readFileSync(new URL('../test-resources/jar-oracle/${name}.json', import.meta.url), 'utf8'))
+    const oracle = JSON.parse(readFileSync(new URL('../../../test-resources/jar-oracle/${name}.json', import.meta.url), 'utf8'))
     expect(oracle.hash, 'jar oracle 过期/缺失, 请重跑 node scripts/generate-jar-oracle.mjs').toBe('${hash}')
     const variants = oracle.variants ?? []
     for (let i = 0; i < NAMES.length; i++) {
@@ -118,8 +118,8 @@ describe('elkt 生成 (P3 JSON): ${name}', () => {
 
 mkdirSync(OUT_DIR, { recursive: true })
 const header = `import { readFileSync } from 'node:fs'
-import { buildLGraphFromElkJson } from '../shared/elkgraph-builder.ts'
-import { LayeredLayoutProvider } from '../src/layered-layout-provider.js'
+import { buildLGraphFromElkJson } from '../../../shared/elkgraph-builder.ts'
+import { LayeredLayoutProvider } from '../../../src/layered-layout-provider.js'
 
 `
 const outFile = join(OUT_DIR, 'json_path_batch.test.ts')

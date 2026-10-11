@@ -66,7 +66,7 @@
 ## 6. 验证命令速查
 
 ```bash
-cd packages/layout
+cd <本仓库根>
 ./node_modules/.bin/vitest run tests/elk-java-unit --testTimeout=120000        # 全量（~45s）
 ./node_modules/.bin/vitest run tests/elk-java-unit/IssueXXXXTest.test.ts      # 单个工单
 node scripts/diff-failures.mjs collect-all /tmp/f.json && node scripts/diff-failures.mjs check /tmp/f.json  # 696 门禁

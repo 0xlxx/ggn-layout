@@ -52,7 +52,7 @@ e2e 注册表补充: hierarchy01 ×4 方向 (RIGHT/LEFT/UP/DOWN) 均 nodeDiffs=0
 
 ## 3. Scope 边界
 
-- **可碰**: packages/layout/src/compound/*, intermediate/hierarchical-port-*.ts,
+- **可碰**: src/compound/*, intermediate/hierarchical-port-*.ts,
   intermediate/long-edge-*.ts, intermediate/elk-graph-importer.ts, graph/lgraph-util.ts
   (仅跨级边相关函数), tests/bdd/compound-ports.scenarios.test.ts (可加场景)。
 - **不可碰**: 自环簇文件 (intermediate/loops/*, cell-system.ts) 与压缩器 (compaction/oned/*)

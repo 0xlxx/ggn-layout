@@ -1,6 +1,6 @@
 # 完成度审计 (GOAL-AUDIT)
 
-> 目标: 移植 eclipse elk (Java 0.12.0) → TypeScript (packages/layout), 1:1 对齐。
+> 目标: 移植 eclipse elk (Java 0.12.0) → TypeScript (本仓库), 1:1 对齐。
 > 审计日期: 2026-08-12 · 分支: fix/json-scene-editor-integration · HEAD: c103962 (NLA 并行批次 4/4 并入后)
 
 ## 一、验收标准与结论

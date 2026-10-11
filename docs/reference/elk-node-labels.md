@@ -24,7 +24,7 @@
 | :--- | :--- | :--- |
 | R1 | 组容器同时设 `nodeLabels.placement: [INSIDE, H_CENTER, V_TOP]` + `nodeSize.constraints: [NODE_LABELS]`（`packages/kernel/src/layout/elk-service.ts`） | ✅ |
 | R2 | **不适用**：node/edge 的标签由 kernel 预测量（`measureNode` / `measureEdgeLabelSize`）后以显式 `width/height` 传入，ELK 不做字体度量（ADR 0001） | ⚪ 有意的另一条路 |
-| R3 | 不适用：容器用 `H_CENTER`，本就不产生对称留白；若未来改 `H_LEFT`，子节点可开 `ASYMMETRICAL`（移植层已实现：`packages/layout/src/common/node-micro-layout.ts`） | ⚪ N/A |
+| R3 | 不适用：容器用 `H_CENTER`，本就不产生对称留白；若未来改 `H_LEFT`，子节点可开 `ASYMMETRICAL`（移植层已实现：`src/common/node-micro-layout.ts`） | ⚪ N/A |
 | R4 | 白盒 layered 依赖 ELK 原生预留；6 种 black-box（box/force/radial/stress/rectpacking/topdownpacking）由 kernel 注入 `padding.top` 手动预留 | ✅ 与 R4 一致 |
 | R5 | 未使用 `ASYMMETRICAL`（容器非左对齐），与 R5 不冲突 | ✅ |
 | R6 | 容器标题行的**宽度与高度都由 kernel 外置预留**：`groupTitleRowWidth` / `groupBadgeRowWidth` / `groupHeaderHeight` 计算需求，black-box 走 `reserveBlackBoxTitleWidthInPlace`（对称 padding + 二次撑宽） | ✅ 比博文示例更完整 |

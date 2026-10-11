@@ -16,5 +16,5 @@
 | [ELK 布局选项接口参考（ELK Java 0.12.0 → ggn-layout）](./elk-layout-options.md) | 移植 ELK Java 0.12.0 布局选项接口（CoreOptions / LayeredOptions）到本项目的权威对照表——选项键、TS Property、类型、默认值一一对应；供 `kernel:layout` 接线与消费方查表。 | 🟢 |
 | [ELK 节点标签最佳实践与 GGN 映射（Node Labels）](./elk-node-labels.md) | 对照 ELK 官方博文《Node Labels》（2025-08-22），记录 GGN kernel 的标签预留策略、与官方建议的逐条符合度、以及有意偏离（reservation-only label）的理由与风险控制。 | 🟢 |
 | [ELK 间距选项指南（Spacing Options，ELK Java → ggn-layout）](./elk-spacing-options.md) | 移植 ELK Java「Spacing Options」指南——间距成对语义、base value、个体间距覆盖与 margin/padding 正交关系，对应到 TS 的 `Spacings` 表与 `LayeredSpacingsBuilder`。 | 🟢 |
-| [elkjs 0.12.0 特性覆盖审计（ggn-layout 测试对照）](./elkjs-feature-coverage.md) | 枚举 elkjs 0.12.0 的对外特性（算法 / 能力旗标 / JSON 图格式 / 选项 / API 面），逐项对照 ggn-layout（`packages/layout`）的测试覆盖，给出覆盖结论与差距清单。 | 🟢 |
+| [elkjs 0.12.0 特性覆盖审计（ggn-layout 测试对照）](./elkjs-feature-coverage.md) | 枚举 elkjs 0.12.0 的对外特性（算法 / 能力旗标 / JSON 图格式 / 选项 / API 面），逐项对照 ggn-layout（`本仓库`）的测试覆盖，给出覆盖结论与差距清单。 | 🟢 |
 | [参考资料](./README.md) | 参考资料 目录的入口索引（按文档职责与状态汇总）。 | 🟢 |

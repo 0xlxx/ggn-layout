@@ -1291,7 +1291,7 @@ ${ggnApply}
 
     // L1 (M3): 与 ELK Java 0.12.0 jar oracle 坐标级差分 (容差 ε = ${TOLERANCE}).
     // oracle 坐标相对父块 (jar getX/getY); ggn 子图节点坐标同样相对父 → 直接对比, 无需世界坐标累加.
-    const oracle = JSON.parse(readFileSync(new URL('../test-resources/jar-oracle/${name}.json', import.meta.url), 'utf8'))
+    const oracle = JSON.parse(readFileSync(new URL('../../../test-resources/jar-oracle/${name}.json', import.meta.url), 'utf8'))
     expect(oracle.hash, 'jar oracle 过期/缺失, 请重跑 node scripts/generate-jar-oracle.mjs').toBe('${hash}')
     // ELK 类加载顺序变体 (EdgeMain vs BatchMain): oracle.variants 记录另一变体, 任一匹配即通过.
     const variants = oracle.variants ?? []
@@ -1353,13 +1353,13 @@ for (const [top, groupFiles] of groups) {
   }
   const outFile = join(OUT_DIR, `${sanitize(top)}_batch.test.ts`)
   const header = `import { readFileSync } from 'node:fs'
-import { buildLGraphFromElkJson } from '../shared/elkgraph-builder.ts'
-import { LGraph, LNode, LPort, LEdge, NodeType } from '../src/index.js'
-import { PortSide, PortType } from '../src/graph/enums.js'
-import { createMergedPort } from '../src/graph/lgraph-util-merge.js'
-import { LayeredLayoutProvider } from '../src/layered-layout-provider.js'
-import { PORT_CONSTRAINTS as PORT_CONSTRAINTS_KEY, PORT_INDEX as PORT_INDEX_KEY, HIERARCHY_HANDLING as HIERARCHY_HANDLING_KEY, DIRECTION as DIRECTION_KEY, INSIDE_SELF_LOOPS_ACTIVATE as INSIDE_SELF_LOOPS_ACTIVATE_KEY, INSIDE_SELF_LOOPS_YO as INSIDE_SELF_LOOPS_YO_KEY, PORT_BORDER_OFFSET as PORT_BORDER_OFFSET_KEY, MERGE_EDGES as MERGE_EDGES_KEY } from '../src/options/layered-options.js'
-import { MODEL_ORDER as MODEL_ORDER_KEY } from '../src/options/internal-properties.js'
+import { buildLGraphFromElkJson } from '../../../shared/elkgraph-builder.ts'
+import { LGraph, LNode, LPort, LEdge, NodeType } from '../../../src/index.js'
+import { PortSide, PortType } from '../../../src/graph/enums.js'
+import { createMergedPort } from '../../../src/graph/lgraph-util-merge.js'
+import { LayeredLayoutProvider } from '../../../src/layered-layout-provider.js'
+import { PORT_CONSTRAINTS as PORT_CONSTRAINTS_KEY, PORT_INDEX as PORT_INDEX_KEY, HIERARCHY_HANDLING as HIERARCHY_HANDLING_KEY, DIRECTION as DIRECTION_KEY, INSIDE_SELF_LOOPS_ACTIVATE as INSIDE_SELF_LOOPS_ACTIVATE_KEY, INSIDE_SELF_LOOPS_YO as INSIDE_SELF_LOOPS_YO_KEY, PORT_BORDER_OFFSET as PORT_BORDER_OFFSET_KEY, MERGE_EDGES as MERGE_EDGES_KEY } from '../../../src/options/layered-options.js'
+import { MODEL_ORDER as MODEL_ORDER_KEY } from '../../../src/options/internal-properties.js'
 
 // M5/mergeEdges: 每个测试块在创建边前设置 (ELK LGraphUtil.createPort 合并分支).
 let __mergeEdges = false

@@ -1,7 +1,7 @@
 /**
  * Stryker Mutation Testing 配置 — layout 移植代码 (ELK Java 0.12.0 1:1 移植).
  *
- * 运行: bun run --filter ggn-layout mutation
+ * 运行: bun run mutation
  * 报告: reports/mutation/index.html
  *
  * 范围: elk-java-unit 移植单测覆盖的模块 (P3 交叉最小化 / intermediate 处理器 / 自环 / compaction)。

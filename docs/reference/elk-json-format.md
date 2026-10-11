@@ -11,7 +11,7 @@ ELK 官方文档 `documentation/tooldevelopers/graphdatastructure/jsonformat.md`
 `layoutElkJson` 的输入 / 输出即该格式。本文把该指南**移植并做针对性修改**：元素规则与 Java 一致，
 导入导出 API 映射到本仓库 TS 实现（`buildGraph` / `extractGraph` / `layoutElkJson`），差异见 §8。
 
-> 配套：使用契约见 `packages/layout/docs/API.md`（含坐标模式）；选项键见
+> 配套：使用契约见 `docs/API.md`（含坐标模式）；选项键见
 > [ELK 布局选项接口参考](./elk-layout-options.md)。本文专注**格式本身**。
 
 ## 2. 五种基本元素
@@ -89,7 +89,7 @@ Java 文档说明原语边仅为遗留模型保留。**本移植不接受原语�
 }
 ```
 
-TS 侧等价（`layoutElkJson` 输出即布局后 JSON，见 `packages/layout/examples/basic.ts`）。
+TS 侧等价（`layoutElkJson` 输出即布局后 JSON，见 `examples/basic.ts`）。
 
 ## 7. 导入导出 API（Java `ElkGraphJson` → TS）
 
@@ -114,6 +114,6 @@ TS 侧等价（`layoutElkJson` 输出即布局后 JSON，见 `packages/layout/ex
 
 ## 9. 相关文档
 
-- `packages/layout/docs/API.md` / `API-QUICKREF.md` — `layoutElkJson` 使用契约、坐标模式、错误码
+- `docs/API.md` / `API-QUICKREF.md` — `layoutElkJson` 使用契约、坐标模式、错误码
 - [ELK 布局选项接口参考](./elk-layout-options.md) — `layoutOptions` 键与默认值
 - [ELK 算法实现指南](./elk-algorithm-guide.md) — 阶段 / 处理器 / Provider 接口

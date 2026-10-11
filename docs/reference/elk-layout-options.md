@@ -7,11 +7,11 @@
 
 ## 1. 背景与来源（为什么有这份文档）
 
-`packages/layout` 是 ELK Java 0.12.0（`org.eclipse.elk`）的 1:1 TypeScript 移植。
+`本仓库` 是 ELK Java 0.12.0（`org.eclipse.elk`）的 1:1 TypeScript 移植。
 **布局选项是用户与布局引擎之间的接口契约**：图 JSON 中的 `layoutOptions` 声明如何映射到内部属性、
 缺省时回落到什么默认值，直接决定布局结果。本表从移植代码（SSOT）提取：
 
-- 主表来源：`packages/layout/src/options/layered-options.ts`（`Property` 常量的第二个构造参数 = 默认值）
+- 主表来源：`src/options/layered-options.ts`（`Property` 常量的第二个构造参数 = 默认值）
 - 其他算法模块：各自目录下的 `options.ts`（`DEFAULTS` 对象），见 [§6 其他算法模块选项](#6-其他算法模块选项)
 - 内部属性（`*.internal.*`，非用户接口）：`src/options/internal-properties.ts`，不在本表列出，见 [§8 边界](#8-边界与内部属性)
 

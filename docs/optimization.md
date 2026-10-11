@@ -2,7 +2,7 @@
 
 > 本文件是 parallel-optimizing 的**项目特化文件**（对应 skill 的「项目文件约定」）。
 > 执行优化前先读本文件（基线/命令/热点/陷阱/历史成果），再读 `OPTIMIZATION_CLASSES.tsv` 查表、
-> `docs/clusters/agent-remarks.md` 获取历史备注。工作目录: `packages/layout`。
+> `docs/clusters/agent-remarks.md` 获取历史备注。工作目录: 本仓库根。
 
 ## 基线（2026-08-12 实测，优化前必须重采样；tag: perf-baseline / perf-optimized）
 
@@ -298,10 +298,10 @@ mrtree        N=500 → 22ms    N=2000 → 275ms (×12.5/×4)  N=5000 → 1656ms
 
 ```bash
 # 在 worktree 内补软链（scripts/elk-java-debug 的 ELK jar 与 out-edge 目录）
-d=<worktree>/packages/layout/scripts/elk-java-debug
+d=<worktree>/scripts/elk-java-debug
 mkdir -p "$d"
-ln -s /Users/bjorn/ai-dev/ggn/packages/layout/scripts/elk-java-debug/lib      "$d/lib"
-ln -s /Users/bjorn/ai-dev/ggn/packages/layout/scripts/elk-java-debug/out-edge "$d/out-edge"
+ln -s /Users/bjorn/ai-dev/ggn-layout-standalone/scripts/elk-java-debug/lib      "$d/lib"
+ln -s /Users/bjorn/ai-dev/ggn-layout-standalone/scripts/elk-java-debug/out-edge "$d/out-edge"
 ```
 
 派发前先在一个 worktree 里冒烟：`bun scripts/verify-bit-exact.mjs` 应输出 `368/368`（全等 337）。

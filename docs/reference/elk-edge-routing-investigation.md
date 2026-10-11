@@ -30,7 +30,7 @@
 1. 从 Viewer `GET /api/events` 抓取 `run_ggn_project_feedback` 全量事件，用 `@ggn/agent` reducer 重放成场景元素；
 2. 用 kernel `measureNode()` 计算节点尺寸，导出标准 ELK JSON（19 边 / 12 节点 / `json.shapeCoords=ROOT`）；
 3. **同一份 JSON** 分别跑：
-   - 本仓库：`packages/layout/src/api/index.ts` 的 `layoutElkJson()`
+   - 本仓库：`src/api/index.ts` 的 `layoutElkJson()`
    - Java oracle：`java -cp "out-edge:lib/*" LayoutJsonMain <input.json>`（ELK 0.12.0 + 未签名 layered jar）
 
 ### 3.2 结果
@@ -169,7 +169,7 @@
 ### 6.4 暂不做的两件事
 
 1. **自研正交路由（libavoid 等）**：ELK 官方只支持 Java 侧 libavoid，elkjs 无对应实现。
-   若要做，等于在 kernel 之上再写一层路由引擎，与 `packages/layout` 的 1:1 移植使命冲突，
+   若要做，等于在 kernel 之上再写一层路由引擎，与 `本仓库` 的 1:1 移植使命冲突，
    当前收益（本图 40→13 弯点）不足以支撑该复杂度。
 2. **固定节点位置 + 只重算边**：ELK 明确不支持（#1174），需要自研或改用 Java 侧 libavoid。
 
@@ -200,11 +200,11 @@ Java oracle 命令（ELK 0.12.0 + 未签名 layered jar）：
 
 ```bash
 /opt/homebrew/opt/openjdk@21/bin/java -cp \
-  "packages/layout/scripts/elk-java-debug/out-edge:packages/layout/scripts/elk-java-debug/lib/*" \
+  "scripts/elk-java-debug/out-edge:scripts/elk-java-debug/lib/*" \
   LayoutJsonMain /tmp/ggn-edge-input.json > /tmp/ggn-edge-java-raw.txt
 ```
 
-> 长期回归建议：把「层次包含 vs contains 长边」两个样本收敛为 `packages/layout` 的测试用例
+> 长期回归建议：把「层次包含 vs contains 长边」两个样本收敛为 `本仓库` 的测试用例
 > （同一 ELK JSON 进 → 断言弯点/边长上界），避免只靠临时脚本复现。
 
 ## 9. 相关文档

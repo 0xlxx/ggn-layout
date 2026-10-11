@@ -7,7 +7,7 @@
  *       即「构建 + 布局」端到端耗时 (vitest bench / Tinybench 自动 warmup + 统计).
  *
  * 运行:
- *   cd packages/layout
+ *   cd <本仓库根>
  *   bunx vitest bench tests/perf/layout.bench.mjs
  *   bunx vitest bench tests/perf/layout.bench.mjs --run --outputJson bench-results/layout-baseline.json
  *

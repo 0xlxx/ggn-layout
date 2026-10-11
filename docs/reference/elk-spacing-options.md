@@ -89,5 +89,5 @@ factor，再统一乘 base 应用（见 §6）。
 ## 7. 相关文档
 
 - [ELK 布局选项接口参考](./elk-layout-options.md) — 全部间距键与默认值（§间距选项）
-- `packages/layout/src/options/layered-spacings.ts` — 基准 / factor / 应用实现
-- `packages/layout/src/p4nodes/spacings.ts` — 节点类型间距表与个体覆盖实现
+- `src/options/layered-spacings.ts` — 基准 / factor / 应用实现
+- `src/p4nodes/spacings.ts` — 节点类型间距表与个体覆盖实现
