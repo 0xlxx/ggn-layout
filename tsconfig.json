@@ -3,7 +3,14 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "customConditions": ["development"],
+    "paths": {
+      "ggn-layout": ["./src/index.ts"],
+      "ggn-layout/api": ["./src/api/index.ts"],
+      "ggn-layout/core": ["./src/internal.ts"],
+      "ggn-layout/options": ["./src/options.ts"],
+      "ggn-layout/layered": ["./src/api/layered.ts"],
+      "ggn-layout/layout-worker": ["./src/layout-worker.ts"]
+    },
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,

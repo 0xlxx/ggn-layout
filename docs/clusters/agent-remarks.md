@@ -198,3 +198,12 @@ bit-exact 368/368（全等 337 不变）· 对齐 362/368 · 696 回归 PASS · 
 | R67 | 主线程 | **本轮用到的三个工具及其口径**（供以后复用）：① **V8 coverage**（`NODE_V8_COVERAGE=… node --import tsx scripts/perf-run.mjs …`，注意源码用 `.js` 后缀 import `.ts`，node 原生跑不通、必须走 tsx）：默认路径只执行 `src/**` **39.3%** 的函数；layered 入口内 **<15% 覆盖率且 ≥3KB 的模块 = 70,065B（12.1%）**、**<35% = 245,614B（42.3%）**。② **rolldown/tsdown metafile**：字节归因；**不要用 `bun build` 口径**（不加 define 会留下全部 debug 分支，同入口 581KB vs 510KB 差 12%）。③ **knip**：找未引用文件/导出，但对 bundle 的直接帮助有限（未引用文件全在 scripts/demo/examples；未使用导出多在非 layered 算法目录，那些已 tree-shake 到独立 chunk） | 见 R66 | 记录 | 结论：**能减字节的是「可达性」，不是「文件大小」** —— 分布平坦时按字节排序看不出东西 |
 | R68 | 主线程 | **bundle 字节门禁落地**（批次 15 唯一产出）：`bun run check:bundle` = tsdown + `scripts/check-bundle-budget.mjs`，度量 core/api/algorithms/total 的 raw+gzip，超「基线×(1+2%) 且 >2048B」即失败。基线 `bench-results/baseline-bundle.json`（目录被 gitignore，`git add -f`）。负向验证：注入 12,451B 死代码 → `core +2.44%` → exit 1；恢复即绿。**背景**：批次 14 的性能优化把 core 从 506,686 撑到 510,167（+3.5KB）没人拦 | 门禁正/负向均验证 | 已合（e6cd588b） | 性能改动「跑得更快、包更大」以后会被拦 |
 
+## 批次 16 (2026-10-11, 拆仓发布 — 发布边界收口)
+
+> 把本包从 ggn monorepo 拆成独立仓库 `ggn-layout` 并发布 npm 时暴露的**消费者侧**缺陷。
+> monorepo 内自引用从没走过真实消费者解析路径，所以一直没暴露。
+
+| id | 来源 | 备注摘要 | 验证结果 | 处置 | 计划影响 |
+|---|---|---|---|---|---|
+| R69 | 主线程（拆仓发布暴露） | **`exports` 的 `development` 条件向消费者泄漏不可解析的源码**。原设计（R49）用 `customConditions:["development"]` 让本包自引用 `ggn-layout/*` 指向 `src/**`，以免 typecheck 依赖 `dist` 先存在。但 `development` 是 **Vite/esbuild 等 bundler 默认注入的条件** —— 任何 Vite 消费者在 dev 模式都会命中该分支：① `files` 不含 `src` → 直接解析失败；② 即便打包 `src`，`src/**` 用 `.js` 说明符跨目录引用仓库根的 `shared/`（同样不在包内）→ 仍失败。**修复**：从 `exports` 六个入口移除 `development` 条件（消费者只应看到 `dist`），改用 **tsconfig `paths` + vitest `resolve.alias`** 在包内把自引用解析到 `src`（保持「未构建 dist 也能 typecheck/测试」的原性质）。`files` 恢复为不含裸 `src`（保留 `src/api/layout-input.schema.json` 这一机器可读契约文件） | 移走 `dist` 后 `bun run typecheck` 0 错误；`tests/contract/api-subpaths.test.ts` 4/4 通过；`bun run build` OK；`bun run test:ci` **245 passed / 4 skipped，3780 passed / 7 skipped**；消费者安装 tarball 后 ESM 根入口 / `./api` / `./core` / `./layered` / `./options` + CJS `require` 全部冒烟通过；`node --conditions=development` 复测解析落回 `dist/**` | 已合（拆分仓提交） | 教训：**自引用的解析路径 ≠ 消费者的解析路径**。凡进 `exports` 的条件/路径，必须按「真实消费者 + 默认条件集」验证，不能只在包内自引用自测 |
+

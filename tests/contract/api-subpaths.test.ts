@@ -1,8 +1,9 @@
 /**
  * 发布子路径与机器可读契约。
  *
- * 先尝试包自引用；若测试环境尚未构建 dist，Vitest 会退化到 src/options.ts，
- * 但仍保留明确的 fallback 说明，避免把构建前的环境差异伪装成发布契约。
+ * 本地工作区把 `ggn-layout/options` 自引用经 vitest alias 解析到 src/options.ts
+ * （发布包的 `exports` 只暴露 dist）。若 alias/自引用都不可用，则退化为
+ * src/options.ts 直接导入，避免把构建前的环境差异伪装成发布契约。
  */
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'

@@ -6,37 +6,31 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./api": {
       "types": "./dist/api/index.d.ts",
-      "development": "./src/api/index.ts",
       "import": "./dist/api/index.js",
       "require": "./dist/api/index.cjs"
     },
     "./core": {
       "types": "./dist/internal.d.ts",
-      "development": "./src/internal.ts",
       "import": "./dist/internal.js",
       "require": "./dist/internal.cjs"
     },
     "./options": {
       "types": "./dist/options.d.ts",
-      "development": "./src/options.ts",
       "import": "./dist/options.js",
       "require": "./dist/options.cjs"
     },
     "./layered": {
       "types": "./dist/api/layered.d.ts",
-      "development": "./src/api/layered.ts",
       "import": "./dist/api/layered.js",
       "require": "./dist/api/layered.cjs"
     },
     "./layout-worker": {
       "types": "./dist/layout-worker.d.ts",
-      "development": "./src/layout-worker.ts",
       "import": "./dist/layout-worker.js",
       "require": "./dist/layout-worker.cjs"
     }
