@@ -53,7 +53,24 @@ git tag -a v0.1.2 -m "ggn-layout 0.1.2"
 git push origin v0.1.2
 ```
 
-`release.yml` 会先跑完所有门禁，并校验「tag 名 == package.json 版本」。
+`release.yml` 分成两个 job，职责按「谁会执行仓库代码」切开：
+
+- **`build`**（`contents: read`，**没有** `id-token`）：装依赖（`bun install` 会执行 devDependency
+  的 `postinstall`）、跑全部门禁、`npm pack` 出唯一交付物 `ggn-layout-package.tgz` 并上传 artifact。
+  即使某个依赖的安装脚本被污染，它在这里也换不到 npm 身份。
+- **`publish`**（`contents: write` + `id-token: write`，`environment: npm`）：**不** checkout 源码、
+  **不**装依赖、**不**跑构建脚本，只对上面那个 tarball 调 `npm publish <tgz> --provenance`。
+  npm 按 tarball 发布时不会执行包内的 lifecycle 脚本，故 OIDC 身份不会经手仓库代码。
+
+发布前的门禁在 `build` 里跑：`check:workflows`（两份工作流的 `NPM_VERSION` 必须一致且为精确版本）、
+`typecheck`、`verify:public-api`（导出集合与 `docs/api-manifest.json` 对账）、`test:ci`、`build`、
+`smoke:pack`。
+
+tag 路径另有两道校验：
+
+- 「tag 名 == `package.json` 版本」；
+- 「被打 tag 的提交是 `origin/main` 的祖先」—— `ci.yml` 只监听 main 上的 push/PR，从侧分支打一个
+  `v*` tag 本来可以绕过全部门禁，这道校验把该路径封掉。
 
 若该版本**已在 registry**：工作流会比对 registry 里的 `gitHead` 与当前提交 —— 一致则跳过
 `npm publish`、只补建 GitHub Release（用于给历史版本补 tag）；不一致则直接失败，避免产出一张

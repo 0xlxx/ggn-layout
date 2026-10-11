@@ -10,11 +10,11 @@ on:
         type: boolean
         default: true
 
-# npm Trusted Publishing (OIDC) + provenance 需要 id-token: write.
-# contents: write 用于打 tag 后创建 GitHub Release（跳过发布时也照样建）。
+# 默认最小权限。只有 publish job 单点提权：
+#   contents: write —— 建 tag 后创建 GitHub Release
+#   id-token: write —— 换 npm Trusted Publishing (OIDC) 身份 + provenance
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 # 发布不可并发: tag push 与 main 上的 workflow_dispatch 属于不同 ref, 必须按仓库串行,
 # 否则同一版本的两条流水线可能同时 npm publish.
@@ -23,18 +23,24 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # 固定 npm 版本: 该 job 持有 id-token / contents 写权限, 不能使用浮动 `@latest`.
+  # 固定 npm 版本: `npm pack` 的行为与 `npm pack --json` 的输出结构随 npm 大版本变过
+  # (2026-10-11 实测 npm 12 改成按包名索引的对象), 打包与发布两侧必须是同一版本.
   NPM_VERSION: 12.2.0
+  TARBALL: ggn-layout-package.tgz
 
 jobs:
-  publish:
+  # ── 构建：唯一会执行仓库代码 (含 devDep postinstall) 的 job，无写权限、无 OIDC ──
+  # 把「装依赖 / 跑测试 / 构建」整体挪出 OIDC job：即使某个 devDependency 的 postinstall
+  # 被污染，它在这里也换不到 npm 身份，最多弄脏一次构建。
+  # 本 job 的唯一交付物是一个 .tgz —— 发布 job 只认它。
+  build:
     runs-on: ubuntu-latest
-    # 需在仓库 Settings → Environments 里建 "npm" 环境 (建议配 required reviewers).
-    environment: npm
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          # `gh release create --generate-notes` 需要历史与既有 tag 才能算变更集。
+          # tag 路径要验证「被打 tag 的提交是 main 的祖先」, 需要完整历史与 origin/main.
           fetch-depth: 0
 
       - name: Guard — 发布来源与版本号
@@ -42,6 +48,15 @@ jobs:
           version="$(node -p "require('./package.json').version")"
           if [ "${{ github.event_name }}" = "push" ]; then
             test "v${version}" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} != v${version}"; exit 1; }
+            # ci.yml 只在 push/pull_request 到 main 上跑, 而 tag push 不匹配该触发器:
+            # 从侧分支打一个 v* tag 即可绕过全部门禁发布. 故这里额外要求被打 tag 的提交
+            # 必须是 main 的祖先 (fetch-depth: 0 下 origin/main 一定存在).
+            git rev-parse --verify --quiet origin/main >/dev/null || { echo "缺少 origin/main, 无法校验 tag 来源"; exit 1; }
+            git merge-base --is-ancestor "$GITHUB_SHA" origin/main || {
+              echo "tag ${GITHUB_REF_NAME} 指向的提交 ${GITHUB_SHA} 不是 origin/main 的祖先 —— 拒绝发布"
+              exit 1
+            }
+            echo "tag 来源校验通过: ${GITHUB_SHA} 是 origin/main 的祖先"
           else
             # 手工发布只允许 main, 防止在历史提交/分支上误发.
             test "${GITHUB_REF_NAME}" = "main" || { echo "workflow_dispatch 只允许在 main 上发布 (当前 ${GITHUB_REF_NAME})"; exit 1; }
@@ -53,7 +68,7 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
-          # Trusted Publishing (OIDC) 需要 npm CLI ≥ 11.5.1；Node 24 自带 npm 11。
+          # 用与发布一致的 Node/npm 打包, 避免「CI 绿而 release 红」.
           node-version: 24
           registry-url: https://registry.npmjs.org
 
@@ -61,11 +76,77 @@ jobs:
         run: npm install -g "npm@${NPM_VERSION}" && npm --version
 
       - run: bun install --frozen-lockfile
+      - run: bun run check:workflows
       - run: bun run typecheck
+      - run: bun run verify:public-api
       - run: bun run test:ci
       - run: bun run build
       # 发布前的产物门禁: 完整入口可跑非 layered 算法 + layered 子入口可用 + 体积分层.
       - run: bun run smoke:pack
+
+      - name: 打包待发布 tarball
+        id: pack
+        # dry-run 演练用一次性预发布版本号: npm 即使 --dry-run 也会去 registry 查重,
+        # 沿用 package.json 里已发布的版本必然以
+        # "You cannot publish over the previously published versions" 收尾, Actions 上
+        # 永远是一条红的. 换成本次 run 独有、不可能存在的版本号后, 演练能一路走完
+        # (含 registry 查询与 provenance 前置校验) 且不产生任何残留.
+        # 版本号必须在 `npm pack` **之前** 改好 —— 之后发布的 publish job 不再接触源码.
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry-run }}" = "true" ]; then
+            npm pkg set version="0.0.0-dryrun.${{ github.run_id }}"
+            echo "dry-run: 版本号改写为 0.0.0-dryrun.${{ github.run_id }}"
+          fi
+          npm pack --pack-destination . >/dev/null
+          packed="$(ls ggn-layout-*.tgz | head -n1)"
+          mv "$packed" "$TARBALL"
+          version="$(node -p "require('./package.json').version")"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tarball: ${TARBALL} (version=${version})"
+          ls -l "$TARBALL"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: package-tarball
+          path: ggn-layout-package.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  # ── 发布：唯一持有 id-token 的 job，且不执行仓库里的任何代码 ──────────────────
+  # 不 checkout 源码、不装依赖、不跑构建脚本: 只对 build 产出的 tarball 调 npm.
+  # `npm publish <tarball>` 不会运行 tarball 里的 lifecycle 脚本 (已实测: 声明了
+  # prepublishOnly 的包按 tarball 发布时该脚本不执行), 故仓库代码拿不到 OIDC 身份.
+  # 本 job 里唯一来自外部的可执行代码是上面固定的 npm CLI 自身.
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    # 需在仓库 Settings → Environments 里建 "npm" 环境 (建议配 required reviewers).
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: package-tarball
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          # Trusted Publishing (OIDC) 需要 npm CLI ≥ 11.5.1；Node 24 自带 npm 11.
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Ensure npm CLI supports trusted publishing
+        run: npm install -g "npm@${NPM_VERSION}" && npm --version
+
+      - name: 读取 tarball 内版本
+        id: meta
+        run: |
+          mkdir -p .meta
+          tar -xzf "$TARBALL" -C .meta package/package.json
+          version="$(node -p "require('./.meta/package/package.json').version")"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tarball 版本: ${version}"
 
       # 版本已在 registry 时不再硬失败，而是跳过发布、只建 GitHub Release。
       # 这样两种情形都能走通：① 给历史版本补 tag（内容早已发布，重跑只会红）；
@@ -73,10 +154,9 @@ jobs:
       - name: 探测该版本是否已发布
         id: published
         run: |
-          version="$(node -p "require('./package.json').version")"
-          if npm view "ggn-layout@${version}" version >/dev/null 2>&1; then
+          if npm view "ggn-layout@${{ steps.meta.outputs.version }}" version >/dev/null 2>&1; then
             echo "found=true" >> "$GITHUB_OUTPUT"
-            echo "ggn-layout@${version} 已在 registry —— 跳过 npm publish，只建 GitHub Release。"
+            echo "ggn-layout@${{ steps.meta.outputs.version }} 已在 registry —— 跳过 npm publish，只建 GitHub Release。"
           else
             echo "found=false" >> "$GITHUB_OUTPUT"
           fi
@@ -86,10 +166,9 @@ jobs:
       - name: 校验已发布版本的 gitHead 与当前提交一致
         if: steps.published.outputs.found == 'true' && github.event_name == 'push'
         run: |
-          version="$(node -p "require('./package.json').version")"
-          head="$(npm view "ggn-layout@${version}" gitHead 2>/dev/null || true)"
+          head="$(npm view "ggn-layout@${{ steps.meta.outputs.version }}" gitHead 2>/dev/null || true)"
           if [ -z "${head}" ]; then
-            echo "registry 未记录 ggn-layout@${version} 的 gitHead —— 无法证明与当前提交一致, 拒绝建 Release"
+            echo "registry 未记录 ggn-layout@${{ steps.meta.outputs.version }} 的 gitHead —— 无法证明与当前提交一致, 拒绝建 Release"
             exit 1
           fi
           if [ "${head}" != "${GITHUB_SHA}" ]; then
@@ -101,28 +180,23 @@ jobs:
 
       - name: Publish (dry run)
         if: github.event_name == 'workflow_dispatch' && inputs.dry-run
-        # dry-run 用一次性预发布版本号: npm 即使 --dry-run 也会去 registry 查重,
-        # 若沿用 package.json 里已发布的版本, 演练必然以
-        # "You cannot publish over the previously published versions" 收尾,
-        # Actions 上永远是一条红的. 换成本次 run 独有、不可能存在的版本号后,
-        # 演练能一路走完(含 registry 查询与 provenance 前置校验)且不产生任何残留.
-        # 预发布版本号还必须显式给 --tag, 否则 npm 直接拒绝.
-        run: |
-          npm pkg set version="0.0.0-dryrun.${{ github.run_id }}"
-          npm publish --dry-run --provenance --tag dryrun
+        # tarball 里已是一次性版本号 (build job 里改的), 这里显式给 --tag.
+        run: npm publish "$TARBALL" --dry-run --provenance --tag dryrun
 
       - name: Publish
         if: >-
           (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry-run == false))
           && steps.published.outputs.found == 'false'
-        run: npm publish --provenance
+        run: npm publish "$TARBALL" --provenance
 
       - name: Create GitHub Release
         if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
+        # 本 job 没有 checkout, 故显式给 --repo (gh 无需本地 git 仓库).
         run: |
-          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
+          gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1 || \
             gh release create "${GITHUB_REF_NAME}" \
+              --repo "${GITHUB_REPOSITORY}" \
               --title "${GITHUB_REF_NAME}" \
               --generate-notes

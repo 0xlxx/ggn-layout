@@ -27,6 +27,20 @@
   `Copyright (c) Kiel University and others`。0.1.1 的 banner 只有许可标识与来源说明，缺版权
   持有人行——EPL-2.0 §3.1 与 REUSE 惯例都要求版权声明随制品分发。
 
+### 工程 / 发布链路（不影响制品内容）
+
+- `release.yml` 拆成 `build` 与 `publish` 两个 job。此前单个 job 的 `id-token: write` 覆盖整条
+  构建链（`bun install` 会执行 devDependency 的 `postinstall`），被污染的开发依赖可以换取
+  OIDC 身份自行发布，且 provenance 还会为其背书。现在：`build` 无 OIDC，产出唯一交付物
+  `ggn-layout-package.tgz`；`publish` 不再 checkout 源码、不装依赖，只对 tarball 调
+  `npm publish --provenance`（npm 按 tarball 发布时不执行包内 lifecycle 脚本）。
+- tag 路径新增「被打 tag 的提交必须是 `origin/main` 的祖先」校验。`ci.yml` 只监听 main 上的
+  push/PR，此前从侧分支打 `v*` tag 即可绕过全部 CI 直接发布。
+- 新增 `check:workflows` 门禁（`ci.yml` 与 `release.yml` 的 `NPM_VERSION` 必须一致且为精确
+  版本），并入 CI、`prepublishOnly` 与 release 的 `build` job。
+- `verify:public-api`（导出集合 ↔ `docs/api-manifest.json` 对账）此前只存在于 `package.json`
+  scripts、CI 未执行，现接入 CI 与 release 门禁。
+
 ## [0.1.1]
 
 ### 变更

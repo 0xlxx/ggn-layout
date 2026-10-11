@@ -55,11 +55,16 @@ jobs:
         with:
           node-version: 22
       - run: bun install --frozen-lockfile
+      # 发布链路工具链门禁: ci.yml 与 release.yml 的 NPM_VERSION 必须一致且为精确版本.
+      - run: bun run check:workflows
       - run: bun run build
       # 产物级门禁: 打包 → 安装到干净消费方 → 全入口 ESM/CJS 冒烟 + layered 体积分层 + 下游 bundler 冒烟.
       - run: bun run smoke:pack
       # 包元数据门禁: publint + 严格类型解析 (仅豁免 node10/EOL 列) + 随包文档链接.
       - run: bun run check:pkg
+      # 公共 API 边界门禁: 用真实运行时枚举出 public / core / options 三个入口的导出集合,
+      # 与 docs/api-manifest.json 对账 (防「改了源码但没改契约文档」静默漂移).
+      - run: bun run verify:public-api
 
   # release.yml 走 Node 24 + 固定版本的 npm (env.NPM_VERSION); npm 大版本会改 `npm pack --json`
   # 的输出结构与打包行为. 这里用「发布同款环境」复跑产物门禁, 避免 CI 绿而 release 红.

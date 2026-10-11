@@ -86,8 +86,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json --noEmit && node scripts/check-process-env-defines.mjs && tsdown",
     "smoke:pack": "node scripts/smoke-packed.mjs",
-    "prepublishOnly": "npm run typecheck && npm run check:license && npm run test:ci && npm run build && npm run smoke:pack && npm run check:pkg",
+    "prepublishOnly": "npm run check:workflows && npm run typecheck && npm run check:license && npm run verify:public-api && npm run test:ci && npm run build && npm run smoke:pack && npm run check:pkg",
     "check:license": "node scripts/check-license-headers.mjs",
+    "check:workflows": "node scripts/check-workflow-npm-version.mjs",
     "check:pkg": "node scripts/check-publint.mjs && node scripts/check-attw.mjs && node scripts/check-doc-links.mjs",
     "check:attw": "node scripts/check-attw.mjs",
     "check:docs": "node scripts/check-doc-links.mjs",
