@@ -17,7 +17,7 @@ ELK 交互式布局把「上一轮布局输出坐标」作为本轮输入, 配�
 | P3 排序 | `crossingMinimization.semiInteractive: true` | `org.eclipse.elk.position` 属性 | 层内按输入 y 升序, 节点相对顺序稳定 |
 
 输入节点 `x/y` 会被种子到 `LNode.position` (对齐 Java `ElkGraphImporter.transformNode:913-914`,
-2026-08-13 修复, 见 PROGRESS.md 当日条目)。旧版 dist 未重建时此行为缺失。
+2026-08-13 修复)。旧版 dist 未重建时此行为缺失。
 
 ## 2. 最小流程
 

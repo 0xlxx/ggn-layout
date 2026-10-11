@@ -14,7 +14,7 @@
  *   bun scripts/perf-nonlayered.mjs --quick --json out.json
  *
  * 说明：同进程 warm 后取中位数；结构化输入生成器保证 --nodes 改变规模时仍无悬空边。
- * 跨进程对比才是可信协议（见 docs/optimization.md 陷阱 7）。
+ * 跨进程对比才是可信协议。
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";

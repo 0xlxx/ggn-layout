@@ -27,7 +27,7 @@ description: layout 移植标准 (SSOT=ELK Java 0.12.0, 方法论=Bun-in-Rust / 
 | 差分 | elkjs 0.12.0 | 仅交叉参考/无回归基线, 不参与验收 |
 | 基线 | 696 (examples/tests/tickets) | 失败集合与 triage-registry 逐名对比, 无新增 |
 
-> **SSOT 源码 checkout 版本固定**: 本地参考源码 `/Users/bjorn/ai-dev/tmp/elk` 当前是
+> **SSOT 源码 checkout 版本固定**: 本地参考源码 checkout（`<path/to/elk>`）当前是
 > **0.13.0-SNAPSHOT (master)** — 审阅时发现与其 v0.12.0 tag 在该文件上无 diff, 但为防基线
 > 不一致, 移植前应 `git checkout v0.12.0` 固定到与 jar 一致版本 (2026-08-12 对抗审阅 P2#3)。
 
@@ -273,9 +273,9 @@ bun scripts/mutate-batch.mjs <batch>
 3. **对抗审查**: 深水区 (涉及多模块交互/有回归风险) 必须配 1 个审查 agent:
    独立上下文, 只看 diff, 假设代码是错的, 对照 ELK Java 源码 (或 elkjs 编译产物当 oracle).
 4. **修复 + 验证矩阵** (§9): 按修复类型跑对应验证; 全量无新增失败才可合并.
-5. **沉淀**: 更新陷阱表 + PROGRESS.md 工单 (标记 closed).
+5. **沉淀**: 更新陷阱表, 把该失败对应的工单标记为 closed.
 
-## 9. 工单模板 (PROGRESS.md)
+## 9. 工单模板
 
 ```markdown
 ## [日期] 工单 <name>: <一句话根因>

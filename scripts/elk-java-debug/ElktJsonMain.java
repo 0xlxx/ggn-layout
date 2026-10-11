@@ -2,7 +2,7 @@
  * P1-A: 用 ELK Java 的 Xtext elkt 解析器 (org.eclipse.elk.graph.text) 独立解析 .elkt → ElkGraphJson.
  *
  * 打破循环论证: oracle 差分当前让 Java 吃 elktToElkJson(ggn parseElkt) 的输出, 与 ggn 同源派生,
- * 只能证算法等价、不能证输入正确 (见 docs/data-paths-review.md §0 问题 b). 本工具让 Java 侧
+ * 只能证算法等价、不能证输入正确. 本工具让 Java 侧
  * 用 ELK 官方 Xtext 文法直接解析 .elkt, 再导出标准 ElkGraphJson, 与 ggn elktToElkJson 输出 diff
  * → 解析 + 转换正确性同时被覆盖, 且天然覆盖全部 .elkt (不限于 realworld 的 elkg).
  *

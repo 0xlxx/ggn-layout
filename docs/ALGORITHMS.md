@@ -2,7 +2,6 @@
 
 > 目标: 100% 1:1 移植 ELK layered 到 layout, 以 elkjs 坐标级差分 (1807 测试) 为验收。
 > 本文档记录**关键算法的正确语义** (以 elkjs 为 oracle 实测为准), 以及移植过程中的**方法论与经验教训**。
-> 进度/失败集合变化见 [PROGRESS.md](../PROGRESS.md)。
 
 ## 1. 管线顺序 (P1 → P5) 与处理器清单
 
@@ -840,7 +839,7 @@ ELK 在导入期 (变换前) 应用。DOWN/UP 图节点已转置 (200x100→100x
 - **ERR 行在 stderr** 是 harness 类 bug 的高发点 (进程退出码 0 时 execFile 的 stderr 极易被忽略)。
 - **err-oracle 才是"忠实 SSOT"对报错图的正确形态**: 官方示例在 0.12.0 上可能真的崩溃 (verticalOrder),
   不能因为"示例应该能跑"就丢参数迁就 — 要以 jar 实际行为为准。
-- **参考源码版本**: /Users/bjorn/ai-dev/tmp/elk 是 master (0.13.0-SNAPSHOT), 不是 0.12.0!
+- **参考源码版本**: 本地 ELK 源码 checkout 是 master (0.13.0-SNAPSHOT), 不是 0.12.0!
   读行号/行为前先 `git show v0.12.0:path` 对照 (NPE 的 MAX_MODEL_ORDER_NODES 在 master 也同, 但其它文件可能已变)。
 - 结果: 36 → 33 失败 (verticalOrder/modelOrderCrossingMinimization/476/453 修复, 453 从 accepted 移除)。
 

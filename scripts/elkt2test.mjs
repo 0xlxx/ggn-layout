@@ -18,7 +18,7 @@ import { OPT_MAP, coerceVal, unescapeElkt } from '../shared/opt-map.ts'
 const OUT_DIR = resolve(import.meta.dirname, '../tests/oracle/generated/')
 
 /**
- * 坐标差分的容差 ε (px). 默认 2 (2026-08-07 从 1 提升, 依据见 plans/elk-layout-verification.md M3):
+ * 坐标差分的容差 ε (px). 默认 2 (2026-08-07 从 1 提升):
  *   精度噪声分档: (0,0.01] 320 图 / (0.01,1] 4 图 (selfloop_crash 等亚像素) /
  *   (1,2] 4 图 (self_loops__south|hyperLoops、302、288, 均为自环族 **4/3=1.333 系统性精度差**);
  *   结构 bug 全 ≥4px (jar-triage 实证 4.4/10/20/40+)。ε=2 吸收精度噪声且不漏结构 bug。

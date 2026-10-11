@@ -1,6 +1,6 @@
 # ELK Layered 算法过程概览 (来自 elk 仓库官方文档)
 
-> 来源: /Users/bjorn/ai-dev/tmp/elk/docs (blog 2025-08-21 layered overview, 2025-08-22 node-labels,
+> 来源: 上游 ELK 仓库的 `docs/` (blog 2025-08-21 layered overview, 2025-08-22 node-labels,
 > algorithmdevelopers/algorithmimplementation/algorithmstructure, release-0.12.0)
 
 ## 1. 总体结构: 5 阶段 + intermediate processors

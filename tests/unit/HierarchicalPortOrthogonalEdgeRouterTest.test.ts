@@ -15,7 +15,7 @@
  *     (重连 + 弯点迁移, ELK 精确语义) / Step5 fixExternalPortCoordinates /
  *     Step6 correctSlantedEdgeSegments 均已实现, process() 按 ELK Step1-6 顺序调用.
  *
- * 坐标系适配 (非语义差异, 见 plans/isomorphism-testing.md): Step2 northY
+ * 坐标系适配 (非语义差异): Step2 northY
  *   ggn = 0 - offset.y (pre-padding 坐标系, padding 由 resizeParentNode 单独计入);
  *   ELK = -padding.top - offset.y (content 坐标系, HierarchicalPortOrthogonalEdgeRouter.java:288).
  *   经各自 resize 后 dummy 均落在父节点顶边, 最终父尺寸与端口位置一致 (194 实证).
@@ -210,7 +210,7 @@ describe('HierarchicalPortOrthogonalEdgeRouter (ELK Java 0.12.0 移植)', () => 
       //   southY = size.y + padding.top + padding.bottom - offset.y
       //          = 50 + 12 + 12 - 10 = 64 (ggn 与 ELK 一致)
       expect(origSouth.getPosition().y).toBeCloseTo(50 + 12 + 12 - 10, 6)
-      // 坐标系适配 (非语义差异, 见 plans/isomorphism-testing.md): ggn pre-padding 坐标
+      // 坐标系适配 (非语义差异): ggn pre-padding 坐标
       // northY = -offset.y = -10; ELK content 坐标 = -padding.top - offset.y = -22.
       // 二者经各自 resize (ggn pad-min / ELK getActualSize+offset) 后 dummy 均落在父节点顶边,
       // 最终父尺寸与端口位置一致 (194 实证). 断言 ggn 坐标系值 + 语义等价关系:

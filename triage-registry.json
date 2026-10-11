@@ -5,7 +5,7 @@
   "oracle_mode": "L1: 生成测试 = ggn vs 预生成 jar oracle (scripts/generate-jar-oracle.mjs); 不再用 elkjs 差分",
   "eps": {
     "default": 2,
-    "note": "ε=2 (2026-08-07 从 1 提升): 精度噪声 (0,2] 全吸收 (含自环族 4/3=1.333 系统性差), 结构 bug ≥4px 不漏; 依据见 plans/elk-layout-verification.md M3"
+    "note": "ε=2 (2026-08-07 从 1 提升): 精度噪声 (0,2] 全吸收 (含自环族 4/3=1.333 系统性差), 结构 bug ≥4px 不漏"
   },
   "verdicts": {
     "accepted": "有意分歧 (ggn≈jar 但有意不修): 当前为空 (旧 elkjs 冻结清单已过期: selfloop_crash/north_south_ports_1/608 已通过; compound03/three_edges_inverted_ports_2 实为三方各差→tooling)",

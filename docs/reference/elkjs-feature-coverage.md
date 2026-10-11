@@ -96,5 +96,4 @@
 ## 8. 相关文档
 
 - [ELK 布局选项接口参考](./elk-layout-options.md) / [JSON 图格式指南](./elk-json-format.md)
-- `docs/GOAL-COMPLETE.md`（结果层 API 对齐 elkjs 记录）、`docs/agent-remarks.md`（R16/R40/R55/R72 等 elkjs 交叉验证）
 - `docs/MODULES.tsv`（模块 ↔ Java 类 ↔ 观测点）

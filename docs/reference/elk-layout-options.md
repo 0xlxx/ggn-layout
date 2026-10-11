@@ -15,7 +15,7 @@
 - 其他算法模块：各自目录下的 `options.ts`（`DEFAULTS` 对象），见 [§6 其他算法模块选项](#6-其他算法模块选项)
 - 内部属性（`*.internal.*`，非用户接口）：`src/options/internal-properties.ts`，不在本表列出，见 [§8 边界](#8-边界与内部属性)
 
-> 与早期草稿 `plans/elk-options-canonical.md`（2026-08-07）相比，本表已按当前代码补齐并核对默认值
+> 相对 2026-08-07 的早期草稿，本表已按当前代码补齐并核对默认值
 > （如 `spacing.edgeLabel = 2`、`portSortingStrategy = INPUT_ORDER` 等修正，见 [§7 针对性修改记录](#7-针对性修改记录相对-elk-java-早期移植)）。
 
 ## 2. 阅读约定
@@ -275,7 +275,7 @@ layered 之外，`layoutElkJson` 按 `org.eclipse.elk.algorithm` 分派到各算
 | `layerUnzipping.strategy` 默认 `NONE` | 枚举 `OFF → NONE` 对齐 | canonical 清单 |
 | `priority.shortness` 默认 `0` | 早期误用 1 | canonical 清单 |
 | core 键归属 | `direction` / `edgeRouting` / `portConstraints` / `hierarchyHandling` 等早期误挂 `layered.*`，已修正回 core | canonical 清单 |
-| 命名约束 | 新增公共符号/文件名不含 `ELK`/`Elk`（`layoutElkJson`/`ElkNode` 兼容名保留） | `docs/api-workflow.md` |
+| 命名约束 | 新增公共符号/文件名不含 `ELK`/`Elk`（`layoutElkJson`/`ElkNode` 兼容名保留） | 仓库约定 |
 | spacing 基准 | `LayeredSpacingsBuilder` 以 `spacing.nodeNode`（20）为基准按比例派生其余 spacing factor | `src/options/layered-spacings.ts` |
 
 ## 8. 边界与内部属性
@@ -285,7 +285,7 @@ layered 之外，`layoutElkJson` 按 `org.eclipse.elk.algorithm` 分派到各算
   **不是用户接口**，由算法/处理器写入，消费方不应依赖。
 - 未定义 `Property` 常量的 core 键（解析层按需处理，不在本表）：`padding`、`edge.type`、单值全局
   `priority`、`portLabels.treatAsGroup`（热字符串 key，默认 `undefined`，见 `properties.ts` 的
-  `registerFastStringKey`）。待办清单见 `plans/elk-options-canonical.md` §待办。
+  `registerFastStringKey`）。
 
 ## 9. 重新生成
 
