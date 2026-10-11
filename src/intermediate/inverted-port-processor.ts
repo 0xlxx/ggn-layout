@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2010, 2015 Kiel University and others.
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout, a TypeScript port of the Eclipse Layout
+ * Kernel (ELK, https://github.com/eclipse/elk). It is derived from ELK and is
+ * made available under the terms of the Eclipse Public License 2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt — see also THIRD_PARTY_NOTICES.md.
+ */
 /**
  * InvertedPortProcessor (对应 ELK intermediate.InvertedPortProcessor).
  * P3 前置: 处理反向端口 (WEST 输出口 / EAST 输入口的边) — P1 断环后端口方向与边不匹配的图.

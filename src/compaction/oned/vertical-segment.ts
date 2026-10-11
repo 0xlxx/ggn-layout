@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2010, 2015 Kiel University and others.
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout, a TypeScript port of the Eclipse Layout
+ * Kernel (ELK, https://github.com/eclipse/elk). It is derived from ELK and is
+ * made available under the terms of the Eclipse Public License 2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt — see also THIRD_PARTY_NOTICES.md.
+ */
 /**
  * VerticalSegment (对应 ELK intermediate.compaction.VerticalSegment).
  * 正交/样条路由中的垂直段: 压缩时作为 CNode 参与, 把弯点/包围盒随节点一起平移.

@@ -29,6 +29,16 @@ EPL-2.0 全文见 [`LICENSES/EPL-2.0.txt`](LICENSES/EPL-2.0.txt)。
 **本仓库自有内容**：对外 API 设计（`layoutElkJson` 等）、校验与错误契约、worker 外壳、
 构建/发布工程与本文档，均为 GGN 项目新增，以 MIT 授权（见 [`LICENSE`](LICENSE)）。
 
+### 声明落在哪里
+
+- **源文件**：`src/**` 每个 `.ts` 文件首部都带 SPDX 头 —— ELK 衍生文件标 `EPL-2.0`，
+  GGN 自有文件标 `MIT`。逐文件归属由 `scripts/check-license-headers.mjs` 在 CI 中强制校验
+  （新增文件漏标或标错都会让 CI 变红）。
+- **发布产物**：`dist/**` 每个 chunk 顶部带归属 banner（由 `tsdown.config.ts` 的 `banner`
+  注入，`minify` 不会吃掉它）。
+- **包元数据**：`package.json` 的 `license` 为 `(MIT AND EPL-2.0)` —— 由于本包把两种许可的
+  代码打在一起分发，消费方需要**同时**满足 MIT 与 EPL-2.0 的义务。
+
 > 注意：`src/**` 中的算法实现属 ELK 的**衍生作品**，因此对这些文件的重新分发需满足 EPL-2.0 的
 > 义务（保留版权与许可声明、以 EPL-2.0 授权该等文件、提供获取源码的途径等）。EPL-2.0 允许
 > 与其他许可（此处为 MIT）的独立模块组合分发（"Secondary License"/separate module 机制）。

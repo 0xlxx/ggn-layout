@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2010, 2015 Kiel University and others.
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout, a TypeScript port of the Eclipse Layout
+ * Kernel (ELK, https://github.com/eclipse/elk). It is derived from ELK and is
+ * made available under the terms of the Eclipse Public License 2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt — see also THIRD_PARTY_NOTICES.md.
+ */
 /**
  * ComponentOrderingStrategy (对应 ELK layered components.ComponentOrderingStrategy).
  * 连通分量排序策略: 决定分量按何种顺序排列 (模型序 = 输入元素顺序).

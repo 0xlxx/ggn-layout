@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2010, 2015 Kiel University and others.
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout, a TypeScript port of the Eclipse Layout
+ * Kernel (ELK, https://github.com/eclipse/elk). It is derived from ELK and is
+ * made available under the terms of the Eclipse Public License 2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt — see also THIRD_PARTY_NOTICES.md.
+ */
 /**
  * LongEdgeJoiner (对应 ELK intermediate.LongEdgeJoiner).
  * 合并 LONG_EDGE dummy 的入/出边 (保留入边, 丢弃出边, 汇合弯点/标签/连接点).

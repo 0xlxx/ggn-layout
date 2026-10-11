@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2010, 2015 Kiel University and others.
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout, a TypeScript port of the Eclipse Layout
+ * Kernel (ELK, https://github.com/eclipse/elk). It is derived from ELK and is
+ * made available under the terms of the Eclipse Public License 2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt — see also THIRD_PARTY_NOTICES.md.
+ */
 /**
  * SelfLoopRouter (对应 ELK intermediate.SelfLoopRouter).
  * P4 前: RoutingDirector → LabelPlacer → RoutingSlotAssigner → routeSelfLoops (扩展 margin).

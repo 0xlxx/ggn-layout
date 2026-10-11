@@ -1,5 +1,18 @@
 import { defineConfig } from 'tsdown'
 
+// 每个输出 chunk 顶部保留归属声明. minify 会吃掉源码里的注释, 必须走 banner 才能落到 dist.
+// 与 THIRD_PARTY_NOTICES.md / package.json 的 `(MIT AND EPL-2.0)` 口径保持一致:
+// 本包是 ELK 的衍生作品, 派生部分 EPL-2.0、GGN 新增部分 MIT, 消费方两者都要满足.
+const LICENSE_BANNER = `/**
+ * ggn-layout — TypeScript port of the Eclipse Layout Kernel (ELK) layered layout algorithms.
+ *
+ * Portions derived from ELK (https://github.com/eclipse/elk) are licensed under the
+ * Eclipse Public License 2.0 (EPL-2.0); GGN-original portions are licensed under MIT.
+ * See LICENSES/EPL-2.0.txt, LICENSE and THIRD_PARTY_NOTICES.md.
+ *
+ * SPDX-License-Identifier: EPL-2.0 AND MIT
+ */`
+
 // 61 个 GGN_* debug 开关 define 为 undefined (与默认未设置完全等价) → bundler 消除 dead debug 分支 (R40 bundle 瘦身).
 const GGN_DEFINE = Object.fromEntries([
   ['process.env.GGN_API_DBG', 'undefined'],
@@ -77,6 +90,7 @@ export default defineConfig({
   fixedExtension: false,
   clean: true,
   minify: true,
+  banner: LICENSE_BANNER,
   // 注意: package.json 不得声明「白名单式」的 sideEffects 数组 —— 构建期 rolldown 会据此把
   // 其他模块判为无副作用, 从而把 src/api/index.ts 的裸副作用 `import './register-all.js'`
   // 整块摇掉, 完整入口退化成 layered 入口 (非 layered 算法全部「未注册」). 该回归由

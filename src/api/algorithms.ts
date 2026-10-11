@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout. It is original work of the GGN project and
+ * is made available under the terms of the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ * License text: LICENSE.
+ */
 /**
  * 已移植布局算法注册表（单一事实来源）。
  *

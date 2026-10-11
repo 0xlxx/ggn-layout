@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2010, 2015 Kiel University and others.
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout, a TypeScript port of the Eclipse Layout
+ * Kernel (ELK, https://github.com/eclipse/elk). It is derived from ELK and is
+ * made available under the terms of the Eclipse Public License 2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt — see also THIRD_PARTY_NOTICES.md.
+ */
 /**
  * 端口侧辅助 (ELK PortSide.ordinal 语义: NORTH=0, EAST=1, SOUTH=2, WEST=3, UNDEFINED=4).
  * ggn 的 PortSide 字符串枚举 ordinal 与 ELK 不一致, 统一用此映射.

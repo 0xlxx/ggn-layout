@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 GGN contributors.
+ *
+ * This file is part of ggn-layout. It is original work of the GGN project and
+ * is made available under the terms of the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ * License text: LICENSE.
+ */
 /** 完整入口: 注册全部非 layered 算法 provider (副作用). layered-only 用 ./layered.js. */
 import './register-all.js'
 
