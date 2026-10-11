@@ -28,6 +28,10 @@
   「发布同款环境」复跑产物门禁，避免 CI 绿而 release 红。
 - `release.yml` 的「该版本尚未发布」守卫改为只在真正发布时生效：`workflow_dispatch` 的
   `dry-run` 现在能完整演练到 `npm publish --dry-run --provenance` 这一步。
+- **修复 `npm publish` 下嵌套 npm 调用的环境泄漏**：npm 会把自身配置以 `npm_config_*` 注入子进程，
+  于是 `prepublishOnly` 里嵌套的 `npm pack` 在 `--dry-run` 下**静默不产出 tarball**，
+  连带 `smoke:pack` / `check:pkg` 失败。新增 `scripts/npm-utils.mjs` 的 `npmEnv()`
+  隔离 `npm_config_dry_run` / `npm_config_provenance` 后再嵌套调用 npm。
 
 ## [0.1.0]
 

@@ -19,7 +19,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { parsePackJson } from './npm-pack-json.mjs'
+import { npmEnv, parsePackJson } from './npm-utils.mjs'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const workDir = mkdtempSync(join(tmpdir(), 'ggn-layout-smoke-'))
@@ -116,16 +116,20 @@ try {
   const packOutput = execFileSync('npm', ['pack', '--json', '--pack-destination', workDir], {
     cwd: repoRoot,
     encoding: 'utf8',
+    // 父级 npm(如 `npm publish --dry-run`) 会注入 npm_config_dry_run,
+    // 不剥离的话这里的 pack 会静默不产出 tarball.
+    env: npmEnv(),
   })
   const [{ filename }] = parsePackJson(packOutput)
   const tarball = join(workDir, filename)
 
   // 2) 安装到干净消费方目录, 走真实 exports 解析 (而非直接 import dist 相对路径)
   mkdirSync(consumerDir, { recursive: true })
-  execFileSync('npm', ['init', '-y'], { cwd: consumerDir, stdio: 'ignore' })
+  execFileSync('npm', ['init', '-y'], { cwd: consumerDir, stdio: 'ignore', env: npmEnv() })
   execFileSync('npm', ['install', '--no-save', '--no-audit', '--no-fund', tarball], {
     cwd: consumerDir,
     stdio: 'ignore',
+    env: npmEnv(),
   })
   const installed = join(consumerDir, 'node_modules', 'ggn-layout')
 

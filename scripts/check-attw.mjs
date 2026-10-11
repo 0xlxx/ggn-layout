@@ -9,6 +9,8 @@
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 
+import { npmEnv } from './npm-utils.mjs'
+
 const ATTW_VERSION = '0.18.5'
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
 
@@ -17,7 +19,8 @@ try {
   raw = execFileSync(
     'npx',
     ['--yes', `@arethetypeswrong/cli@${ATTW_VERSION}`, '--pack', '.', '--format', 'json'],
-    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] },
+    // attw 会自己走打包流程, 同样要隔离父级 npm 的 dry-run/provenance 配置.
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], env: npmEnv() },
   )
 } catch (error) {
   // 有 node10 问题时 attw 以非零码退出，但 stdout 仍是完整 JSON。

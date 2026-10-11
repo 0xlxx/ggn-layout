@@ -10,10 +10,10 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
-import { parsePackJson } from './npm-pack-json.mjs'
+import { npmEnv, parsePackJson } from './npm-utils.mjs'
 
 const [tarball] = parsePackJson(
-  execFileSync('npm', ['pack', '--dry-run', '--json'], { encoding: 'utf8' }),
+  execFileSync('npm', ['pack', '--dry-run', '--json'], { encoding: 'utf8', env: npmEnv() }),
 )
 const files = new Set(tarball.files.map((entry) => entry.path))
 
