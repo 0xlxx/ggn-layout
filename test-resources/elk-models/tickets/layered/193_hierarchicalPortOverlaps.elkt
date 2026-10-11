@@ -1,0 +1,33 @@
+/*******************************************************************************
+ * Copyright (c) 2017 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+node r {
+	layout [ size: 60, 30 ]
+	org.eclipse.elk.portConstraints: FIXED_ORDER
+	nodeSize.constraints: PORT_LABELS
+	
+	node n1
+
+	port p1 {
+		^port.side: NORTH
+		^port.index: 1
+	}
+	port p2 {
+		^port.side: NORTH
+		^port.index: 2
+	}
+	port p3 {
+		^port.side: NORTH
+		^port.index: 3
+	}
+
+	edge n1 -> p1
+//	edge n1 -> p2
+//	edge n1 -> p3
+}

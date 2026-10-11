@@ -1,0 +1,65 @@
+{
+ "generated": "2026-08-11T14:17:39.837Z",
+ "models": {
+  "examples_hierarchy_hierarchicalEdges.json": {
+   "src": "examples/hierarchy/hierarchicalEdges.elkt",
+   "srcHash": "948cc4300ce0bb2c",
+   "jsonHash": "948cc4300ce0bb2c"
+  },
+  "examples_general_direction.json": {
+   "src": "examples/general/direction.elkt",
+   "srcHash": "bf7308e69e0df1ae",
+   "jsonHash": "bf7308e69e0df1ae"
+  },
+  "examples_general_mixingDirection.json": {
+   "src": "examples/general/mixingDirection.elkt",
+   "srcHash": "12ebdc1c5dbdcc0d",
+   "jsonHash": "12ebdc1c5dbdcc0d"
+  },
+  "ptolemy_hierarchical_pn_blindcommunication_BlindCommunication.json": {
+   "src": "realworld/ptolemy/hierarchical/pn_blindcommunication_BlindCommunication.elkt",
+   "srcHash": "d67dfcb2cb2a50bc",
+   "jsonHash": "d67dfcb2cb2a50bc"
+  },
+  "ptolemy_flattened_aspect_cartrackingattackmodeling_CarTrackingAttackModeling.json": {
+   "src": "realworld/ptolemy/flattened/aspect_cartrackingattackmodeling_CarTrackingAttackModeling.elkt",
+   "srcHash": "618fecb4ec7697f1",
+   "jsonHash": "618fecb4ec7697f1"
+  },
+  "ptolemy_flattened_wireless_intersections_Intersections.json": {
+   "src": "realworld/ptolemy/flattened/wireless_intersections_Intersections.elkt",
+   "srcHash": "f46d9fded297241e",
+   "jsonHash": "f46d9fded297241e"
+  },
+  "ptolemy_hierarchical_ptango_optimizationadvisor_OptimizationAdvisor.json": {
+   "src": "realworld/ptolemy/hierarchical/ptango_optimizationadvisor_OptimizationAdvisor.elkt",
+   "srcHash": "d26089c53242f2e2",
+   "jsonHash": "d26089c53242f2e2"
+  },
+  "ptolemy_flattened_pn_countermachine_CounterMachine.json": {
+   "src": "realworld/ptolemy/flattened/pn_countermachine_CounterMachine.elkt",
+   "srcHash": "b0e56ca12e101de8",
+   "jsonHash": "b0e56ca12e101de8"
+  },
+  "ptolemy_hierarchical_gr_robotarm_RobotArm.json": {
+   "src": "realworld/ptolemy/hierarchical/gr_robotarm_RobotArm.elkt",
+   "srcHash": "4748a502c24848ff",
+   "jsonHash": "4748a502c24848ff"
+  },
+  "ptolemy_flattened_dt_pickstates_pickstates.json": {
+   "src": "realworld/ptolemy/flattened/dt_pickstates_pickstates.elkt",
+   "srcHash": "2b61d0192ca462d5",
+   "jsonHash": "2b61d0192ca462d5"
+  },
+  "ptolemy_hierarchical_continuous_starmac_Starmac.json": {
+   "src": "realworld/ptolemy/hierarchical/continuous_starmac_Starmac.elkt",
+   "srcHash": "c3023169bb6276da",
+   "jsonHash": "c3023169bb6276da"
+  },
+  "ptolemy_flattened_ptides_printingpress_PrintingPress.json": {
+   "src": "realworld/ptolemy/flattened/ptides_printingpress_PrintingPress.elkt",
+   "srcHash": "e4184093addb74b3",
+   "jsonHash": "e4184093addb74b3"
+  }
+ }
+}

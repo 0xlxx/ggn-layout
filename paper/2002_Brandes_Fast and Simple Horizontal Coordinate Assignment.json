@@ -1,0 +1,26 @@
+{
+  "doi": "10.1007/3-540-45848-4_3",
+  "title": "Fast and Simple Horizontal Coordinate Assignment",
+  "authors": [
+    {
+      "name": "Ulrik Brandes",
+      "affiliation": "University of Konstanz"
+    },
+    {
+      "name": "Boris Köpf",
+      "affiliation": "University of Konstanz"
+    }
+  ],
+  "year": 2002,
+  "venue": "Lecture notes in computer science",
+  "publisher": null,
+  "abstract": null,
+  "cited_by_count": 87,
+  "is_open_access": true,
+  "best_oa_url": "https://link.springer.com/content/pdf/10.1007/3-540-45848-4_3.pdf",
+  "source": "openalex",
+  "concepts": [
+    "Computer Science",
+    "Computer Graphics and Computer-Aided Design"
+  ]
+}

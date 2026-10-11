@@ -1,0 +1,1 @@
+{"file":"tests/layered/layer_constraints/03","graph":"tests__layered__layer_constraints__03","hash":"a27935bf437d4e4d","nodes":7,"edges":6,"eps":1,"coords":{"root":{"x":0,"y":0},"NFIRST":{"x":12,"y":82},"NLAST":{"x":292,"y":82},"NN1":{"x":12,"y":12},"NN2":{"x":82,"y":12},"NN3":{"x":152,"y":20.333333333333332},"NN4":{"x":222,"y":12},"NN5":{"x":292,"y":12}}}

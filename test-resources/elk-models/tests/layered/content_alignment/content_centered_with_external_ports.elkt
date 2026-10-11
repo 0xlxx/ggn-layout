@@ -1,0 +1,39 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+node root {
+	layout [ size: 60, 30 ]
+	nodeSize.constraints: MINIMUM_SIZE	
+	nodeSize.minimum: "(900.0,400.0)"
+	contentAlignment: "[V_CENTER, H_CENTER]"
+	portConstraints: FIXED_SIDE
+	edgeRouting: ORTHOGONAL
+	port e1 {
+		side: EAST
+	}
+	port e2 {
+		side: SOUTH
+	}
+	port e3 {
+		side: WEST
+	}
+	port e4 {
+		side: NORTH
+	}
+	node n2 {
+		port p2
+	}
+	node n3 {
+		layout [ size: 200, 30 ]
+	}
+	edge E1: e3 -> n2
+	edge E2: e4 -> n2
+	edge E3: n2.p2 -> e2
+	edge E4: n3 -> e1
+}

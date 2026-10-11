@@ -1,0 +1,18 @@
+graph root
+node tree {
+	algorithm: org.eclipse.elk.mrtree
+	elk.spacing.nodeNode: 30
+	node a { layout [ size: 70, 50 ] }
+	node b
+	node c
+	node d
+	node e
+	node f
+	edge a -> b
+	edge a -> c
+	edge b -> d
+	edge c -> d
+	edge d -> e
+	edge d -> f
+	edge f -> a
+}

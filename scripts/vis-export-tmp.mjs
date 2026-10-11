@@ -1,0 +1,1 @@
+import { readFileSync, writeFileSync } from 'node:fs'; import { parseElkt, elktToElkJson } from './elkt2test.mjs'; const s = readFileSync("test-resources/elk-models/tests/layered/splines/three_edges_inverted_ports_2.elkt", 'utf8'); const g = parseElkt(s); g.graphProps.direction = "RIGHT"; writeFileSync('/tmp/vis-elk.json', JSON.stringify(elktToElkJson(g)));

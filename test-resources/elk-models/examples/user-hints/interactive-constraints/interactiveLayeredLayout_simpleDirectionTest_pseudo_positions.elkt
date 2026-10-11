@@ -1,0 +1,59 @@
+/*******************************************************************************
+ * Copyright (c) 2021-2022 Kiel University and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+/*
+// elkex:category
+Interactive > Layered
+
+// elkex:label
+Direction Test (Pseudo Positions)
+
+// elkex:doc
+Pseudo positions are set which emulate what would be done by the interactiveLayout property.
+ 
+Expected layout:
+
+<pre>
+ ____ <_ ____ <_ ____
+|n3  |<_|n2  |<_|n1  |
+|____| _|____|  |____|
+ ____ | 
+|n4  |< 
+|____|   
+</pre>
+ 
+Change the direction or introduce pseudo positions to change the layout.
+
+*/
+
+// elkex:graph
+elk.direction: LEFT
+cycleBreaking.strategy: INTERACTIVE
+layering.strategy: INTERACTIVE
+crossingMinimization.semiInteractive: true
+separateConnectedComponents: false
+node n1 {
+  label "n1"
+}
+node n2 {
+  label "n2"
+}
+node n3 {
+  label "n3"
+}
+node n4 {
+  label "n4"
+}
+
+
+edge n1 -> n2
+edge n1 -> n2
+edge n2 -> n3
+edge n2 -> n3
+edge n2 -> n4

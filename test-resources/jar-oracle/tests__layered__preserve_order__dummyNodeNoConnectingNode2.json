@@ -1,0 +1,1 @@
+{"file":"tests/layered/preserve_order/dummyNodeNoConnectingNode2","graph":"tests__layered__preserve_order__dummyNodeNoConnectingNode2","hash":"5c2badf21e1926a9","nodes":5,"edges":5,"eps":1,"coords":{"root":{"x":0,"y":0},"Nl0p0":{"x":12,"y":42},"Nl2p0":{"x":92,"y":63},"Nl2p2":{"x":92,"y":113},"Nl2p3":{"x":92,"y":12},"Nl4p0":{"x":182,"y":40}}}

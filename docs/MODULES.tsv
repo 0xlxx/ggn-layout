@@ -1,0 +1,204 @@
+# MODULES.tsv — layout 管线模块清单 (对齐 Bun LIFETIMES.tsv 思路)
+# 包名：@ggn/layout（目录 packages/layout；2026-09 由 elk-layout 更名，唯一使命 = ELK Java 0.12.0 1:1 移植）
+#
+# 用途: 并行 agent 先查表再动手, 不各自猜。登记每个管线阶段: Java 类 ↔ TS 模块 ↔
+#       移植状态 ↔ 算法不变量 ↔ 测试文件 ↔ 根因簇。
+# 权威事实源: ELK Java 0.12.0 (/Users/bjorn/ai-dev/tmp/elk). 状态以代码+测试实证为准,
+#       agent 完成一簇后必须回写本表 (状态/不变量/测试列), 不允许只改代码不改表。
+# 状态图例: ✅ ported (TS 存在且管线调用, 差分/单测通过) | 🟡 partial (存在但已知差距)
+#          ❌ missing (无 TS 对应) | ⛔ n/a (非 layered / 非默认策略, 待移植)
+# 基线 (2026-08-11): 布局侧差分 338/348 — **layered 全部全等** (剩余 8=jar 自身错误, 2=非 layered 跳过), 696 0 失败, bdd 217 全过, oracle 1036 全过, EdgeRoutingE2E 941/941。
+# T4-B (2026-08-12): 核实 10 个 🟡 — 9 行标 ✅ (HighDegree 已过 / HierarchicalResizing 内联完整 / HierarchicalPort* 行级对齐 / SelfLoop 簇 A 簇后 1:1 / NetworkSimplexCompaction 移植), 1 行保留已核实 🟡 (ComponentGroupGraphPlacer 9 扇区放置未接线, 语料无触发);
+#   NetworkSimplexCompaction: 新增 src/compaction/oned/network-simplex-compaction.ts (1:1 Java alg.common), horizontal-graph-compactor EDGE_LENGTH 由 LongestPath 占位改为 NS (moreThanOneStraightSegmentPath jar 1:1, bdd +2, 290 全过); 348 338/348 失败集不新增, 696 0 失败, oracle 1977 全过。
+# 已并入: E(5e40f0c) D(15381b5) B(e9b87ae) A(472d971) C(7b3ff8e hierarchy01) + T2 平台簇
+#   M1(9e9fcf6c P1 断环 6) M2(9165909 P2 分层 5) M3(678363e Median/MO-Barycenter) M4(b2f2cba CrossingsCounter 核实) M5(d07d357 LinearSegments)。
+# T2 ccx 已并入: M6 (components 策略族) M7 (intermediate 4 处理器) M8 (wrapping 9 类) M9 (NodeLabelPlacer)。
+# R 簇已并入: 策略注册里程碑 — 已移植策略全部接入 layered-layout-provider.ts (provider 归 R 簇)。
+# R 簇 (策略注册 0e0b401) 已并入: 新策略全部接入 provider (默认值保持 Java, 348 零回归)。
+# 运行中: X1 变异 p3order (Descartes 续接)。
+# M8 (wrapping, 2026-08-11): 9 类全移植 + 23 bdd, 未接线 provider (禁改 layered-layout-provider.ts); 全量 bdd 159, verify 337/348 失败集不新增。
+# R 簇 (策略注册, 2026-08-11): 全部已移植策略接入 layered-layout-provider.ts — P1 断环 5 + P2 分层 5 + P3 (MEDIAN_LAYER_SWEEP/forceNodeModelOrder)
+#   + P4 LINEAR_SEGMENTS + components (ComponentsCompactor/ModelOrder*) + wrapping BreakingPoint* + intermediate 4 处理器 + NodeLabelPlacer。
+#   默认值保持 Java (GREEDY/NETWORK_SIMPLEX/LAYER_SWEEP/BRANDES_KOEPF), verify 338/348 失败集不新增; 新增 bdd strategy-registration (21)。
+#   注意: DF/BF_MODEL_ORDER 为 ELK 实验策略, Java 0.12.0 在含环图上断环后会产生向后边且 greedy switch NPE (jar 实证), 已复刻。
+# 差分命令: bun scripts/verify-elkg-java-layout.ts '<glob>';  bdd: bunx vitest run tests/bdd
+# 变异测试: bun scripts/mutate-batch.mjs (模块级分批, 不跑全量);  全量: bun run mutation
+# 更新时间: 2026-08-12
+#
+stage	java_class	ts_module	status	invariants	tests	cluster_notes
+# ─── P1 断环 (p1cycles) ───
+P1	GreedyCycleBreaker	src/p1cycles/greedy-cycle-breaker.ts	✅	输出无环; backward 边数 ≤ 输入; 平局走 JavaRandom 序列与 Java 一致	tests/unit/BasicCycleBreakerTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	默认 GREEDY 断环
+P1	GreedyModelOrderCycleBreaker	src/p1cycles/greedy-model-order-cycle-breaker.ts	✅	按 model order 优先断环; 同 Greedy 无环不变量	tests/unit/BasicModelOrderTest.test.ts	模型序断环
+P1	ModelOrderCycleBreaker	src/p1cycles/model-order-cycle-breaker.ts	✅	backward 边最小且尊重输入模型序	tests/unit/BasicModelOrderTest.test.ts	-
+P1	InteractiveCycleBreaker	src/p1cycles/interactive-cycle-breaker.ts	✅	不破坏用户指定方向 (interactive)	tests/unit/BasicCycleBreakerTest.test.ts	-
+P1	GroupModelOrderCalculator	src/p1cycles/group-model-order-calculator.ts	✅	组内 model order 偏序成立	tests/unit/BasicModelOrderTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	-
+P1	DepthFirstCycleBreaker	src/p1cycles/DepthFirstCycleBreaker.ts	✅	DFS 断环无环; DEPTH_FIRST 选项经 provider 断环后无环	tests/unit/BasicCycleBreakerTest.test.ts; tests/bdd/cycle-breakers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M1 移植; R 簇已注册 (CYCLE_BREAKING_STRATEGY=DEPTH_FIRST)
+P1	BFSNodeOrderCycleBreaker	src/p1cycles/BFSNodeOrderCycleBreaker.ts	✅	BFS 序断环无环; BFS_NODE_ORDER 选项经 provider 断环后无环	tests/unit/BasicCycleBreakerTest.test.ts; tests/bdd/cycle-breakers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M1 移植; R 簇已注册 (CYCLE_BREAKING_STRATEGY=BFS_NODE_ORDER)
+P1	DFSNodeOrderCycleBreaker	src/p1cycles/DFSNodeOrderCycleBreaker.ts	✅	DFS 序断环无环; DFS_NODE_ORDER 选项经 provider 断环后无环	tests/unit/BasicCycleBreakerTest.test.ts; tests/bdd/cycle-breakers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M1 移植; R 簇已注册 (CYCLE_BREAKING_STRATEGY=DFS_NODE_ORDER)
+P1	SCCModelOrderCycleBreaker	src/p1cycles/SCCModelOrderCycleBreaker.ts	✅	SCC 内模型序断环 (SCConnectivity 基类; SCC_CONNECTIVITY 选项经 provider 断环后无环)	tests/unit/BasicModelOrderTest.test.ts; tests/bdd/cycle-breakers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M1 移植 (含 Tarjan 辅助); R 簇已注册
+P1	SCCNodeTypeCycleBreaker	src/p1cycles/SCCNodeTypeCycleBreaker.ts	✅	SCC 内节点类型优先断环; SCC_NODE_TYPE 选项经 provider 断环后无环	tests/unit/BasicCycleBreakerTest.test.ts; tests/bdd/cycle-breakers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M1 移植; R 簇已注册 (CYCLE_BREAKING_STRATEGY=SCC_NODE_TYPE)
+P1	SCConnectivity	src/p1cycles/SCConnectivity.ts	✅	强连通分量划分正确 (SCC 辅助); SCC_CONNECTIVITY 选项经 provider 断环后无环	tests/unit/BasicModelOrderTest.test.ts; tests/bdd/cycle-breakers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M1 移植 (SCC 族共用辅助); R 簇已注册
+# ─── P2 分层 (p2layers) ───
+# T5-A (2026-08-12): 变异批次 p2layers covered 杀灭率 64.22%→72.45% — 新增 tests/unit/P2LayerersKillTest.test.ts
+#   (各 layerer 合成图精确层号 + 无 layerless/空层/边前向 + monitor 任务名 + label dummy/自环/负边界场景),
+#   已加入 scripts/mutate-batch.mjs p2layers 批次 tests。src/p2layers 无改动 (非 bug)。
+P2	NetworkSimplexLayerer	src/p2layers/network-simplex-layerer.ts + src/networksimplex/*	✅	边 targetLayer ≥ sourceLayer+1 (断环后); 层号无空洞; 与 Java 层号 1:1	tests/unit/BasicLayerAssignmentTest.test.ts; tests/bdd/network-simplex.scenarios.test.ts	默认 NETWORK_SIMPLEX
+P2	LongestPathLayerer	src/p2layers/longest-path-layerer.ts	✅	最长路径分层; 层号正确	tests/unit/BasicLayerAssignmentTest.test.ts	-
+P2	LongestPathSourceLayerer	src/p2layers/longest-path-source-layerer.ts	✅	源节点优先最长路径分层	tests/unit/BasicLayerAssignmentTest.test.ts	-
+P2	InteractiveLayerer	src/p2layers/interactive-layerer.ts	✅	尊重伪坐标/固定层号; span 合并/新节点放置与 jar oracle 一致	tests/unit/BasicLayerAssignmentTest.test.ts; tests/unit/InteractiveLayererTest.test.ts	oracle: scripts/elk-java-debug/InteractiveOracle.java
+P2	NodePromotion	src/intermediate/node-promotion.ts + src/p2layers/node-promotion.ts	✅	promote 后层差约束仍成立; 与 Java promote 决策一致	tests/unit/NodePromotionTest.test.ts	P2 槽位 intermediate
+P2	CoffmanGrahamLayerer	src/p2layers/CoffmanGrahamLayerer.ts	✅	每层节点数 ≤ layerBound (默认 MAX); 边 targetLayer ≥ sourceLayer+1; COFFMAN_GRAHAM 选项经 provider 分层边前向	tests/unit/BasicLayerAssignmentTest.test.ts; tests/bdd/layerers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M2 簇; R 簇已注册 (LAYERING_STRATEGY=COFFMAN_GRAHAM)
+P2	BreadthFirstModelOrderLayerer	src/p2layers/BreadthFirstModelOrderLayerer.ts	✅	模型序 BFS 分层; 层号按模型序非降 (BF); 无 layerless/空层; BF_MODEL_ORDER 选项经 provider 跑通 (DAG 边前向)	tests/unit/BasicLayerAssignmentTest.test.ts; tests/bdd/layerers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M2 簇; R 簇已注册; 含环图断环后不保证边前向 (jar 实证)
+P2	DepthFirstModelOrderLayerer	src/p2layers/DepthFirstModelOrderLayerer.ts	✅	模型序 DFS 条带分层; 无 layerless/空层; DF_MODEL_ORDER 选项经 provider 跑通 (DAG 边前向); isConnectedToCurrentLayer 依赖断环后 node.id=0..n-1 (GreedyCycleBreaker 副作用已补)	tests/unit/BasicLayerAssignmentTest.test.ts; tests/bdd/layerers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M2 簇; R 簇已注册; 含环图断环后不保证边前向 (jar 实证)
+P2	MinWidthLayerer	src/p2layers/MinWidthLayerer.ts	✅	层宽最小化 (maxWidth ≤ 单配置结果, -1 全候选); 边 targetLayer ≥ sourceLayer+1; MIN_WIDTH 选项经 provider 分层边前向	tests/unit/BasicLayerAssignmentTest.test.ts; tests/bdd/layerers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M2 簇; R 簇已注册 (LAYERING_STRATEGY=MIN_WIDTH)
+P2	StretchWidthLayerer	src/p2layers/StretchWidthLayerer.ts	✅	层宽拉伸分层; 边 targetLayer ≥ sourceLayer+1; STRETCH_WIDTH 选项经 provider 分层边前向	tests/unit/BasicLayerAssignmentTest.test.ts; tests/bdd/layerers.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M2 簇; R 簇已注册 (LAYERING_STRATEGY=STRETCH_WIDTH)
+# ─── P3 交叉最小化 (p3order) ───
+P3	LayerSweepCrossingMinimizer	src/p3order/layer-sweep-crossing-minimizer.ts	✅	每轮 sweep 交叉数不增; 两遍序 (BARYCENTER→TWO_SIDED_GREEDY_SWITCH) 与 Java 一致	tests/unit/BasicCrossingMinimizationTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	默认 LAYER_SWEEP
+P3	BarycenterHeuristic	src/p3order/barycenter-heuristic.ts	✅	节点按 barycenter 值排序 (平局 JavaRandom); 与 Java 输出序一致	tests/unit/BarycenterHeuristicTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	P3 第一遍
+P3	GreedyPortDistributor	src/p3order/greedy-port-distributor.ts	✅	端口按贪心交叉数最小化分布; 与 Java 输出端口序一致	tests/unit/GreedyPortDistributorTest.test.ts	P3 第二遍 (两遍 GREEDY 的核心)
+P3	AbstractBarycenterPortDistributor	src/p3order/port-distributors.ts	✅	端口 barycenter 排序; 与 Java 一致	tests/unit/AbstractBarycenterPortDistributorTest.test.ts	-
+P3	LayerTotalPortDistributor	src/p3order/port-distributors.ts	✅	端口总序分布; 与 Java 一致	-	-
+P3	NodeRelativePortDistributor	src/p3order/port-distributors.ts	✅	端口相对节点位置分布; 与 Java 一致	tests/unit/AbstractBarycenterPortDistributorTest.test.ts	-
+P3	ForsterConstraintResolver	src/p3order/forster-constraint-resolver.ts	✅	约束冲突按 Forster 规则解决; 与 Java 一致	tests/unit/ForsterConstraintResolverTest.test.ts	-
+P3	GraphInfoHolder	src/p3order/graph-info-holder.ts	✅	层内节点/边索引正确	tests/unit/BasicCrossingMinimizationTest.test.ts	-
+P3	InteractiveCrossingMinimizer	src/p3order/interactive-crossing-minimizer.ts	✅	保持 interactive 位置	tests/unit/BasicCrossingMinimizationTest.test.ts	-
+P3	LayerSweepTypeDecider	src/p3order/layer-sweep-type-decider.ts	✅	sweep 方向/次序与 Java 一致	tests/unit/LayerSweepTypeDeciderTest.test.ts	-
+P3	SweepCopy	src/p3order/sweep-copy.ts	✅	复制后图结构等价	tests/unit/BasicCrossingMinimizationTest.test.ts	-
+P3	AllCrossingsCounter	src/p3order/all-crossings-counter.ts + src/p3order/counting.ts	✅	交叉数计数正确 (含超边/NS)	tests/unit/AllCrossingsCounterTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	-
+P3	CrossingsCounter	src/p3order/counting.ts	✅	两两交叉数正确/对称/单调; 逐符号 diff 无缺失分支 (632 vs 444 行, 差异均为防遗留值守卫); 与 Java 一致 (暴力 oracle)	tests/unit/CrossingsCounterTest.test.ts; tests/bdd/crossings-counter.scenarios.test.ts	M4 已对齐 (2026-08-11)
+P3	HyperedgeCrossingsCounter	src/p3order/counting/hyperedge-crossings-counter.ts	✅	超边交叉数正确	tests/unit/CrossingsCounterTest.test.ts	-
+P3	BinaryIndexedTree	src/p3order/counting.ts	✅	前缀和/计数查询正确	tests/unit/BinaryIndexedTreeTest.test.ts	-
+P3	MedianHeuristic	src/p3order/MedianHeuristic.ts	✅	中位数交叉最小化; MEDIAN_LAYER_SWEEP 选项经 provider 交叉数 ≤ 输入序	tests/unit/BasicCrossingMinimizationTest.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M3 移植; R 簇已注册 (CROSSING_MINIMIZATION_STRATEGY=MEDIAN_LAYER_SWEEP)
+P3	ModelOrderBarycenterHeuristic	src/p3order/ModelOrderBarycenterHeuristic.ts	✅	模型序优先 barycenter; BARYCENTER + forceNodeModelOrder 选项经 provider 层内真实节点按模型序不增	tests/unit/ModelOrderBarycenterHeuristicTest.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M3 移植; R 簇已注册 (CROSSING_MINIMIZATION_FORCE_NODE_MODEL_ORDER)
+P3	NoCrossingMinimizer	-	⛔	不做交叉最小化 (策略空实现)	-	策略开关, 由 provider 引用
+# ─── P3 前置 greedy switch (intermediate/greedyswitch) ───
+P3	GreedySwitchHeuristic	src/intermediate/greedyswitch/greedy-switch-heuristic.ts	✅	相邻层交换不增交叉数; 与 Java 两遍 switch 序一致	tests/unit/GreedySwitchProcessorTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	TWO_SIDED_GREEDY_SWITCH 核心
+P3	SwitchDecider	src/intermediate/greedyswitch/greedy-switch-heuristic.ts	✅	交换决策与 Java 一致	tests/unit/SwitchDeciderTest.test.ts	-
+P3	CrossingMatrixFiller	src/intermediate/greedyswitch/greedy-switch-heuristic.ts	✅	交叉矩阵填充正确	tests/unit/GreedySwitchProcessorTest.test.ts	-
+P3	BetweenLayerEdgeTwoNodeCrossingsCounter	src/intermediate/greedyswitch/greedy-switch-heuristic.ts	✅	层间两条边交叉数正确	tests/unit/BetweenLayerEdgeTwoNodeCrossingsCounterTest.test.ts	-
+P3	NorthSouthEdgeNeighbouringNodeCrossingsCounter	src/intermediate/greedyswitch/greedy-switch-heuristic.ts	✅	NS 边邻节点交叉数正确	tests/unit/NorthSouthEdgeNeighbouringNodeCrossingsCounterTest.test.ts	-
+P3	InLayerEdgeTwoNodeCrossingCounter	-	✅	层内两条边交叉数 (Java 测试辅助类, 非管线模块)	tests/unit/InLayerEdgeTwoNodeCrossingCounterTest.test.ts	test-helper; TS 测试已存在且 41 例全过 (2026-08-11)
+P3	NorthSouthEdgeAllCrossingsCounter	-	✅	NS 边全交叉数 (Java 测试辅助类, 非管线模块)	tests/unit/NorthSouthEdgeAllCrossingsCounterTest.test.ts	test-helper; TS 测试已存在且 41 例全过 (2026-08-11)
+# ─── P4 节点放置 (p4nodes) ───
+P4	BKNodePlacer	src/p4nodes/bk-node-placer.ts + bk-aligner.ts + bk-compactor.ts + bk-aligned-layout.ts	✅	对齐块同坐标; 无重叠; 4 遍对齐 (上下×左右) + 平衡; 与 Java 坐标差 < ε	tests/unit/BasicNodePlacementTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	默认 BRANDES_KOEPF
+P4	NeighborhoodInformation	src/p4nodes/neighborhood-information.ts	✅	中位数邻居信息正确	tests/unit/BasicNodePlacementTest.test.ts	-
+P4	ThresholdStrategy	src/p4nodes/threshold-strategy.ts	✅	阈值对齐策略与 Java 一致	tests/unit/BasicNodePlacementTest.test.ts	-
+P4	NetworkSimplexPlacer	src/p4nodes/network-simplex-placer.ts + src/networksimplex/*	✅	坐标差约束满足; 与 Java 坐标一致	tests/unit/BasicNodePlacementTest.test.ts; tests/bdd/network-simplex.scenarios.test.ts	flexible_ports 第二遍 placer 依赖
+P4	SimpleNodePlacer	src/p4nodes/simple-node-placer.ts	✅	简单放置无重叠; 与 Java 一致	tests/unit/BasicNodePlacementTest.test.ts	-
+P4	InteractiveNodePlacer	src/p4nodes/interactive-node-placer.ts	✅	保持用户位置	tests/unit/BasicNodePlacementTest.test.ts	-
+P4	LinearSegmentsNodePlacer	src/p4nodes/linear-segments-node-placer.ts	✅	线性段放置 (段内同 y / 无重叠); LINEAR_SEGMENTS 选项经 provider 放置无重叠	tests/unit/BasicNodePlacementTest.test.ts; tests/bdd/linear-segments.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M5 移植; R 簇已注册 (NODE_PLACEMENT_STRATEGY=LINEAR_SEGMENTS)
+# ─── P5 边路由 (p5edges) ───
+P5	OrthogonalEdgeRouter	src/p5edges/orthogonal-edge-router.ts + orthogonal/*	✅	弯点在水平/垂直轨道; 无重叠; 与 Java 弯点一致	tests/unit/BasicEdgeRouterTest.test.ts; tests/bdd/orthogonal-routing.scenarios.test.ts; tests/oracle/EdgeRoutingE2ETest.test.ts	正交 e2e 覆盖
+P5	OrthogonalRoutingGenerator	src/p5edges/orthogonal/orthogonal-routing-generator.ts	✅	正交段生成与 Java 一致	tests/unit/BasicEdgeRouterTest.test.ts; tests/bdd/orthogonal-routing.scenarios.test.ts	-
+P5	HyperEdgeCycleDetector	src/p5edges/orthogonal/hyper-edge-cycle-detector.ts	✅	超边环检测正确	tests/unit/BasicEdgeRouterTest.test.ts	-
+P5	HyperEdgeSegment(+Dependency/Splitter)	src/p5edges/orthogonal/hyper-edge-segment.ts + hyper-edge-segment-dependency.ts + hyper-edge-segment-splitter.ts	✅	超边段拆分/依赖正确	tests/unit/BasicEdgeRouterTest.test.ts	-
+P5	PolylineEdgeRouter	src/p5edges/polyline-edge-router.ts	✅	折线弯点与 Java 一致	tests/unit/BasicEdgeRouterTest.test.ts	-
+P5	SplineEdgeRouter	src/p5edges/splines/spline-edge-router.ts + spline-segment.ts + nub-spline.ts + splines-math.ts	✅	样条段/控制点与 Java 一致	tests/unit/BasicEdgeRouterTest.test.ts; tests/bdd/spline-selfloop.scenarios.test.ts	-
+P5	NubsSelfLoop	src/p5edges/splines/nubs-self-loop.ts	✅	自环样条构造器 (side/corner/across/three/four); 接入 SplineEdgeRouter.selfLoopsLayer 收尾 (未预路由自环); 与 jar 弯点逐位一致	tests/unit/NubsSelfLoopTest.test.ts; tests/bdd/spline-selfloop.scenarios.test.ts	T4-A 收尾 (2026-08-11); 现行 ELK 自环由 SplineSelfLoopRouter 预路由, routeSelfLoops 为标准图空操作
+P5	LayerSizeAndGraphHeightCalculator	src/p5edges/layer-size-calculator.ts	✅	层尺寸/图高正确	tests/unit/LayerSizeAndGraphHeigthCalculatorTest.test.ts	-
+P5	EdgeRouterFactory	src/layered-layout-provider.ts (分派)	✅	按 edgeRouting 选项分派 P5 策略	-	分派逻辑在 provider
+# ─── intermediate (P0/P1/P3/P4/P5 槽位处理器) ───
+INT	GraphTransformer	src/intermediate/graph-transformer.ts	✅	方向变换可逆 (TO_INPUT_DIRECTION ↔ TO_INTERNAL_LTR); 1:1 补齐 transposeProperties/placement/alignment/position/edgeLabelSide (R16)	tests/bdd/direction-transform.scenarios.test.ts; tests/unit/BasicLayoutTest.test.ts	R16 (compound+UP 方向)
+INT	EdgeAndLayerConstraintEdgeReverser	src/intermediate/edge-and-layer-constraint-edge-reverser.ts	✅	约束边反向后 P2 层差成立; 后置恢复	tests/unit/EdgeAndLayerConstraintEdgeReverserTest.test.ts	-
+INT	LayerConstraintPreprocessor	src/intermediate/layer-constraint-preprocessor.ts	✅	FIRST/LAST/层约束 dummy 正确	tests/unit/LayerConstraintProcessorTest.test.ts	-
+INT	LayerConstraintPostprocessor	src/intermediate/layer-constraint-postprocessor.ts	✅	约束 dummy 移除后图等价	tests/unit/LayerConstraintProcessorTest.test.ts	-
+INT	PartitionPreprocessor/Midprocessor/Postprocessor	src/intermediate/partition-processors.ts	✅	partition 约束生效且恢复正确	tests/unit/PartitionTest.test.ts; tests/unit/PartitionPostProcessorTest.test.ts	-
+INT	SortByInputModelProcessor	src/intermediate/sort-by-input-model-processor.ts	✅	输出序与输入模型序一致	tests/unit/ConcreteSortByInputModelTest.test.ts; tests/unit/BasicConsiderModelOrderTest.test.ts	-
+INT	PortSideProcessor	src/intermediate/port-side-processor.ts	✅	端口侧分配与 Java 一致	tests/unit/PortSideProcessorTest.test.ts	-
+INT	PortListSorter	src/intermediate/port-list-sorter.ts	✅	端口序与 Java 一致	tests/unit/PortListSorterTest.test.ts	-
+INT	InvertedPortProcessor	src/intermediate/inverted-port-processor.ts	✅	反向端口 dummy 正确; 后置恢复	tests/unit/InvertedPortProcessorTest.test.ts	-
+INT	InLayerConstraintProcessor	src/intermediate/in-layer-constraint-processor.ts	✅	层内约束 dummy 正确	tests/unit/InLayerConstraintProcessorTest.test.ts	-
+INT	LongEdgeSplitter	src/intermediate/long-edge-splitter.ts	✅	长边拆分 dummy 正确; 层差单调	tests/unit/LongEdgeSplitterTest.test.ts	-
+INT	LongEdgeJoiner	src/intermediate/long-edge-joiner.ts	✅	长边 join 后弯点正确	tests/unit/LongEdgeJoinerTest.test.ts	-
+INT	ReversedEdgeRestorer	src/intermediate/reversed-edge-restorer.ts	✅	断环反转边恢复	tests/unit/ReversedEdgeRestorerTest.test.ts	-
+INT	HyperedgeDummyMerger	src/intermediate/hyperedge-dummy-merger.ts	✅	同源/同目标 dummy 合并正确	tests/unit/BasicEdgeRouterTest.test.ts	-
+INT	LabelAndNodeSizeProcessor	src/intermediate/label-and-node-size-processor.ts	✅	节点尺寸含 label 区; 对称预留 (ASYMMETRICAL 关闭); 与 Java cell 一致	tests/unit/LabelAndNodeSizeProcessorOffsetTest.test.ts; tests/bdd/cell-system.scenarios.test.ts; tests/bdd/port-labels.scenarios.test.ts	cell 系统
+INT	LabelDummyInserter	src/intermediate/label-dummy-inserter.ts	✅	边 label dummy 插入正确	tests/unit/BasicLayoutTest.test.ts	-
+INT	LabelDummyRemover	src/intermediate/label-dummy-remover.ts	✅	label dummy 移除后弯点正确	tests/unit/LabelDummyRemoverTest.test.ts	-
+INT	LabelDummySwitcher	src/intermediate/label-dummy-switcher.ts	✅	label dummy 交换正确	tests/unit/BasicLayoutTest.test.ts	-
+INT	LabelSideSelector	src/intermediate/label-side-selector.ts	✅	label 侧选择与 Java 一致	tests/unit/LabelSideSelectorTest.test.ts	-
+INT	EndLabelPreprocessor/Postprocessor/Sorter	src/intermediate/labels/end-label-preprocessor.ts + end-label-postprocessor.ts + end-label-sorter.ts	✅	端 label 前置/后置/排序正确	tests/unit/EndLabelSorterTest.test.ts	-
+INT	NodeMarginCalculator	src/intermediate/node-margin-calculator.ts	✅	margin 计算与 Java 一致	tests/unit/NodeMarginCalculatorTest.test.ts	-
+INT	InnermostNodeMarginCalculator	src/intermediate/node-margin-calculator.ts	✅	最内层节点 margin 正确	tests/unit/NodeMarginCalculatorTest.test.ts	-
+INT	CommentPreprocessor/Postprocessor	src/intermediate/comment-processors.ts	✅	注释节点预处理/后置正确	tests/unit/CommentPostprocessorTest.test.ts	-
+INT	CommentNodeMarginCalculator	src/intermediate/comment-processors.ts	✅	注释节点 margin 正确	tests/unit/CommentPostprocessorTest.test.ts	-
+INT	NorthSouthPortPreprocessor	src/intermediate/north-south-port-preprocessor.ts	✅	NS 端口 dummy 正确	tests/unit/NorthSouthPortPreprocessorTest.test.ts	-
+INT	NorthSouthPortPostprocessor	src/intermediate/north-south-port-postprocessor.ts	✅	NS 端口恢复/SPLINE_NS_PORT_Y_COORD 正确	tests/unit/NorthSouthPortPostprocessorTest.test.ts; tests/bdd/north-south-ports.scenarios.test.ts	-
+INT	SemiInteractiveCrossMinProcessor	src/intermediate/semi-interactive-cross-min-processor.ts	✅	半交互交叉最小化保持位置	tests/unit/BasicCrossingMinimizationTest.test.ts	-
+INT	AlternatingLayerUnzipper	src/intermediate/unzipping/alternating-layer-unzipper.ts	✅	交替层解压缩正确	tests/unit/AlternatingLayerUnzipperTest.test.ts	-
+INT	HighDegreeNodeLayeringProcessor	src/intermediate/high-degree-node-layering-processor.ts	✅	高扇出节点树移动: 层插入/树移动与 Java 1:1 (degree/threshold, treeHeight 0→MAX, prepend/append 层序, isTreeRoot/moveTree); 选项 highDegreeNodes.treatment (boolean, 0.12.0 Layered.melk L805) 经 provider HIGH_DEGREE_NODES_TREATMENT 接线 (无 strategy 选项)	tests/oracle/generated/tests_batch.test.ts; tests/oracle/generated/json_path_batch.test.ts	已过: high_degree_nodes/Fan + high-degree-example 布局差分 2/2 全等; 696 0 失败 (旧 "2 模型失败" 标注过期)
+INT	LabelManagementProcessor	-	✅	label 管理编排: 仅当 LABEL_MANAGER (programmatic-only 选项, 默认 null) 配置时委托 ILabelManager 缩短 label; 无 manager 时严格 no-op. doManageLabels 空间累计 + center dummy 尺寸已由 LabelDummyInserter (label-dummy-inserter.ts) 等价实现	tests/bdd/labels.scenarios.test.ts; tests/unit/LabelDummyRemoverTest.test.ts	T4-A 核实 (2026-08-11): 已覆盖 (无 ILabelManager 实现, 测试无法触发 programmatic 选项); A 簇根因另由 NodeLabelPlacer 解决INT
+INT	NodeLabelPlacer	src/intermediate/labels/node-label-placer.ts	✅	OUTSIDE label 放置 (y 负 + spacing) → margin.top; provider 全链路 (LabelAndNodeSizeProcessor/NodeMarginCalculator 调用)	tests/bdd/labels.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M9 移植; R 簇已注册 (经 provider P4 前处理器)
+INT	ConstraintsPostprocessor	src/intermediate/constraints-postprocessor.ts	✅	NORMAL 节点写层 ID + 层内位置 ID; 空层不递增层号 (与 Java 语义一致); interactiveLayout/generatePositionAndLayerIds 选项触发	tests/bdd/constraints-postprocessor.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M7 (157a992); R 簇已注册 (P5 后)
+INT	HypernodesProcessor	src/intermediate/hypernodes-processor.ts	✅	<=2 端口超节点移到边首弯点; N/S 替代弯点重接边; 移除碰撞 junction point; HYPERNODE 选项触发 (GRAPH_PROPERTIES.HYPERNODES)	tests/bdd/hypernodes-processor.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M7 (157a992); R 簇已注册 (P5 后)
+INT	HierarchicalNodeResizingProcessor	src/layered-layout-provider.ts (内联 resizeParentNode)	✅	父尺寸=图 actualSize+padding, 按 minimum 放大, CONTENT_ALIGNMENT 偏移, 外部端口 getExternalPortPosition+FIXED_POS, 无外部端口按比例调端口 (Java resizeGraph/resizeGraphNoReallyIMeanIt/graphLayoutToNode 语义齐备)	tests/oracle/generated/tests_batch.test.ts; tests/bdd/compound-ports.scenarios.test.ts; tests/bdd/self-loops.scenarios.test.ts	内联实现已核实完整: 348 差分全过 (hierarchy01/194/148/193/hierarchy0x/685/686/content_centered_with_external_ports 等 1:1), 696 0 失败
+INT	InteractiveExternalPortPositioner	src/intermediate/interactive-external-port-positioner.ts	✅	外部端口 dummy 按 NORMAL 包围盒赋坐标 (W/E/T/B, 间距 10); INTERACTIVE 断环/分层时 P1 前执行	tests/bdd/interactive-external-port-positioner.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M7 (157a992); R 簇已注册 (P1 前)
+INT	NodePlacementRepeater	src/intermediate/node-placement-repeater.ts	✅	第二遍放置: 清弹性/尺寸约束, 重置 y, 重算 label/margin 后按 RECOMPUTE 重跑; recomputeNodePlacement 选项触发	tests/bdd/node-placement-repeater.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M7 (157a992); R 簇已注册 (P4 后)
+# ─── 层级/外部端口 (compound + hierarchical port) ───
+COMPOUND	CompoundGraphPreprocessor	src/compound/compound-graph-preprocessor.ts	✅	复合图预处理 (外部端口 dummy) 与 Java 一致	tests/bdd/compound-ports.scenarios.test.ts; tests/bdd/self-loops.scenarios.test.ts	A 簇已修 (472d971)
+COMPOUND	CompoundGraphPostprocessor	src/compound/compound-graph-postprocessor.ts	✅	段合并 reference=挂载容器图; 段弯点按段图 NORMAL 内容选偏移; 跨级边端点=recursiveAnchorTo(LCA); INCLUDE 下被平移的 W-E dummy 锚点用 parentOffset	tests/bdd/self-loops.scenarios.test.ts; tests/bdd/compound-ports.scenarios.test.ts	A 簇已修 (472d971): 455; C 簇已修 (本簇): hierarchy01 — dummy 平移侧判定 + parentOffset
+COMPOUND	CrossHierarchyEdge	src/compound/cross-hierarchy-edge.ts	✅	跨层级边结构正确	tests/bdd/compound-ports.scenarios.test.ts	455 已随 A 修复; hierarchy01 已随 C 修复 (全 4 方向 e2e 通过)
+COMPOUND	CrossHierarchyEdgeComparator	src/compound/cross-hierarchy-edge-comparator.ts	✅	跨层级边排序与 Java 一致 (段序决定合并点序)	tests/bdd/compound-ports.scenarios.test.ts	C 簇已随 hierarchy01 验证 (合并输出与 jar 1:1)
+INT	HierarchicalPortConstraintProcessor	src/intermediate/hierarchical-port-constraint-processor.ts	✅	E/W dummy 按 PORT_RATIO_OR_POSITION 排序加 in-layer successor; N/S 替身 dummy (FIXED_POS+CENTER) 重连边; 与 Java 1:1 (ORIGIN↔EXT_PORT_REPLACED_DUMMY 键等价)	tests/bdd/compound-ports.scenarios.test.ts	B 簇 (e9b87ae) 已修: hierarchical_ports 9 模型 + all_four_port_sides/hierarchy09/194 布局差分 1:1; 行级对齐已核
+INT	HierarchicalPortDummySizeProcessor	src/intermediate/hierarchical-port-dummy-size-processor.ts	✅	N/S dummy 宽度按 edgeEdgeBetweenLayers*2 递增/递减 + ALIGNMENT=CENTER + E 端口 x=width (Java setWidths 1:1)	tests/bdd/compound-ports.scenarios.test.ts	B 簇 3 模型全等 (all_four_port_sides/hierarchy09/194); 行级对齐已核
+INT	HierarchicalPortPositionProcessor	src/intermediate/hierarchical-port-position-processor.ts	✅	FIXED_RATIO/FIXED_POS E/W dummy 按 PORT_RATIO_OR_POSITION 定 y (FIXED_RATIO×图高, PORT_ANCHOR, borderToContent→-pad.top-offset.y); 与 Java 1:1	tests/bdd/compound-ports.scenarios.test.ts	B 簇 3 模型已修 (e9b87ae); 本体行级对齐已核 (HPOER Step4 后全等)
+INT	HierarchicalPortOrthogonalEdgeRouter	src/intermediate/hierarchical-port-orthogonal-edge-router.ts	✅	Step4 删除替换 dummy 同步移出 layerlessNodes; 外部端口沿边位置不被残留 dummy 覆盖 (与 Java 语义一致)	tests/bdd/north-south-ports.scenarios.test.ts	B 簇已修 (e9b87ae): 194/all_four_port_sides/hierarchy09
+# ─── wrapping 断行 (intermediate/wrapping, M8 簇 — 已移植未接线) ───
+WRAP	BreakingPointInserter	src/intermediate/wrapping/breaking-point-inserter.ts	✅	插入后图等价: 原边拆三段; MODEL_ORDER 传递; 多 cut 链 prev/next; WRAPPING_STRATEGY=MULTI_EDGE 时 P3 前执行	tests/bdd/wrapping.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M8 簇; R 簇已注册
+WRAP	BreakingPointProcessor	src/intermediate/wrapping/breaking-point-processor.ts	✅	performWrapping 后 chunk 交错放置; CYCLIC 置位; 节点索引复刻 Java id 语义 (局部 Map); MULTI_EDGE 时 P4 前执行	tests/bdd/wrapping.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M8 簇; R 簇已注册
+WRAP	BreakingPointRemover	src/intermediate/wrapping/breaking-point-remover.ts	✅	移除后无 BREAKING_POINT; 原边恢复端点; POLYLINE/ORTHOGONAL 弯点组装; SPLINES 段/链转移; MULTI_EDGE 时 P5 后执行 (LongEdgeJoiner/SelfLoopPost 后, NS 后置前)	tests/bdd/wrapping.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M8 簇; R 簇已注册
+WRAP	CuttingUtils	src/intermediate/wrapping/cutting-utils.ts	✅	insertDummies: 每层一 LONG_EDGE dummy; 端口 WEST/EAST; LONG_EDGE_SOURCE/TARGET 传递	tests/bdd/wrapping.scenarios.test.ts	M8 簇
+WRAP	GraphStats	src/intermediate/wrapping/graph-stats.ts	✅	惰性统计; dar 方向校正; 切割合法性: 层内入边必须单 (源,目标) 对	tests/bdd/wrapping.scenarios.test.ts	M8 簇
+WRAP	ICutIndexCalculator(+Manual)	src/intermediate/wrapping/cut-index-calculator.ts	✅	MANUAL 直读 WRAPPING_CUTTING_CUTS	tests/bdd/wrapping.scenarios.test.ts	M8 簇
+WRAP	ARDCutIndexHeuristic	src/intermediate/wrapping/cut-index-calculator.ts	✅	chunk 数 = min(round(sqrt(...)), longestPath); 切割点等距	tests/bdd/wrapping.scenarios.test.ts	M8 簇
+WRAP	MSDCutIndexHeuristic	src/intermediate/wrapping/cut-index-calculator.ts	✅	max scale 最大化; MSD_FREEDOM 微调切割数; 输出有序且界内	tests/bdd/wrapping.scenarios.test.ts	M8 簇
+WRAP	SingleEdgeGraphWrapper	src/intermediate/wrapping/single-edge-graph-wrapper.ts	✅	validify GREEDY/LOOK_BACK 正确; performCuts 后图等价; 纵横比满足时提前返回	tests/bdd/wrapping.scenarios.test.ts	M8 簇
+# ─── 自环 (intermediate/loops + self-loop 处理器) ───
+LOOP	SelfLoopPreprocessor	src/intermediate/self-loop-preprocessor.ts	✅	自环隐藏/收集正确	tests/unit/SelfLoopPreprocessorTest.test.ts	-
+LOOP	SelfLoopPostProcessor	src/intermediate/self-loop-postprocessor.ts	✅	自环恢复顺序: LongEdgeJoiner 后、EndLabelSorter 前	tests/bdd/spline-selfloop.scenarios.test.ts	D 簇已修 (15381b5)
+LOOP	SelfLoopPortRestorer	src/intermediate/self-loop-port-restorer.ts	✅	自环端口恢复正确	tests/bdd/spline-selfloop.scenarios.test.ts	-
+LOOP	SelfLoopRouter	src/intermediate/self-loop-router.ts + loops/routing/*	✅	自环路由槽位/弯点与 Java 一致 (spline/polyline/orthogonal)	tests/unit/PolylineSelfLoopRouterTest.test.ts; tests/bdd/spline-selfloop.scenarios.test.ts; tests/bdd/self-loops.scenarios.test.ts	A 簇 (472d971) 6 目标模型 + 全自环族 24 模型隔离 jar 差分 1:1; 348 338/348 稳定 (8=jar 自身错误, 2=非 layered), 696 0 失败; 注: jar 批量 JVM 有跨模型状态 (inside_outside 子集批次假差异), 隔离验证 ggn==jar
+LOOP	SelfLoopHolder	src/intermediate/loops/self-loop-holder.ts	✅	自环持有者结构正确	tests/unit/SelfLoopHolderTest.test.ts	-
+LOOP	SelfLoopEdge/Port/Type	src/intermediate/loops/self-loop-edge.ts + self-loop-port.ts + self-loop-type.ts	✅	自环边/端口/类型枚举正确	tests/unit/SelfLoopHolderTest.test.ts	-
+LOOP	SelfHyperLoop(+Labels)	src/intermediate/loops/self-hyper-loop.ts + self-hyper-loop-labels.ts	✅	超自环结构正确	-	-
+LOOP	PortSideAssigner/PortRestorer	src/intermediate/loops/ordering/port-side-assigner.ts + port-restorer.ts	✅	自环端口侧分配/恢复与 Java 一致	tests/bdd/self-loops.scenarios.test.ts; tests/bdd/spline-selfloop.scenarios.test.ts	A 簇已修 (472d971); 自环族隔离 jar 差分 1:1 (同 SelfLoopRouter)
+LOOP	RoutingDirector/RoutingSlotAssigner	src/intermediate/loops/routing/routing-director.ts + routing-slot-assigner.ts	✅	路由槽位分配与 Java 一致	tests/bdd/self-loops.scenarios.test.ts; tests/bdd/spline-selfloop.scenarios.test.ts	A 簇已修 (472d971); 自环族隔离 jar 差分 1:1 (同 SelfLoopRouter)
+LOOP	LabelPlacer	src/intermediate/loops/routing/label-placer.ts	✅	自环 label 放置正确	tests/bdd/spline-selfloop.scenarios.test.ts	-
+LOOP	OrthogonalSelfLoopRouter	src/intermediate/loops/routing/orthogonal-self-loop-router.ts	✅	正交自环弯点与 Java 一致	tests/bdd/spline-selfloop.scenarios.test.ts	-
+LOOP	PolylineSelfLoopRouter	src/intermediate/loops/routing/polyline-self-loop-router.ts	✅	折线自环弯点与 Java 一致	tests/unit/PolylineSelfLoopRouterTest.test.ts	-
+LOOP	SplineSelfLoopRouter	src/intermediate/loops/routing/spline-self-loop-router.ts	✅	样条自环弯点与 Java 一致	tests/bdd/spline-selfloop.scenarios.test.ts	-
+LOOP	DummySelfLoopProcessor	src/intermediate/dummy-self-loop-processor.ts	✅	自环 dummy 处理正确	tests/bdd/spline-selfloop.scenarios.test.ts	-
+LOOP	SelfLoopRouter (getEdgeEndpoints)	src/intermediate/loops/port-side-util.ts + graph/lgraph-util.ts	✅	compound 自环端点=端口绝对锚点 (HIERARCHY_HANDLING 分流); simple=边界投影; 跨分支边=recursiveAnchorTo(LCA)	tests/bdd/self-loops.scenarios.test.ts; tests/bdd/compound-ports.scenarios.test.ts	A 簇已修 (472d971): inside_outside/167/548/288/298/352 全等
+# ─── 压缩 (compaction) ───
+COMP	OneDimensionalCompactor	src/compaction/oned/oned-compactor.ts + algs.ts	✅	压缩后无重叠; 与 Java 尺寸一致	tests/unit/CompactionTest.test.ts; tests/bdd/compaction.scenarios.test.ts	-
+COMP	LongestPathCompaction	src/compaction/oned/oned-compactor.ts + algs.ts	✅	最长路径压缩约束正确	tests/unit/CompactionTest.test.ts	-
+COMP	QuadraticConstraintCalculation	src/compaction/oned/oned-compactor.ts + algs.ts	✅	二次约束计算正确	tests/unit/CompactionTest.test.ts	-
+COMP	ScanlineConstraintCalculator	src/compaction/oned/edge-aware-scanline.ts + algs.ts	✅	扫描线约束正确	tests/unit/CompactionTest.test.ts; tests/bdd/compaction.scenarios.test.ts	E 簇 (edgeLabelShouldBeCentered 已修)
+COMP	EdgeAwareScanlineConstraintCalculation	src/compaction/oned/edge-aware-scanline.ts	✅	everything 阶段按 CGroup 扩大 hitbox; SMALL_EPSILON 残留与 Java 一致	tests/bdd/compaction.scenarios.test.ts	E 簇已修 (5e40f0c)
+COMP	HorizontalGraphCompactor	src/compaction/oned/horizontal-graph-compactor.ts	✅	水平压缩 (含 NetworkSimplexCompaction 分派) 与 Java 一致	tests/unit/CompactionTest.test.ts; tests/bdd/compaction.scenarios.test.ts	-
+COMP	NetworkSimplexCompaction	src/compaction/oned/network-simplex-compaction.ts + horizontal-graph-compactor.ts (EDGE_LENGTH 分派)	✅	网络单纯形压缩独立实现 (1:1 Java): CGroup→NNode, 分离约束 (同边垂直段 helper+offsetDelta, 端口微移), 原始边权 100, 人工源连通, 结果写 hitbox.x	tests/unit/CompactionTest.test.ts; tests/bdd/compaction.scenarios.test.ts	T4-B 移植: 原 LongestPath 占位→NetworkSimplexCompaction; moreThanOneStraightSegmentPath+EDGE_LENGTH jar 差分 1:1 (n1 x=212 vs 占位 122), bdd +2 例
+COMP	LGraphToCGraphTransformer	src/compaction/oned/lgraph-to-cgraph-transformer.ts	✅	CGraph 转换/段链约束/自环位移与 Java 一致	tests/unit/CompactionTest.test.ts; tests/bdd/compaction.scenarios.test.ts	-
+COMP	CGraph/CGroup/CNode	src/compaction/oned/cgraph.ts + cgroup.ts + cnode.ts + cnode-implementations.ts	✅	压缩图结构正确	tests/unit/CompactionTest.test.ts	-
+COMP	VerticalSegment	src/compaction/oned/vertical-segment.ts	✅	垂直段属性正确	tests/unit/CompactionTest.test.ts	-
+COMP	Quadruplet	src/compaction/oned/quadruplet.ts	✅	四元组结构正确	tests/unit/CompactionTest.test.ts	-
+COMP	CompareFuzzy	src/compaction/oned/compare-fuzzy.ts	✅	模糊比较 (容差) 正确	tests/unit/CompactionTest.test.ts	-
+COMP	ISpacingsHandler/SpacingsHandler	src/compaction/oned/spacings-handler.ts	✅	间距处理与 Java 一致	tests/unit/CompactionTest.test.ts	-
+COMP	RectilinearConvexHull	src/compaction/recthull/*	✅	正交凸包正确	tests/unit/RectlinearConvexHullTest.test.ts	-
+COMP	Point/Scanline (recthull)	src/compaction/recthull/point.ts + scanline.ts	✅	点/扫描线正确	tests/unit/RectlinearConvexHullTest.test.ts	-
+# ─── 连通分量 (components) ───
+COMPONENTS	ComponentsProcessor	src/components/components-processor.ts + component-group.ts	✅	连通分量分组/放置正确	tests/unit/ComponentGroupTest.test.ts; tests/bdd/core-layout.scenarios.test.ts	-
+COMPONENTS	ComponentGroup	src/components/component-group.ts	✅	分量组结构正确	tests/unit/ComponentGroupTest.test.ts	-
+COMPONENTS	SimpleRowGraphPlacer	src/components/components-processor.ts	✅	简单行放置正确	tests/unit/ComponentGroupTest.test.ts	-
+COMPONENTS	ComponentGroupGraphPlacer	src/components/component-group-graph-placer.ts	✅	9 扇区放置 (16 侧集合 → 3×3 扇区偏移, 与 Java 1:1, 含 NW/NWE/WNS 留左上角语义); extPorts+分离+NONE 排序时经 components-processor 装配	tests/bdd/components-strategies.scenarios.test.ts	R05 已修 (2026-08-12)
+COMPONENTS	ComponentsCompactor	src/components/components-compactor.ts + oned-components-compaction.ts + components-to-cgraph-transformer.ts	✅	一维压缩折叠 (ELK 固有语义); 与 Java 逐行对齐; compaction.connectedComponents=true 时 combine 装配执行	tests/bdd/components-strategies.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M6 (6540772); R 簇已注册 (combine)
+COMPONENTS	ComponentOrderingStrategy/ModelOrder*	src/components/component-ordering-strategy.ts + model-order-component-group.ts + model-order-row-graph-placer.ts + abstract-graph-placer.ts	✅	模型序分量分组/行放置顺序正确; considerModelOrder.components=MODEL_ORDER 时 split 按模型序排序 + ModelOrderRowGraphPlacer (外部端口) 装配	tests/bdd/components-strategies.scenarios.test.ts; tests/bdd/strategy-registration.scenarios.test.ts	M6 (6540772); R 簇已注册 (split/combine)
+# ─── 图/选项/API (graph/options/api) ───
+GRAPH	LGraph/LNode/LPort/LEdge/LShape/Layer	src/graph/lgraph.ts + lnode.ts + lport.ts + ledge.ts + lshape.ts + layer.ts	✅	图结构语义与 Java 一致	tests/unit/BasicLayoutTest.test.ts; tests/bdd/parser-scenarios.test.ts	-
+GRAPH	LGraphUtil	src/graph/lgraph-util.ts + lgraph-util-merge.ts	✅	getEdgeEndpoints 按 HIERARCHY_HANDLING 分流 + lcaNodeOf/recursiveAnchorTo; 与 Java 语义一致	tests/bdd/self-loops.scenarios.test.ts; tests/bdd/parser-scenarios.test.ts	A 簇已修 (472d971)
+OPTIONS	LayeredOptions/Spacings/InternalProperties	src/options/layered-options.ts + layered-spacings.ts + internal-properties.ts	✅	选项键/默认值/间距与 Java 0.12.0 一致 (OPT_MAP 全量补齐)	tests/oracle/generated/*_batch.test.ts; tests/bdd/parser-scenarios.test.ts	SSOT 选项表
+API	buildGraph (ElkJson→LGraph)	src/api/elk-json.ts + intermediate/elk-graph-importer.ts + graph/*	✅	JSON→LGraph 与 elkt 解析后一致; 容器显式 size; padding 应用	tests/bdd/parser-scenarios.test.ts; tests/oracle/generated/json_path_batch.test.ts	elkg<->elkt 双路径同源
+API	CoreProviders (box/fixed/random)	src/api/core-providers.ts	✅	非 layered 算法分派; box/fixed/random 已移植	tests/bdd/core-providers.scenarios.test.ts	-
+UTIL	JavaRandom	src/util/java-random.ts	✅	与 Java Random 序列一致 (随机数种子可复现)	tests/unit/BasicCycleBreakerTest.test.ts	剥离随机干扰: 固定 seed 差分
+# ─── 非 layered 算法 (待移植, 见 docs/NON-LAYERED-PORTING.md) ───
+NLA	stress / rectpacking / others	-	✅	stress/force + rectpacking + topdownpacking + spore + mrtree + radial + vertiflex + disco (src/*) 全部已移植 (2026-08-12 NLA 并行批次)	src/force; src/rectpacking; src/topdownpacking; src/spore; src/mrtree; src/radial; src/vertiflex; src/disco	tickets/665 + 3 rectpacking + 3 topdown + 5 spore + 3 mrtree + 3 radial + 3 vertiflex + 3 disco 模型全等
+NLA	vertiflex NodeMicroLayout	src/vertiflex/node-micro-layout.ts	✅	端口排序/节点尺寸(NODE_LABELS/PORTS/OUTSIDE)/端口放置(DISTRIBUTED)/标签(INSIDE/OUTSIDE)/margin 与 Java 0.12.0 一致 (R74)	tests/bdd/vertiflex.scenarios.test.ts (18); 26 模型 jar 对拍全等	已知边界: PORT_LABELS/FIXED_POS/FIXED_RATIO/MINIMUM_SIZE/H_PRIORITY/OUTSIDE 多标签 (R76)

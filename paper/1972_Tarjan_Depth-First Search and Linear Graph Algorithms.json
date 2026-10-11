@@ -1,0 +1,22 @@
+{
+  "doi": "10.1137/0201010",
+  "title": "Depth-First Search and Linear Graph Algorithms",
+  "authors": [
+    {
+      "name": "Robert E. Tarjan",
+      "affiliation": null
+    }
+  ],
+  "year": 1972,
+  "venue": "SIAM Journal on Computing",
+  "publisher": null,
+  "abstract": "Abstract. The value of depth-first search or &amp;quot;bacltracking &amp;quot; as a technique for solving problems is illustrated by two examples. An improved version of an algorithm for finding the strongly connected components of a directed graph and ar algorithm for finding the biconnected components of an undirect graph are presented. The space and time requirements of both algorithms are bounded by k 1V + k2E d- k for some constants kl, k2, and k a, where Vis the number of vertices and E is the number of edges of the graph being examined.",
+  "cited_by_count": 6050,
+  "is_open_access": false,
+  "best_oa_url": null,
+  "source": "openalex",
+  "concepts": [
+    "Computer Science",
+    "Artificial Intelligence"
+  ]
+}

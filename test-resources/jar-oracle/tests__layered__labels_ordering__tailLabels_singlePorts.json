@@ -1,0 +1,1 @@
+{"file":"tests/layered/labels_ordering/tailLabels_singlePorts","graph":"tests__layered__labels_ordering__tailLabels_singlePorts","hash":"f6e27710189e496e","nodes":6,"edges":7,"eps":1,"coords":{"root":{"x":0,"y":0},"Nleft":{"x":12,"y":12},"Nmid1":{"x":92,"y":113},"Nmid2":{"x":92,"y":12},"Nmid3":{"x":92,"y":63},"Nright1":{"x":172,"y":37},"Nright2":{"x":172,"y":113}}}

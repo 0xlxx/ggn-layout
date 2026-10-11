@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>layout · 演示</title>
+<style>
+  /* ── 内在尺寸设计: 内容驱动, 流体值, 无媒体查询 ── */
+  :root {
+    --gap: clamp(0.75rem, 2vmax, 1.5rem);
+    --pad: clamp(1rem, 3vw, 2rem);
+    --radius: clamp(10px, 1.6vw, 16px);
+    --bg: #fafafa;
+    --card: #ffffff;
+    --line: #e4e4e7;
+    --ink: #18181b;
+    --dim: #71717a;
+    --accent: #6366f1;
+    --accent-soft: #eef2ff;
+    --green: #059669;
+    --amber: #b45309;
+    --red: #dc2626;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+
+  /* 应用骨架: 固定 header + 滚动内容 (100dvh 现代视口单位) */
+  .app { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100dvh; }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap);
+    padding: var(--pad); border-bottom: 1px solid var(--line); background: #fff;
+  }
+  .brand { font-size: clamp(0.95rem, 2vw, 1.1rem); font-weight: 700; letter-spacing: -0.01em; }
+  .brand em { font-style: normal; color: var(--accent); }
+  .brand small { color: var(--dim); font-weight: 400; font-size: 0.8em; margin-left: 0.6em; white-space: nowrap; }
+  .spacer { flex: 1; }
+  .hint { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+  /* 药丸标签页 (视图切换) */
+  .tabs { display: inline-flex; gap: 2px; padding: 3px; background: #f1f1f3; border-radius: 999px; }
+  .tabs button {
+    border: none; border-radius: 999px; padding: 6px 16px; cursor: pointer;
+    background: transparent; color: var(--dim); font: 12.5px var(--sans);
+    transition: all 0.15s ease; width: max-content;
+  }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button.active { background: #fff; color: var(--accent); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.14); }
+
+  /* 视图: 内容驱动行 + 整体滚动 */
+  main { min-height: 0; overflow: auto; padding: var(--pad); }
+  .view { display: grid; gap: var(--gap); align-content: start; min-width: 0; max-width: 1400px; margin-inline: auto; }
+  .view[hidden] { display: none; }
+  .view-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75em; }
+  .view-head h2 { font-size: clamp(1.05rem, 2vw, 1.4rem); font-weight: 650; margin: 0; letter-spacing: -0.01em; }
+  .view-head p { font-size: 12.5px; color: var(--dim); margin: 0; }
+
+  /* 工具栏: flex-wrap 内容驱动换行, 无断点 */
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  button {
+    width: max-content; font: 12.5px var(--sans); color: var(--ink); background: #fff;
+    border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.primary:hover { filter: brightness(1.08); }
+  button.danger:hover { border-color: var(--red); color: var(--red); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button { border: none; border-radius: 0; border-right: 1px solid var(--line); padding: 6px 11px; font-family: var(--mono); font-size: 11.5px; color: var(--dim); }
+  .seg button:last-child { border-right: none; }
+  .seg button.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+  /* 画布: 内在尺寸 — 小图紧凑, 大图内部滚动; 高度由 clamp 驱动 */
+  .stage {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    min-height: clamp(220px, 36vh, 480px); max-height: clamp(220px, 58vh, 760px);
+    overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: clamp(0.75rem, 2vw, 1.25rem);
+    container-type: inline-size;
+  }
+  .stage svg { display: block; max-width: 100%; height: auto; }
+
+  /* 指标行 + 图例: 内容驱动换行 */
+  .metrics { display: flex; flex-wrap: wrap; gap: clamp(0.75rem, 2vw, 1.5rem); font-size: 12px; color: var(--dim); font-family: var(--mono); }
+  .metrics b { color: var(--ink); font-weight: 600; }
+  .metrics .ok { color: var(--green); }
+  .metrics .warn { color: var(--amber); }
+  .legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 11.5px; color: var(--dim); }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .dot { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+
+  /* 图库网格: RAM — auto-fit + minmax, 空间变化自动增减列, 无断点 */
+  .graph-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: var(--gap); }
+  .graph-card {
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer;
+    background: var(--card); transition: all 0.12s ease; text-align: left;
+    display: flex; flex-direction: column; gap: 2px; min-width: 0;
+  }
+  .graph-card:hover { border-color: var(--accent); }
+  .graph-card.active { border-color: var(--accent); background: var(--accent-soft); }
+  .gc-title { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gc-sub { font-size: 11px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* 嵌套布局 MVP: 左右分栏 (SVG + 结论/JSON), 窄屏自动单列 */
+  .nested-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--gap); align-items: start; }
+  @media (max-width: 900px) { .nested-grid { grid-template-columns: 1fr; } }
+  .nested-panel { display: grid; gap: 10px; min-width: 0; }
+  .verdict { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 12.5px; line-height: 1.65; color: var(--ink); }
+  .verdict b { font-weight: 650; }
+  .verdict.ok { border-color: #a7f3d0; background: #ecfdf5; }
+  .verdict.err { border-color: #fecaca; background: #fef2f2; }
+  .verdict.warn { border-color: #fde68a; background: #fffbeb; }
+  .verdict pre { margin: 8px 0 0; font: 11px/1.6 var(--mono); background: rgba(0,0,0,0.04); border-radius: 8px; padding: 8px 10px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+  .nested-json-head { font-size: 11.5px; color: var(--dim); font-family: var(--mono); }
+  .nested-json-head span { color: #a1a1aa; }
+  .nested-json { background: #18181b; color: #e4e4e7; border-radius: 10px; padding: 12px 14px; font: 11px/1.6 var(--mono); overflow: auto; max-height: 440px; margin: 0; white-space: pre; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">layout <em>演示</em><small>ELK Layered · TS 1:1 移植</small></div>
+    <div class="spacer"></div>
+    <div class="tabs" role="tablist">
+      <button data-tab="incremental" class="active" role="tab">增量布局</button>
+      <button data-tab="gallery" role="tab">示例图库</button>
+      <button data-tab="nested" role="tab">嵌套布局 MVP</button>
+    </div>
+    <div class="hint">修改 src/** 自动热更新</div>
+  </header>
+
+  <main>
+    <section class="view" id="view-incremental" data-view="incremental">
+      <div class="view-head">
+        <h2>增量布局</h2>
+        <p>基于上一轮布局坐标重新布局 — 结构变化时节点尽量保持原位，仅受影响部分移动。</p>
+      </div>
+      <div class="toolbar">
+        <button id="btn-add" class="primary">＋ 加节点</button>
+        <button id="btn-del" class="danger">− 删节点</button>
+        <button id="btn-inc">↻ 增量布局</button>
+        <button id="btn-full">↻ 全量布局</button>
+        <div class="seg" id="inc-engine-seg">
+          <button data-inc-engine="main" class="active">主线程</button>
+          <button data-inc-engine="worker">Worker</button>
+        </div>
+      </div>
+      <div class="stage" id="inc-stage"></div>
+      <div class="metrics" id="inc-metrics"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:#6366f1"></i>当前布局</span>
+        <span><i class="dot" style="background:#d4d4d8"></i>上一轮位置 (虚线)</span>
+        <span><i class="dot" style="background:#f97316"></i>本轮新增</span>
+        <span style="font-family:var(--mono)">位移 = 所有节点相对上一轮位置的总移动距离</span>
+      </div>
+    </section>
+
+    <section class="view" id="view-gallery" data-view="gallery" hidden>
+      <div class="view-head">
+        <h2>示例图库</h2>
+        <p>真实语料与各布局算法 — 支持与 elkjs 逐坐标对照。</p>
+      </div>
+      <div class="toolbar">
+        <div class="seg" id="dir-seg">
+          <button data-dir="RIGHT" class="active">RIGHT</button>
+          <button data-dir="LEFT">LEFT</button>
+          <button data-dir="DOWN">DOWN</button>
+          <button data-dir="UP">UP</button>
+        </div>
+        <div class="seg" id="engine-seg">
+          <button data-engine="layout" class="active">layout</button>
+          <button data-engine="worker">Worker</button>
+          <button data-engine="elkjs">elkjs</button>
+          <button data-engine="compare">对照</button>
+        </div>
+      </div>
+      <div class="stage" id="gal-stage"></div>
+      <div class="metrics" id="gal-metrics"></div>
+      <div class="graph-grid" id="graph-list"></div>
+    </section>
+    <section class="view" id="view-nested" data-view="nested" hidden>
+      <div class="view-head">
+        <h2>嵌套布局 MVP</h2>
+        <p>纯 layered 边拓扑枚举：S1–S5 全部支持（跨组节点 / 组↔节点 / 组↔组 / 祖先·环·多重边）；S6/S7 混合算法边界（v1 范围外）。</p>
+      </div>
+      <div class="toolbar">
+        <div class="seg" id="nested-seg">
+          <button data-scenario="s1" class="active">S1 跨层级边</button>
+          <button data-scenario="s2">S2 3层嵌套</button>
+          <button data-scenario="s3">S3 组↔节点</button>
+          <button data-scenario="s4">S4 组↔组</button>
+          <button data-scenario="s5">S5 祖先/环/多重</button>
+          <button data-scenario="s6">S6 box内嵌force</button>
+          <button data-scenario="s7">S7 跨出子树</button>
+        </div>
+      </div>
+      <div class="nested-grid">
+        <div class="stage" id="nested-stage"></div>
+        <div class="nested-panel">
+          <div class="metrics" id="nested-metrics"></div>
+          <div class="verdict" id="nested-verdict"></div>
+          <div class="nested-json-head">输入 JSON <span>（点击场景切换）</span></div>
+          <pre class="nested-json" id="nested-json"></pre>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="background:#6366f1"></i>叶子节点</span>
+        <span><i class="dot" style="background:#fef9c3"></i>group 容器（含算法标注）</span>
+        <span><i class="dot" style="background:#a5b4fc"></i>已路由边</span>
+        <span><i class="dot" style="background:#d4d4d8"></i>未路由边（provider 不读边 / 误挂载）</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script type="module" src="/main.ts"></script>
+</body>
+</html>

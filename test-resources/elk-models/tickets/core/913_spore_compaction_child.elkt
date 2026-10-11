@@ -1,0 +1,25 @@
+graph root
+node group {
+	algorithm: org.eclipse.elk.sporeCompaction
+	layout [ size: 400, 300 ]
+	node g1 {
+		layout [ size: 60, 40 ]
+		^position: "(20, 20)"
+	}
+	node g2 {
+		layout [ size: 80, 60 ]
+		^position: "(160, 30)"
+	}
+	node g3 {
+		layout [ size: 50, 50 ]
+		^position: "(30, 160)"
+	}
+	node g4 {
+		layout [ size: 70, 40 ]
+		^position: "(200, 170)"
+	}
+}
+node a {
+	layout [ size: 40, 30 ]
+}
+edge a -> group

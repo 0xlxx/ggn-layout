@@ -1,0 +1,1 @@
+{"file":"tests/layered/port_label_placement/inside_compound_nodes_03","graph":"tests__layered__port_label_placement__inside_compound_nodes_03","hash":"228ab12bf67a6354","nodes":6,"edges":7,"eps":1,"coords":{"root":{"x":0,"y":0},"Nn1":{"x":12,"y":12},"Nn4":{"x":12,"y":62},"Nn2":{"x":108,"y":32},"Nn2.n2_1":{"x":20,"y":12},"Nn3":{"x":244,"y":12},"Nn5":{"x":244,"y":62}}}

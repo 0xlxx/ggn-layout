@@ -1,0 +1,29 @@
+{
+ "id": "root",
+ "layoutOptions": {
+  "org.eclipse.elk.algorithm": "org.eclipse.elk.disco",
+  "org.eclipse.elk.randomSeed": "1"
+ },
+ "children": [
+  {
+   "id": "g1",
+   "width": 60,
+   "height": 40
+  },
+  {
+   "id": "g2",
+   "width": 80,
+   "height": 60
+  },
+  {
+   "id": "g3",
+   "width": 50,
+   "height": 50
+  },
+  {
+   "id": "g4",
+   "width": 40,
+   "height": 70
+  }
+ ]
+}

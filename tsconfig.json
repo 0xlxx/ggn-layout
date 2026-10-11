@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "customConditions": ["development"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "types": ["vitest/globals", "node"],
+    "verbatimModuleSyntax": true,
+    "noUnusedLocals": false
+  },
+  "include": ["src", "tests"],
+  "exclude": ["tests/oracle/generated", "tests/debug", "tests/core/bisect.test.ts", "tests/core/order-test.test.ts", "tests/oracle/eps-scan.test.ts"]
+}

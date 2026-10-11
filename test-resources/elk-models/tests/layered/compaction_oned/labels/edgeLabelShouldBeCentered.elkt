@@ -1,0 +1,32 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+edgeRouting: ORTHOGONAL
+postCompaction.strategy: LEFT
+
+node startN {
+	layout [ size: 20, 20 ]
+}
+
+node large {
+	layout [ size: 200, 20 ]
+}
+
+node endN {
+	layout [ size: 20, 20 ]
+}
+
+edge startN -> large
+edge large -> endN
+
+edge startN -> endN {
+	label "But what if ..."
+}
+ 

@@ -1,0 +1,1 @@
+{"file":"tests/layered/interactive_layout/noDummyNodes","graph":"tests__layered__interactive_layout__noDummyNodes","hash":"c0a229aebfa98812","nodes":7,"edges":9,"eps":1,"coords":{"root":{"x":0,"y":0},"Ninit":{"x":12,"y":22.714285714285715},"Nn1":{"x":132,"y":114},"Nn2":{"x":132,"y":63},"Nn3":{"x":212,"y":68},"Nn4":{"x":292,"y":73},"Nn5":{"x":132,"y":12},"Nn6":{"x":212,"y":17}}}

@@ -1,0 +1,19 @@
+graph root
+node tree {
+	algorithm: org.eclipse.elk.vertiflex
+	node n1 {
+		layout [ size: 60, 30 ]
+	}
+	node n2 {
+		layout [ size: 60, 30 ]
+	}
+	node n3 {
+		layout [ size: 60, 30 ]
+	}
+	edge n1 -> n2
+	edge n1 -> n3
+}
+node a {
+	layout [ size: 40, 30 ]
+}
+edge a -> tree

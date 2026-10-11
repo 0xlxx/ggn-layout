@@ -1,0 +1,29 @@
+{
+ "id": "root",
+ "layoutOptions": {
+  "org.eclipse.elk.algorithm": "org.eclipse.elk.box",
+  "org.eclipse.elk.randomSeed": "1"
+ },
+ "children": [
+  {
+   "id": "a",
+   "width": 60,
+   "height": 40
+  },
+  {
+   "id": "b",
+   "width": 40,
+   "height": 60
+  },
+  {
+   "id": "c",
+   "width": 50,
+   "height": 50
+  },
+  {
+   "id": "d",
+   "width": 30,
+   "height": 30
+  }
+ ]
+}

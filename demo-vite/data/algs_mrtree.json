@@ -1,0 +1,101 @@
+{
+ "id": "root",
+ "layoutOptions": {
+  "org.eclipse.elk.algorithm": "org.eclipse.elk.mrtree",
+  "org.eclipse.elk.randomSeed": "1",
+  "org.eclipse.elk.direction": "DOWN"
+ },
+ "children": [
+  {
+   "id": "a",
+   "width": 80,
+   "height": 40
+  },
+  {
+   "id": "b",
+   "width": 40,
+   "height": 30
+  },
+  {
+   "id": "c",
+   "width": 40,
+   "height": 30
+  },
+  {
+   "id": "d",
+   "width": 50,
+   "height": 60
+  },
+  {
+   "id": "e",
+   "width": 40,
+   "height": 30
+  },
+  {
+   "id": "f",
+   "width": 40,
+   "height": 30
+  },
+  {
+   "id": "g",
+   "width": 40,
+   "height": 30
+  }
+ ],
+ "edges": [
+  {
+   "id": "e0",
+   "sources": [
+    "a"
+   ],
+   "targets": [
+    "b"
+   ]
+  },
+  {
+   "id": "e1",
+   "sources": [
+    "a"
+   ],
+   "targets": [
+    "c"
+   ]
+  },
+  {
+   "id": "e2",
+   "sources": [
+    "b"
+   ],
+   "targets": [
+    "d"
+   ]
+  },
+  {
+   "id": "e3",
+   "sources": [
+    "c"
+   ],
+   "targets": [
+    "e"
+   ]
+  },
+  {
+   "id": "e4",
+   "sources": [
+    "c"
+   ],
+   "targets": [
+    "f"
+   ]
+  },
+  {
+   "id": "e5",
+   "sources": [
+    "d"
+   ],
+   "targets": [
+    "g"
+   ]
+  }
+ ]
+}

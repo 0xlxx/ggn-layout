@@ -1,0 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+// Reproduces a case where empty layers are produced.
+
+node firstSeparate { layerConstraint: FIRST_SEPARATE }
+node n
+node n2
+node last { layerConstraint: LAST }
+node lastSeparate { layerConstraint: LAST_SEPARATE }
+
+edge E1: firstSeparate -> n
+edge E2: n -> n2
+edge E3: n2 -> last
+edge E4: last -> lastSeparate

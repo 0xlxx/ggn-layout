@@ -1,0 +1,90 @@
+/*******************************************************************************
+ * Copyright (c) 2020 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+// Note that for the corresponding unit test to work, it is important that 
+//  a) the two ports of each node have a different width
+//  b) the relative position of the port labels to their ports is different 
+//    (hence the underscore behind P2 to make the label longer)
+
+node Down {
+    layout [ size: 60, 30 ]
+    elk.direction: DOWN
+    nodeLabels.placement: "H_CENTER V_TOP INSIDE"
+    node N1 {
+        nodeLabels.placement: "H_CENTER V_CENTER INSIDE"
+        portConstraints: FIXED_SIDE
+        portLabels.placement: "OUTSIDE NEXT_TO_PORT_IF_POSSIBLE"
+        port P1 {
+            layout [ size: 31, 7 ]
+            ^port.side: WEST
+        }
+        port P2_ {
+            layout [ size: 27, 7 ]
+            ^port.side: WEST
+        }
+    }
+}
+
+node Up {
+    layout [ size: 60, 30 ]
+    elk.direction: UP
+    nodeLabels.placement: "H_CENTER V_TOP INSIDE"
+    node N1 {
+        nodeLabels.placement: "H_CENTER V_CENTER INSIDE"
+        portConstraints: FIXED_SIDE
+        portLabels.placement: "OUTSIDE NEXT_TO_PORT_IF_POSSIBLE"
+        port P1 {
+            layout [ size: 31, 7 ]
+            ^port.side: WEST
+        }
+        port P2_ {
+            layout [ size: 27, 7 ]
+            ^port.side: WEST
+        }
+    }
+}
+
+node Left {
+    layout [ size: 60, 30 ]
+    elk.direction: LEFT
+    nodeLabels.placement: "H_CENTER V_TOP INSIDE"
+    node N1 {
+        nodeLabels.placement: "H_CENTER V_CENTER INSIDE"
+        portConstraints: FIXED_SIDE
+        portLabels.placement: "OUTSIDE NEXT_TO_PORT_IF_POSSIBLE"
+        port P1 {
+            layout [ size: 31, 7 ]
+            ^port.side: WEST
+        }
+        port P2_ {
+            layout [ size: 27, 7 ]
+            ^port.side: WEST
+        }
+    }
+}
+
+node Right {
+    layout [ size: 60, 30 ]
+    elk.direction: RIGHT
+    nodeLabels.placement: "H_CENTER V_TOP INSIDE"
+    node N1 {
+        nodeLabels.placement: "H_CENTER V_CENTER INSIDE"
+        portConstraints: FIXED_SIDE
+        portLabels.placement: "OUTSIDE NEXT_TO_PORT_IF_POSSIBLE"
+        port P1 {
+            layout [ size: 31, 7 ]
+            ^port.side: WEST
+        }
+        port P2_ {
+            layout [ size: 27, 7 ]
+            ^port.side: WEST
+        }
+    }
+}

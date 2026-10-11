@@ -1,0 +1,1 @@
+{"file":"examples/user-hints/layered/verticalOrder","graph":"examples__user-hints__layered__verticalOrder","hash":"d36c0d927be8e112","err":"org.eclipse.elk.core.UnsupportedGraphException The hierarchy aware processor INTERACTIVE in child node G-unlayered[n_1, n_2, n_3] is only allowed if the root node specifies the same hierarchical processor."}

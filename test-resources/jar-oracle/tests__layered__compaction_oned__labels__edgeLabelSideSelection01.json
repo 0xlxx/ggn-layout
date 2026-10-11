@@ -1,0 +1,1 @@
+{"file":"tests/layered/compaction_oned/labels/edgeLabelSideSelection01","graph":"tests__layered__compaction_oned__labels__edgeLabelSideSelection01","hash":"322c8b3628c93ac8","nodes":4,"edges":3,"eps":1,"coords":{"root":{"x":0,"y":0},"NN1":{"x":12,"y":17},"NN2":{"x":112,"y":17},"NN3":{"x":212,"y":12},"NN4":{"x":212,"y":62}}}

@@ -1,0 +1,1 @@
+{"file":"tests/layered/preserve_order/oneCrossing","graph":"tests__layered__preserve_order__oneCrossing","hash":"274593d6b0d32d29","nodes":5,"edges":6,"eps":1,"coords":{"root":{"x":0,"y":0},"Nl0p0":{"x":12,"y":17},"Nl2p0":{"x":92,"y":62},"Nl2p1":{"x":92,"y":12},"Nl4p0":{"x":192,"y":12},"Nl4p1":{"x":192,"y":62}}}

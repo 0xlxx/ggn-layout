@@ -1,0 +1,1 @@
+{"file":"tests/layered/compaction_oned/labels/edgeLabelShouldBeCentered","graph":"tests__layered__compaction_oned__labels__edgeLabelShouldBeCentered","hash":"f4a998560ca97507","nodes":3,"edges":3,"eps":1,"coords":{"root":{"x":0,"y":0},"NstartN":{"x":12,"y":19.706666666666667},"Nlarge":{"x":52,"y":23.04},"NendN":{"x":272,"y":19.706666666666667}}}

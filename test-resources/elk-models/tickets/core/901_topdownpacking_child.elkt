@@ -1,0 +1,9 @@
+graph root
+node group {
+	algorithm: org.eclipse.elk.topdownpacking
+	node g1
+	node g2
+	node g3
+}
+node a
+edge a -> group

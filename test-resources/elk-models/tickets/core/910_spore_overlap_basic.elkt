@@ -1,0 +1,11 @@
+graph root
+algorithm: org.eclipse.elk.sporeOverlap
+node n1 {
+	layout [ size: 100, 50, position: 10, 10 ]
+}
+node n2 {
+	layout [ size: 80, 60, position: 40, 30 ]
+}
+node n3 {
+	layout [ size: 60, 40, position: 70, 60 ]
+}

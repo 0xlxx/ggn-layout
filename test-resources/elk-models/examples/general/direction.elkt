@@ -1,0 +1,61 @@
+/*******************************************************************************
+ * Copyright (c) 2020 Kiel University and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+/*
+// elkex:category
+General > Direction
+
+// elkex:label
+Basics
+
+// elkex:doc
+The example illustrates how different layout directions can be set.
+*/
+
+// elkex:graph
+node leftToRight {
+    layout [ size: 60, 30 ]
+    elk.direction: RIGHT
+    nodeLabels.placement: "H_LEFT V_TOP OUTSIDE"
+    node n1
+    node n2
+    edge n1->n2
+    label "leftToRight"
+}
+
+node topToBottom {
+    layout [ size: 60, 30 ]
+    elk.direction: DOWN
+    nodeLabels.placement: "H_LEFT V_TOP OUTSIDE"
+    node n1
+    node n2
+    edge n1->n2
+    label "topToBottom"
+}
+
+node rightToLeft {
+    layout [ size: 60, 30 ]
+    elk.direction: LEFT
+    nodeLabels.placement: "H_LEFT V_TOP OUTSIDE"
+    node n1
+    node n2
+    edge n1->n2
+    label "rightToLeft"
+}
+
+node bottomToTop {
+    layout [ size: 60, 30 ]
+    elk.direction: UP
+    nodeLabels.placement: "H_LEFT V_TOP OUTSIDE"
+    node n1
+    node n2
+    edge n1->n2
+    label "bottomToTop"
+}

@@ -1,0 +1,40 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+// In this diagram, all edges should connect to the port centres, not the boundaries.
+// However, the edge to the hierarchical port ignores its port anchor and connects
+// to the boundary instead.
+
+node compound {
+	port p {
+		layout [ size: 10, 10 ]
+		^port.anchor: "5, 5"
+	}
+
+	node n1 {
+		port out {
+			layout [ size: 10, 10 ]
+			^port.anchor: "5, 5"
+		}
+	}
+	node n2 {
+		port in {
+			layout [ size: 10, 10 ]
+			^port.anchor: "5, 5"
+		}
+		port out {
+			layout [ size: 10, 10 ]
+			^port.anchor: "5, 5"
+		}
+	}
+
+	edge n1.out -> n2.in
+	edge n2.out -> compound.p
+}

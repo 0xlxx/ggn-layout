@@ -1,0 +1,1 @@
+{"file":"tests/layered/edge_label_placement/hierarchy_center_edge_label_problem","graph":"tests__layered__edge_label_placement__hierarchy_center_edge_label_problem","hash":"69a26537c12c7049","nodes":3,"edges":1,"eps":1,"coords":{"root":{"x":0,"y":0},"NEinKnoten":{"x":117,"y":12},"NEinKnoten.EinZweiterKnoten":{"x":12,"y":12},"NEinAndererKnoten":{"x":12,"y":24}}}

@@ -1,0 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2017 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+ 
+/**
+ * Note that this minimal example only works if the 'short-circuit' logic 
+ * at the beginning of the 'LayerSweepCrossingMinimizer' class is deactivated,
+ * which otherwise skips execution for single node graphs. 
+ */
+hierarchyHandling: INCLUDE_CHILDREN
+greedySwitch.type: TWO_SIDED
+
+node n1  {
+	layout [ size: 60, 30 ]
+	greedySwitch.type: OFF 
+	node n3
+}
+  

@@ -1,0 +1,18 @@
+graph root
+node tree {
+	algorithm: org.eclipse.elk.mrtree
+	elk.direction: DOWN
+	node a { layout [ size: 80, 40 ] }
+	node b
+	node c
+	node d { layout [ size: 50, 60 ] }
+	node e
+	node f
+	node g
+	edge a -> b
+	edge a -> c
+	edge b -> d
+	edge c -> e
+	edge c -> f
+	edge d -> g
+}

@@ -1,0 +1,26 @@
+{
+  "doi": "10.1016/j.dam.2005.05.023",
+  "title": "Graph layering by promotion of nodes",
+  "authors": [
+    {
+      "name": "Nikola S. Nikolov",
+      "affiliation": "University of Limerick"
+    },
+    {
+      "name": "Alexandre Tarassov",
+      "affiliation": "University of Limerick"
+    }
+  ],
+  "year": 2005,
+  "venue": "Discrete Applied Mathematics",
+  "publisher": null,
+  "abstract": null,
+  "cited_by_count": 23,
+  "is_open_access": false,
+  "best_oa_url": null,
+  "source": "openalex",
+  "concepts": [
+    "Computer Science",
+    "Computer Vision and Pattern Recognition"
+  ]
+}

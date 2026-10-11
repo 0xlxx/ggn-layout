@@ -1,0 +1,400 @@
+{
+  "version": 14,
+  "updated": "2026-09-13",
+  "oracle": "ELK Java 0.12.0 jar",
+  "oracle_mode": "L1: 生成测试 = ggn vs 预生成 jar oracle (scripts/generate-jar-oracle.mjs); 不再用 elkjs 差分",
+  "eps": {
+    "default": 2,
+    "note": "ε=2 (2026-08-07 从 1 提升): 精度噪声 (0,2] 全吸收 (含自环族 4/3=1.333 系统性差), 结构 bug ≥4px 不漏; 依据见 plans/elk-layout-verification.md M3"
+  },
+  "verdicts": {
+    "accepted": "有意分歧 (ggn≈jar 但有意不修): 当前为空 (旧 elkjs 冻结清单已过期: selfloop_crash/north_south_ports_1/608 已通过; compound03/three_edges_inverted_ports_2 实为三方各差→tooling)",
+    "bug": "②真 bug: ggn≠jar; 修复队列, 修复后从登记册移除",
+    "tooling": "③工具待修: harness/模型/参数问题; 修工具后复核"
+  },
+  "entries": [
+    {
+      "verdict": "accepted",
+      "graph": "examples__hierarchy__hierarchicalLayoutMixing",
+      "reason": "嵌套节点用 elk.stress 算法 (非 layered); 已知 ~1e-6 浮点偏差 (pre-existing), bit-exact 门禁豁免 B, 实测 maxAbs 上限 ~1e-5",
+      "bitExact": {
+        "class": "exemptB",
+        "maxUlp": 260000000.0,
+        "maxAbs": 7.38e-06,
+        "limitMaxUlp": null,
+        "limitMaxAbs": 1e-05
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "examples__user-hints__interactive-constraints__interactiveLayout_mixedHierarchy",
+      "reason": "非 layered 算法 (rectpacking/topdownpacking/sporeOverlap), bit-exact 门禁排除 (rectpacking)",
+      "bitExact": {
+        "class": "nonLayered",
+        "skip": true
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "examples__user-hints__interactive-constraints__interactiveRectpacking_hierarchy",
+      "reason": "rectpacking 算法 (非 layered), 超 layered 移植范围; 非 layered 算法 (rectpacking/topdownpacking/sporeOverlap), bit-exact 门禁排除 (rectpacking)",
+      "bitExact": {
+        "class": "nonLayered",
+        "skip": true
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "examples__user-hints__interactive-constraints__interactiveRectpacking_oneBigNode",
+      "reason": "非 layered 算法 (rectpacking/topdownpacking/sporeOverlap), bit-exact 门禁排除 (rectpacking)",
+      "bitExact": {
+        "class": "nonLayered",
+        "skip": true
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "examples__user-hints__model-order__modelOrderCycleBreaking",
+      "reason": "ELK 0.12.0 自身 NPE bug (INCLUDE_CHILDREN + 嵌套图 MODEL_ORDER 断环: ModelOrderCycleBreaker 读 null MAX_MODEL_ORDER_NODES; 修复见 eclipse/elk#756, 0.12.0 未含). ggn assignModelOrdersRecursive 已按修复语义给嵌套图赋值, 不复刻 0.12.0 的 NPE"
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__compaction_oned__labels__labels1",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 2.84e-14,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__connected_components__compound03",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 1.14e-13,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__edge_label_placement__hierarchy01",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 1.42e-14,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__inverted_ports__external_ports",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 7.11e-15,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__labels_ordering__headLabels_multiPorts",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 7.11e-15,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__labels_ordering__tailLabels_multiPorts",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 3.55e-15,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "bug",
+      "graph": "tests__layered__node_placement__bk__classes__classes_leftup",
+      "reason": "label 输入保真 (elktToElkJson 发射 node labels) + oracle 重生成后: NODE_LABELS 尺寸系统差异 — TS label-and-node-size-processor 简化 vs jar cell 系统 (节点尺寸/占位), y 差 5. 与 724 同源, cell 系统专项"
+    },
+    {
+      "verdict": "bug",
+      "graph": "tests__layered__node_placement__bk__classes__classes_rightup",
+      "reason": "同 classes_leftup: NODE_LABELS 尺寸系统差异, Nru_b0_2 y 差 5 (TS 47 vs jar 52)"
+    },
+    {
+      "verdict": "bug",
+      "graph": "tests__layered__node_placement__bk__straightness__straightEdgesLeft",
+      "reason": "同 classes: NODE_LABELS 尺寸系统差异 (BK 类图 + node labels)"
+    },
+    {
+      "verdict": "bug",
+      "graph": "tests__layered__node_placement__bk__straightness__straightEdgesRight",
+      "reason": "同 classes: NODE_LABELS 尺寸系统差异 (BK 类图 + node labels), y 差"
+    },
+    {
+      "verdict": "bug",
+      "graph": "tests__layered__port_label_placement__inside_compound_nodes_02",
+      "reason": "NODE_LABELS/PORT_LABELS 尺寸系统差异 (复合节点 label 占位), y 差"
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__self_loops__fixedSide",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 8,
+        "maxAbs": 5.68e-14,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__self_loops__free",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 8,
+        "maxAbs": 5.68e-14,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__self_loops__hyperLoops",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 4,
+        "maxAbs": 7.11e-15,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__self_loops__south",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 1.42e-14,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tests__layered__splines__sloppy_overlaps_3",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 1.14e-13,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__457_boxLayouterIgnoresMinimumSize",
+      "reason": "box 算法"
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__475_fixedLayoutWithLongLabels",
+      "reason": "嵌套节点用 fixed 算法"
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__489_paddingAndMinSize_Large",
+      "reason": "嵌套节点用 box 算法 + 完整 cell 尺寸系统"
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__489_paddingAndMinSize_Small",
+      "reason": "嵌套节点用 box 算法 + 完整 cell 尺寸系统"
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__900_topdownpacking_basic",
+      "reason": "非 layered 算法 (rectpacking/topdownpacking/sporeOverlap), bit-exact 门禁排除 (org.eclipse.elk.topdownpacking)",
+      "bitExact": {
+        "class": "nonLayered",
+        "skip": true
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__910_spore_overlap_basic",
+      "reason": "非 layered 算法 (rectpacking/topdownpacking/sporeOverlap), bit-exact 门禁排除 (org.eclipse.elk.sporeOverlap)",
+      "bitExact": {
+        "class": "nonLayered",
+        "skip": true
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__912_spore_overlap_multi",
+      "reason": "已知 ~1e-6 浮点偏差 (pre-existing), bit-exact 门禁豁免 B, 实测 maxAbs 上限 ~1e-5",
+      "bitExact": {
+        "class": "exemptB",
+        "maxUlp": 146000000.0,
+        "maxAbs": 8.32e-06,
+        "limitMaxUlp": null,
+        "limitMaxAbs": 1e-05
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__930_radial_basic",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 4,
+        "maxAbs": 7.11e-15,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__931_radial_child",
+      "reason": "已知 ~1e-6 浮点偏差 (pre-existing), bit-exact 门禁豁免 B, 实测 maxAbs 上限 ~1e-5",
+      "bitExact": {
+        "class": "exemptB",
+        "maxUlp": 84500000.0,
+        "maxAbs": 9.61e-06,
+        "limitMaxUlp": null,
+        "limitMaxAbs": 1e-05
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__core__932_radial_multi",
+      "reason": "已知 ~1e-6 浮点偏差 (pre-existing), bit-exact 门禁豁免 B, 实测 maxAbs 上限 ~1e-5",
+      "bitExact": {
+        "class": "exemptB",
+        "maxUlp": 36400000.0,
+        "maxAbs": 2.07e-06,
+        "limitMaxUlp": null,
+        "limitMaxAbs": 1e-05
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__layered__288_selfLoopsCauseNPE_a",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 2,
+        "maxAbs": 1.42e-14,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__layered__288_selfLoopsCauseNPE_b",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 7.11e-15,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__layered__302_brokenSplineSelfLoops",
+      "reason": "few-ULP 末位噪声 (pre-existing): maxUlp<=8 / maxAbs<=1e-12, bit-exact 门禁豁免 A",
+      "bitExact": {
+        "class": "exemptA",
+        "maxUlp": 1,
+        "maxAbs": 1.42e-14,
+        "limitMaxUlp": 8,
+        "limitMaxAbs": 1e-12
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__layered__453_interactiveProblems",
+      "reason": "已知 ~1e-6 浮点偏差 (pre-existing), bit-exact 门禁豁免 B, 实测 maxAbs 上限 ~1e-5",
+      "bitExact": {
+        "class": "exemptB",
+        "maxUlp": 117000000.0,
+        "maxAbs": 6.68e-06,
+        "limitMaxUlp": null,
+        "limitMaxAbs": 1e-05
+      }
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__layered__588_hierarchicalLayoutNPE",
+      "reason": "嵌套节点用 stress 算法"
+    },
+    {
+      "verdict": "accepted",
+      "graph": "tickets__layered__665_includeChildrenDoesntStop",
+      "reason": "嵌套节点用 elk.stress 算法; 已知 ~1e-6 浮点偏差 (pre-existing), bit-exact 门禁豁免 B, 实测 maxAbs 上限 ~1e-5",
+      "bitExact": {
+        "class": "exemptB",
+        "maxUlp": 146000000.0,
+        "maxAbs": 8.3e-06,
+        "limitMaxUlp": null,
+        "limitMaxAbs": 1e-05
+      }
+    },
+    {
+      "verdict": "bug",
+      "graph": "tickets__layered__701_portLabels",
+      "reason": "NODE_LABELS/PORT_LABELS 尺寸系统差异 (容器节点 label 占位), y 差 47"
+    },
+    {
+      "verdict": "bug",
+      "graph": "tickets__layered__724_includeChildrenModelOrder",
+      "reason": "NNode2 x 差 10 (ε=2): NODE_LABELS 约束节点尺寸差 — harness 输入保真: elkt2test parseElkt 解析 node label 时未读 size (322-325 只存 text, _inLabel 分支跳过块内容) → generateTest NODE_LABELS width/height=0; elktToElkJson (build 578) 完全跳过 node labels → oracle 输入无 label. 修复需: ① elkt2test 解析 label size; ② elktToElkJson 发射 node labels; ③ 重生成 jar oracle. (与 Issue905 坐标同源: label 输入保真)"
+    }
+  ],
+  "notes": [
+    "v16: bit-exact 门禁 (verify:bit-exact) 上线 — 默认 === 逐坐标全等, 豁免经 entries[].bitExact 登记: class=exemptA (few-ULP 末位噪声, limit ≤8 ULP / ≤1e-12, 15 个) / exemptB (已知 ~1e-6 偏差, limit maxAbs ≤1e-5, 6 个) / nonLayered (根显式非 layered, 跳过, 5 个). registry graph 名 = 相对路径去 .elkt 且 /→__ (如 examples__hierarchy__hierarchicalLayoutMixing); 脚本读时反向映射 (__→/ + .elkt). 豁免模型变 bit-exact → 提示可移除豁免; 超限 / 未登记差异 / 非 layered 登记模型被比较 → 门禁失败.",
+    "v15: 层约束桥接 (LNode layerConstraint 字段↔property) 修复 7 个 (43→36); 9 个非 layered 算法/interactive 登记 accepted; 剩余 27 范围内缺口按簇 (层级 inside-self-loop/cell 尺寸/层级/方向/three_edges/comment).",
+    "v14: SSOT 保真化 — elktToElkJson 发射全部节点级选项 (nodeSize/layerConstraint/portLabels/edgeRouting.selfLoop*/considerModelOrder/direction 等), ggn NODE_OPTS 应用; oracle/生成测试/edge oracle 重生成. 696 忠实化后 44 失败 (丢参掩盖的真实 ggn 缺口), edge-e2e 83%. self_loops/free 已修 (节点级 selfLoopDistribution/Ordering).",
+    "v13: 自环族 3 图 (self_loops/fixedSide|free + 128_selfLoopLabelSpacing_complex) 修复 → 696 100% (5→0 失败). 根因: computeComponentSize 覆盖 LSAGHC 分量尺寸 (内容边界 76 覆盖自环 spline 外扩 98.67) → 改只增不减. 阶段对比 CLI (scripts/stage-diff.mjs) 二分定位.",
+    "v12: 696 归零 (0 失败) — three_edges 修复: placeVerticalPortsEqually spacing 改为 ELK 中心间隔公式 portHeight + (nodeH-Σsize.y)/(n+1) (全同高端口时=原简化公式, 常规节点不变; size-0 匿名端口时增大 → three_edges N1 7.67 vs 6.33 → margin.top 0.333 对齐). E2E 88.9→89.3% (861/964); 全量 1974 全绿.",
+    "v11: three_edges_inverted_ports_2 从 tooling 升级 bug 候选 — 696 2→1 (bug 0/tooling 0/bug候选 1). inside_outside 类加载变体用双 oracle (oracle.variants+BatchMain) 通过; compound06 jar 自身报错用 expected-crash 测试通过.",
+    "v10: compound05 修复 (真 bug 归零) — NetworkSimplexLayerer.connectedComponents 缺 ELK 的「大分量先」(addFirst) 排序: compound05 子图 N2 链分量 (5 节点) > N1 链 (4 节点) → ELK 先处理 N2 链, ggn 按 push 顺序 N1 链先 → 层内 N1/N2 顺序颠倒 → BK 上下翻转. 696 5→4 (bug 0/tooling 3); compound05 7 节点 0 差; 全量 1974 全绿.",
+    "v9: portConstraints 修复 (真 bug 归零) — ① initializePort 补 FIXED_SIDE 推断侧端口 PORT_BORDER_OFFSET 推导 (LGraphUtil.initializePort 0.12.0 字节码确认: 位置非(0,0) 时 calcPortOffset → LabelAndNodeSizeProcessor 用 offset 还原输入 y); ② 坐标拆回统一 ELK offset+padding 语义 (ElkGraphLayoutTransferrer: 嵌套图坐标 = 图内 + offset + 父 padding, 弃 bounds minX — portConstraints n7 marginL=5 → minX=10 错平移 2)。696 6→5 (bug 0/tooling 5); E2E 88.5→88.9 (857/964); 1974 全绿。",
+    "v5: 修正 tooling 复合图归因 — all_four_port_sides/compound03/04/05 实为 N-S 外部端口 dummy 放置族 (非 harness); 旧\"三方各差\"是 jar-triage 自身世界/相对混用的产物。",
+    "v4: ε 1→2 (精度可容忍): 自环族 4/3 精度差 4 图通过。",
+    "v3: FIXED_ORDER 缺行修复 → hierarchy05/hierarchy01 通过。",
+    "v6: GGN_HIER_ORTHO 默认启用 (Leibniz N-S 三件套) — hierarchy09/502/all_four/compound03/04/194 修复, 移除 6 条 triage; 696 22→17。",
+    "v7: 端标签 (Laplace) + LabelSideSelector (主代理) — edgeLabelSideSelection01/02/edge_labels/labels1 修复, 696 15→13。",
+    "v8: Russell LabelDummySwitcher 修 labels2, 696 13→12。"
+  ],
+  "numericBudget": {
+    "maxUlp": 1000000.0,
+    "maxAbsRelative": 1e-09,
+    "rationale": "2026-09-13 用户授权：门禁从「逐位全等」放宽为「结构全等 + 数值在界内」。全局预算只放行浮点重排带来的舍入差异，不放行逻辑错——结构差异/非有限值/超预算仍硬失败。maxUlp=1e6 ≈ 1.1e-10 相对误差（长归约 k~1e6 步的上界量级）；maxAbsRelative=1e-9 按图包围盒对角线缩放（1000px 图 ≈ 1e-6 px，远低于任何可见或可影响比较的量级）。每模型可在 entries[].bitExact.limitMaxUlp/limitMaxAbs 覆盖。"
+  }
+}

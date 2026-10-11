@@ -1,0 +1,1 @@
+{"file":"tests/layered/connected_components/compound06","graph":"tests__layered__connected_components__compound06","hash":"f90ab3a7d8ac2861","err":"java.lang.IllegalStateException Expected 2 hierarchical ports, but found only 0."}

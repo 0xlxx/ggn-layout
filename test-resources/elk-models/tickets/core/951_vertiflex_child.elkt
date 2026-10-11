@@ -1,0 +1,25 @@
+graph root
+node tree {
+	algorithm: org.eclipse.elk.vertiflex
+	org.eclipse.elk.vertiflex.layoutStrategy: BEND
+	node n1 {
+		layout [ size: 50, 40 ]
+	}
+	node n2 {
+		layout [ size: 70, 50 ]
+	}
+	node n3 {
+		layout [ size: 60, 40 ]
+		org.eclipse.elk.vertiflex.verticalConstraint: 140
+	}
+	node n4 {
+		layout [ size: 60, 30 ]
+	}
+	edge n1 -> n2
+	edge n1 -> n3
+	edge n2 -> n4
+}
+node a {
+	layout [ size: 40, 30 ]
+}
+edge a -> tree

@@ -1,0 +1,20 @@
+graph root
+node group {
+	algorithm: org.eclipse.elk.topdownpacking
+	elk.padding: "[top=8.0,left=8.0,bottom=8.0,right=8.0]"
+	elk.spacing.nodeNode: 10
+	elk.topdown.hierarchicalNodeWidth: 80
+	elk.topdown.hierarchicalNodeAspectRatio: 2
+	node g1
+	node g2
+	node g3
+	node g4
+	node g5
+	edge g1 -> g2
+	edge g3 -> g4
+	edge g2 -> g5
+}
+node a
+node b
+edge a -> group
+edge group -> b

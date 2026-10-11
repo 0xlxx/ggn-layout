@@ -1,0 +1,1 @@
+{"file":"tests/layered/compaction_oned/hierarchical_ports/hports1","graph":"tests__layered__compaction_oned__hierarchical_ports__hports1","hash":"940fbd2d71b655bf","nodes":3,"edges":4,"eps":1,"coords":{"root":{"x":0,"y":0},"Nparent":{"x":20,"y":12},"Nparent.n1":{"x":12,"y":12},"Nparent.n2":{"x":12,"y":62}}}

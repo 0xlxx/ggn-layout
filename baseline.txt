@@ -1,0 +1,9 @@
+=== elk-layout 移植进度 ===
+E2E 696 一致率 : 681/696 (97.8%)  [15 失败]
+边路由 E2E 一致率: 412/612 (67.3%)  [正交弯点, 图×方向]
+elk-java-unit   : 986 语义测试
+覆盖率          : Lines 94.6% / Branches 83.8% / Stmts 93.0%
+失败簇分布      : N-S族=7, insideSelfLoops=2, 复合放置=2, splines=1, 其他=3
+历史失败数      : 24 → 18 → 19 → 22 → 15
+
+目标: 696 全过 (accepted 冻结清单除外) + elk-java-unit 全绿 + 变异 covered ≥80%

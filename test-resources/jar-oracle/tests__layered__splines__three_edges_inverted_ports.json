@@ -1,0 +1,1 @@
+{"file":"tests/layered/splines/three_edges_inverted_ports","graph":"tests__layered__splines__three_edges_inverted_ports","hash":"4ebd1ca066db8557","nodes":3,"edges":4,"eps":1,"coords":{"root":{"x":0,"y":0},"Nouter":{"x":12,"y":12},"Nouter.N1":{"x":23,"y":10},"Nouter.N2":{"x":139,"y":10}}}

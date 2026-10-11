@@ -1,0 +1,1 @@
+{"file":"tests/layered/connected_components/all_four_port_sides","graph":"tests__layered__connected_components__all_four_port_sides","hash":"e8741c0ae64c0891","nodes":4,"edges":12,"eps":1,"coords":{"root":{"x":0,"y":0},"NCompound":{"x":20,"y":20},"NCompound.Child1":{"x":12,"y":49.5},"NCompound.Child2":{"x":12,"y":99.5},"NCompound.Child3":{"x":12,"y":149.5}}}

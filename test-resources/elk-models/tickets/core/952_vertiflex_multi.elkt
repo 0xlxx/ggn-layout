@@ -1,0 +1,32 @@
+graph root
+node tree {
+	algorithm: org.eclipse.elk.vertiflex
+	org.eclipse.elk.vertiflex.considerNodeModelOrder: false
+	org.eclipse.elk.vertiflex.layerDistance: 40
+	node n1 {
+		layout [ size: 60, 40 ]
+		org.eclipse.elk.vertiflex.considerNodeModelOrder: false
+	}
+	node n2 {
+		layout [ size: 80, 50 ]
+		org.eclipse.elk.vertiflex.verticalConstraint: 100
+	}
+	node n3 {
+		layout [ size: 50, 60 ]
+	}
+	node n4 {
+		layout [ size: 70, 40 ]
+		org.eclipse.elk.vertiflex.verticalConstraint: 220
+	}
+	node n5 {
+		layout [ size: 60, 30 ]
+	}
+	edge n1 -> n2
+	edge n1 -> n3
+	edge n1 -> n4
+	edge n2 -> n5
+}
+node a {
+	layout [ size: 40, 30 ]
+}
+edge a -> tree

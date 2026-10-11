@@ -1,0 +1,31 @@
+# OPTIMIZATION_CLASSES.tsv — elk-layout 优化分类表（parallel-optimizing 阶段 0）
+#
+# 用途: 并行 agent 先查表再动手, 不各自猜。登记每个热点模块: 热点占比 ↔ 优化类型 ↔
+#       顺序相关性 ↔ 共享状态风险 ↔ 验证命令。agent 完成一簇后必须回写本表。
+# 顺序相关性: ORDERED（改遍历/求和/排序顺序会漂移, 非 bit-exact 通道）| UNORDERED（顺序无关）
+# 共享状态风险: MUTABLE_SHARED（缓存/复用池返回可变对象 → 别名污染风险）| NONE
+# 基线 (2026-08-12 重采样): verify-bit-exact 368 覆盖, verify-elkg-java-layout 362/368,
+#       696 0 失败, perf-run --phase large sweep 58.8%, bundle 754KB raw / 191KB gzip
+# 更新时间: 2026-08-12 (批次5 合并后): large -36.4% / small ~-29% / medium ~-30% vs 原始基线
+#
+# 验证命令: bit-exact 全量 + 对齐 + 696 回归是硬门禁; 热点定位用 perf-run --phase/--bench。
+#
+module	hotspot_pct	opt_type	order_sensitive	shared_state_risk	verify_cmd	cluster_notes
+src/p3order/layer-sweep-crossing-minimizer.ts	29-59%	side-port 缓存 / BIT 复用池 / Int32Array / 免分配	ORDERED	MUTABLE_SHARED	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --phase --scale large	✅ 批次1 (406c9aa) + 批次5 第二轮 (92dff6d): sweep -12%, large 端到端累计 -36%
+src/intermediate/label-and-node-size-processor.ts	9-16%	热属性直读字段化 + cell-system 计算层免分配	UNORDERED/ORDERED	NONE	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --phase --scale small	✅ 批次1(P1)+批次2(cell) 已合: Label 模块 -41%, small 端到端 -29%
+src/p4nodes/bk-node-placer.ts	7-12%	BKAlignedLayout 8 数组 → Float64/Int32Array + 方向复用	ORDERED	MUTABLE_SHARED	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --phase --scale medium	✅ 批次2 已合 (53eead0): BK 模块 -22.5% (n=200), 端到端 large -7~9%
+src/p5edges/orthogonal-edge-router.ts	4-7%	路由网格复用 / 障碍查询缓存	ORDERED	MUTABLE_SHARED	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --phase --scale medium	✅ 批次3 已合 (e320a79): OER warm medium -26.9% / large -27.7%
+src/p2layers/network-simplex-layerer.ts	3-6%	poID/cutvalue → Int32Array / 栈复用	ORDERED	NONE	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --phase --scale medium	✅ 批次3 已合 (e64fa03): NS warm medium -21.5% / large -27%
+src/graph/*	横切全局	getIndex 缓存 / getPorts(side) 缓存 / 免分配视图 / swap-remove（仅顺序无关）	混合	MUTABLE_SHARED	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --bench 30	横切层 · 共享文件, 预先规划
+src/options/*|src/graph/properties.ts	横切全局	MapPropertyHolder 热路径直读字段（保留 getProperty 兼容层）	UNORDERED	NONE	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --bench 30	横切层 · 热属性先做只读探测
+src/spore/**	非 layered 无覆盖（sporeoverlap 500 节点 4.2s / O(n²)）	复杂度（MinST/三角化/GrowTree）+ 免分配	src/spore 改遍历序会翻 jar 逐位期望	MUTABLE_SHARED（scratch 复用须每图重置）	bunx vitest run tests/bdd/spore.scenarios.test.ts + bun scripts/perf-nonlayered.mjs --scale sporeoverlap	✅ 批次11 已合 (46e6e330): sporeoverlap 500 节点 -86~88%（4.2s→0.49s）、compaction -25.7%；去 MST 字符串键 + BigInt hash + Prim 最小堆
+src/disco/**	非 layered 无覆盖（disco 200 节点 2.3s / O(n²)）	复杂度（两两距离/迭代重建）+ typed array	src/disco 改遍历序会翻 jar 期望	NONE	bunx vitest run tests/bdd/disco.scenarios.test.ts + bun scripts/perf-nonlayered.mjs --scale disco	✅ 批次11 已合 (8ed57ead): disco 200 节点 -87%（2.39s→0.30s）；polyomino BigInt → Uint32 lane。渐进复杂度仍 O(n²)
+src/mrtree/**	非 layered 无覆盖（mrtree 5000 节点 1.66s / 超线性）	子树尺寸/后代数改一次后序聚合 O(n)	层内排序敏感	NONE	bunx vitest run tests/bdd/mrtree.scenarios.test.ts + bun scripts/perf-nonlayered.mjs --scale mrtree	✅ 批次11 已合 (fe7e0acd): mrtree 5000 节点 -97%（1.66s→0.035s）；三处全表扫描 → 索引/邻接表+补集/push。原版 elkjs 同为 ~n^1.8-2，本次超过上游 ~26×
+scripts/**（工具链）	13 个非 layered 算法零 perf 覆盖（回归拦不住）	把非 layered 接入 bench-gate（对比基线，只拦变慢）	无（不动算法）	无	bun scripts/bench-gate.mjs + 负向验证	✅ 批次11 已合 (5af7da9e): check:bench 一条命令覆盖 layered 三规模 + 13 非 layered；负向验证通过；约 13.4s
+src/p3order/**（counting 族+排序启发式）	~20%（countCrossings 10.5% / barycenter 2.8% / port-distributors 2.1% / counting 4.8% / SweepCopy 1.3%）	免分配 + scratch 复用 + typed array + 循环提升	ORDERED（改顺序即位级漂移）	MUTABLE_SHARED（scratch 须每轮重置）	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --phase --scale large	✅ 批次12 已合 (cfad6413): P3 -24.3%（51.07→38.67ms），端到端 large 30.95→25.72ms；10 文件免分配/scratch 复用/内联。无算法级重写
+shared/elkgraph-builder.ts	build 占 e2e 7-13%（small 0.21/medium 0.97/large 4.47ms，~n^1.7）	三处逐节点/逐边全表反查 → 预建索引 Map	UNORDERED（须保持建图插入序）	NONE	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --bench 20 --scale large	✅ 批次12 已合 (38b4ef49): large build.mean 4.28→1.91ms (-55.4%)；插入顺序逐项保持（结构指纹一致 + 全等 337 不变）
+src/graph/properties.ts + src/p3order/forster-constraint-resolver.ts	getProperty 3.1% + setProperty 0.8% + findViolatedConstraint 3.9%	快路径覆盖 / 容器替换 / 免分配	ORDERED（forster）	NONE（禁共享可变视图，R29 前车之鉴）	bun scripts/verify-bit-exact.mjs + bun scripts/perf-run.mjs --phase --scale large	✅ 批次12 部分合（properties.ts）: 两文件自耗时 -25.7%；forster 部分因与 R54 冲突被 p3count 版覆盖（见 R56/R58）
+src/options/** + shared/opt-map.ts	纯数据表占 bundle 5.8%（opt-map 17.1KB + specs 16.2KB）；冷 import 25ms 中建表约占 28ms/次	数据表达式压缩 / 惰性化	UNORDERED	NONE	bun build 字节 + 冷 import 计时 + bun scripts/verify-bit-exact.mjs	⛔ 批次12 否决（R57）: core chunk 本 scope 只 17,110 字节，5% 阈值数学不可达；能达标的编码使冷 import 27→38ms 退化。零改动
+src/p3order/counting/** + counting.ts	~12%（countCrossings 6.7% + counting 家族 5.7%；corners sort 14.4ms）	桶排序 / 预分组 / 预计算索引（R47 三候选，已授权改顺序）	已授权改顺序（结构仍需全等）	MUTABLE_SHARED（scratch 须每轮重置）	bun scripts/verify-bit-exact.mjs + --determinism + perf-run --phase --scale large	✅ 批次14 已合 (4a861cdf+40dac036): P3 -15.8%、端到端 -12.6%。超边分组缓存 + O(k²) 逐对公式。**首版因 Layer.id 恒为 0 串味导致 10 个单测挂**（R62/R65）
+src/p3order/barycenter-heuristic.ts + port-distributors.ts + greedy-port-distributor.ts	~8%（minimizeLayer sort 10.9ms / calculateBarycenter 2.6% / calculatePortRanks 3.6%）	排序键预计算 + 属性读取提升 + 免分配	已授权改顺序（排序元素集合不可变）	MUTABLE_SHARED	bun scripts/verify-bit-exact.mjs + --determinism + perf-run --phase --scale large	✅ 批次14 已合 (f42dd976): 本簇函数 -47.6%（barycenter -57.5% / port rank -27.9%）、端到端 -5.1%。方向邻接预计算 + generation visited
+src/graph/**	filter 8.1ms + push 9.7ms（getPorts/getPortSideView/getAllNodes/getIn·OutgoingEdges 每次新建数组）	版本号 + 惰性只读缓存（Java 集合视图 → TS 零拷贝）	顺序敏感（视图顺序=遍历顺序）	MUTABLE_SHARED（R29 驳回区，须只读 + 唯一失效入口 + fuzz）	bun scripts/verify-bit-exact.mjs + --determinism + fuzz + perf-run --phase	⚠️ 批次14 已合但未达阈值 (32b22666): getter 本身 -65~76%，端到端仅 -4.04%。**否定结论：常驻缓存/冻结视图在 JSC 下反而更慢（+3~10%）**

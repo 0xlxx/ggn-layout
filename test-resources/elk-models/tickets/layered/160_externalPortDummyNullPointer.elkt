@@ -1,0 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2017 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+// Reproduces a case where an unfortunate label side selection strategy will
+// mess up the layout and impede readability.
+algorithm: layered
+hierarchyHandling: INCLUDE_CHILDREN
+
+node Compound {
+	layout [ size: 60, 30 ]
+	portConstraints: FIXED_ORDER
+	
+	port In { ^port.side: WEST }
+	port Out { ^port.side: EAST }
+	
+	node Child
+	
+	edge Compound.In -> Child
+	edge Child -> Compound.Out
+}

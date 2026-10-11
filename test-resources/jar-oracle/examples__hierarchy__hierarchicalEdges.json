@@ -1,0 +1,1 @@
+{"file":"examples/hierarchy/hierarchicalEdges","graph":"examples__hierarchy__hierarchicalEdges","hash":"948cc4300ce0bb2c","nodes":5,"edges":2,"eps":1,"coords":{"root":{"x":0,"y":0},"Nsource":{"x":12,"y":36},"Noutside":{"x":97,"y":12},"Noutside.inside":{"x":17,"y":12},"Noutside.inside.n1":{"x":12,"y":12},"Noutside.inside.n2":{"x":92,"y":12}}}

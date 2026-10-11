@@ -1,0 +1,25 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+/* Demonstration of KIPRA-1745. Without the fix, the label will get placed in the edge
+ * segment inside the compound node and will cause a conflict with the node set to be
+ * in the first layer.
+ */
+ 
+hierarchyHandling: INCLUDE_CHILDREN
+node EinKnoten {
+	layout [ size: 60, 30 ]
+	node EinZweiterKnoten {
+		layerConstraint: FIRST
+	}
+}
+node EinAndererKnoten
+edge E1: EinAndererKnoten -> EinKnoten.EinZweiterKnoten {
+	label L1: "Ein Center Edge Label wo das halt irgendwie kaputt geht"
+}

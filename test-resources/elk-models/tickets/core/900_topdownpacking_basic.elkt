@@ -1,0 +1,13 @@
+graph root
+algorithm: org.eclipse.elk.topdownpacking
+node n1 {
+	layout [ size: 100, 50 ]
+}
+node n2 {
+	layout [ size: 80, 30 ]
+}
+node n3 {
+	layout [ size: 60, 40 ]
+}
+edge n1 -> n2
+edge n2 -> n3

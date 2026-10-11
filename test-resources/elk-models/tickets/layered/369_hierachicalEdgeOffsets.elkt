@@ -1,0 +1,30 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+// Reproduces a problem where the short hierarchical edge a1.a_port1 -> a1
+// fails to be routed orthogonally.
+
+node a {
+	layout [ size: 60, 30 ]
+	port a_port1
+	port a_port2
+	
+	node a1
+	node a2
+	node a3
+	
+	edge a3 -> a1
+	edge a.a_port1 -> a1
+}
+
+node b
+
+edge b -> a.a_port2
+ 

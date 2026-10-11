@@ -1,0 +1,1 @@
+{"file":"tests/layered/port_label_placement/multilabels_compound","graph":"tests__layered__port_label_placement__multilabels_compound","hash":"9b646b69c3f45496","nodes":4,"edges":4,"eps":1,"coords":{"root":{"x":0,"y":0},"NInside":{"x":20,"y":12},"NInside.InsideChild":{"x":12,"y":12},"NOutside":{"x":20,"y":93},"NOutside.OutsideChild":{"x":12,"y":12}}}

@@ -1,0 +1,1 @@
+{"file":"tests/layered/node_placement/flexible_ports/graph02","graph":"tests__layered__node_placement__flexible_ports__graph02","hash":"5677329d88cedab9","nodes":4,"edges":4,"eps":1,"coords":{"root":{"x":0,"y":0},"Nn1_1":{"x":12,"y":29},"Nn1_2":{"x":52,"y":25},"Nn1_3":{"x":52,"y":73},"Nn1_4":{"x":100,"y":12}}}

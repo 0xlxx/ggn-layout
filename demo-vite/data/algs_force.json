@@ -1,0 +1,58 @@
+{
+ "id": "root",
+ "layoutOptions": {
+  "org.eclipse.elk.algorithm": "org.eclipse.elk.force",
+  "org.eclipse.elk.randomSeed": "1"
+ },
+ "children": [
+  {
+   "id": "a",
+   "width": 40,
+   "height": 40
+  },
+  {
+   "id": "b",
+   "width": 40,
+   "height": 40
+  },
+  {
+   "id": "c",
+   "width": 40,
+   "height": 40
+  },
+  {
+   "id": "d",
+   "width": 40,
+   "height": 40
+  }
+ ],
+ "edges": [
+  {
+   "id": "e0",
+   "sources": [
+    "a"
+   ],
+   "targets": [
+    "b"
+   ]
+  },
+  {
+   "id": "e1",
+   "sources": [
+    "a"
+   ],
+   "targets": [
+    "c"
+   ]
+  },
+  {
+   "id": "e2",
+   "sources": [
+    "b"
+   ],
+   "targets": [
+    "d"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1 @@
+{"file":"tests/layered/edge_label_placement/edge__and_port_labels","graph":"tests__layered__edge_label_placement__edge__and_port_labels","hash":"2296f37cb84d0bbe","nodes":6,"edges":4,"eps":1,"coords":{"root":{"x":0,"y":0},"NN1":{"x":12,"y":12},"NN2":{"x":110,"y":12},"NN3":{"x":110,"y":62},"NN4":{"x":12,"y":162},"NN5":{"x":12,"y":112},"NN6":{"x":110,"y":112}}}

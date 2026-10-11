@@ -1,0 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+node root {
+	layout [ size: 60, 30 ]
+	nodeSize.constraints: MINIMUM_SIZE
+	nodeSize.minimum: "(900.0,400.0)"
+	contentAlignment: "[V_CENTER, H_CENTER]"
+	node n2
+	node n3 {
+		layout [ size: 200, 30 ]
+	}
+}

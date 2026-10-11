@@ -1,0 +1,33 @@
+graph root
+node group {
+	algorithm: org.eclipse.elk.sporeOverlap
+	layout [ size: 400, 300 ]
+	node g1 {
+		layout [ size: 70, 50 ]
+		^position: "(20, 20)"
+	}
+	node g2 {
+		layout [ size: 90, 40 ]
+		^position: "(60, 40)"
+	}
+	node g3 {
+		layout [ size: 50, 70 ]
+		^position: "(110, 30)"
+	}
+	node g4 {
+		layout [ size: 60, 60 ]
+		^position: "(50, 110)"
+	}
+	node g5 {
+		layout [ size: 80, 50 ]
+		^position: "(140, 90)"
+	}
+}
+node a {
+	layout [ size: 40, 30 ]
+}
+node b {
+	layout [ size: 50, 40 ]
+}
+edge a -> group
+edge group -> b

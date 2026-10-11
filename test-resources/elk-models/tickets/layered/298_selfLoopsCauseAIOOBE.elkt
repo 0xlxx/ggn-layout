@@ -1,0 +1,42 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+/* Reproduces #298: ArrayIndexOutOfBoundsException for Inside Self Loops With Unconnected Ports. */
+
+node N1 {
+	layout [ 
+		position: 12, 12
+		size: 100, 100
+	]
+	insideSelfLoops.activate: true
+	portConstraints: FIXED_SIDE
+	port P2 {
+		layout [
+			size: 20, 20
+		]
+		side: WEST
+	}
+
+	port P4 {
+		layout [
+			size: 20, 20
+		]
+		side: SOUTH
+	}
+	
+	port P5 {
+		layout [
+			size: 20, 20
+		]
+		side: SOUTH
+	}
+}
+edge E1: N1.P2 -> N1.P5 {
+	yo: true
+}

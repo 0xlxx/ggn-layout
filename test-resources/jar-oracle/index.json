@@ -1,0 +1,146 @@
+{
+ "generated": "2026-08-12T01:40:51.551Z",
+ "eps": 1,
+ "entries": [
+  {
+   "rel": "tickets/core/900_topdownpacking_basic",
+   "graph": "tickets__core__900_topdownpacking_basic",
+   "hash": "b92d5f12870e810b",
+   "nodes": 3,
+   "edges": 2
+  },
+  {
+   "rel": "tickets/core/901_topdownpacking_child",
+   "graph": "tickets__core__901_topdownpacking_child",
+   "hash": "626e3442d23cf5fa",
+   "nodes": 5,
+   "edges": 1
+  },
+  {
+   "rel": "tickets/core/902_topdownpacking_child_sizes",
+   "graph": "tickets__core__902_topdownpacking_child_sizes",
+   "hash": "ee90788e8dfbc163",
+   "nodes": 8,
+   "edges": 5
+  },
+  {
+   "rel": "tickets/core/910_spore_overlap_basic",
+   "graph": "tickets__core__910_spore_overlap_basic",
+   "hash": "b382678b5147e399",
+   "nodes": 3,
+   "edges": 0
+  },
+  {
+   "rel": "tickets/core/911_spore_overlap_child",
+   "graph": "tickets__core__911_spore_overlap_child",
+   "hash": "05f7c6da98f4b033",
+   "nodes": 5,
+   "edges": 1
+  },
+  {
+   "rel": "tickets/core/912_spore_overlap_multi",
+   "graph": "tickets__core__912_spore_overlap_multi",
+   "hash": "83627eda0b04c1e8",
+   "nodes": 8,
+   "edges": 2
+  },
+  {
+   "rel": "tickets/core/913_spore_compaction_child",
+   "graph": "tickets__core__913_spore_compaction_child",
+   "hash": "fd1d87539a92434f",
+   "nodes": 6,
+   "edges": 1
+  },
+  {
+   "rel": "tickets/core/914_spore_overlap_noscanline",
+   "graph": "tickets__core__914_spore_overlap_noscanline",
+   "hash": "4906103375fafa29",
+   "nodes": 5,
+   "edges": 1
+  },
+  {
+   "rel": "tickets/core/920_mrtree_basic",
+   "graph": "tickets__core__920_mrtree_basic",
+   "hash": "dbf47601dd27751a",
+   "nodes": 6,
+   "edges": 4
+  },
+  {
+   "rel": "tickets/core/921_mrtree_child",
+   "graph": "tickets__core__921_mrtree_child",
+   "hash": "1e31e49717f6568e",
+   "nodes": 8,
+   "edges": 6
+  },
+  {
+   "rel": "tickets/core/922_mrtree_mixed",
+   "graph": "tickets__core__922_mrtree_mixed",
+   "hash": "ba1ddc213d82ca2d",
+   "nodes": 7,
+   "edges": 7
+  },
+  {
+   "rel": "tickets/core/930_radial_basic",
+   "graph": "tickets__core__930_radial_basic",
+   "hash": "ab6a429b543d10be",
+   "nodes": 6,
+   "edges": 4
+  },
+  {
+   "rel": "tickets/core/931_radial_child",
+   "graph": "tickets__core__931_radial_child",
+   "hash": "cba497cd3cb214c9",
+   "nodes": 12,
+   "edges": 10
+  },
+  {
+   "rel": "tickets/core/932_radial_multi",
+   "graph": "tickets__core__932_radial_multi",
+   "hash": "cf24ca9016769f0d",
+   "nodes": 15,
+   "edges": 13
+  },
+  {
+   "rel": "tickets/core/940_disco_basic",
+   "graph": "tickets__core__940_disco_basic",
+   "hash": "695c5a40b2989edb",
+   "nodes": 5,
+   "edges": 1
+  },
+  {
+   "rel": "tickets/core/941_disco_child",
+   "graph": "tickets__core__941_disco_child",
+   "hash": "7ad24033edcd9eb9",
+   "nodes": 5,
+   "edges": 2
+  },
+  {
+   "rel": "tickets/core/942_disco_multi",
+   "graph": "tickets__core__942_disco_multi",
+   "hash": "529e08d4fb6dcddd",
+   "nodes": 7,
+   "edges": 4
+  },
+  {
+   "rel": "tickets/core/950_vertiflex_basic",
+   "graph": "tickets__core__950_vertiflex_basic",
+   "hash": "ac06766bef910bda",
+   "nodes": 5,
+   "edges": 3
+  },
+  {
+   "rel": "tickets/core/951_vertiflex_child",
+   "graph": "tickets__core__951_vertiflex_child",
+   "hash": "8cbfe3e35a1bf8be",
+   "nodes": 6,
+   "edges": 4
+  },
+  {
+   "rel": "tickets/core/952_vertiflex_multi",
+   "graph": "tickets__core__952_vertiflex_multi",
+   "hash": "d9705131f4563323",
+   "nodes": 7,
+   "edges": 5
+  }
+ ]
+}

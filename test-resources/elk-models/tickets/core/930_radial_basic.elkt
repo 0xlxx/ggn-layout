@@ -1,0 +1,22 @@
+graph root
+node group {
+	algorithm: org.eclipse.elk.radial
+	layout [ size: 300, 200 ]
+	node r {
+		layout [ size: 40, 40 ]
+	}
+	node c1 {
+		layout [ size: 30, 30 ]
+	}
+	node c2 {
+		layout [ size: 50, 50 ]
+	}
+	node c3 {
+		layout [ size: 30, 20 ]
+	}
+	edge r -> c1
+	edge r -> c2
+	edge r -> c3
+}
+node a
+edge a -> group

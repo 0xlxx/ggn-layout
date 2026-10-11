@@ -1,0 +1,59 @@
+/*******************************************************************************
+ * Copyright (c) 2020 Kiel University and others.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ * 
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+spacing.portPort: 0
+spacing.labelPort: 0
+spacing.portsSurrounding: "[top=0.0,left=0.0,bottom=0.0,right=0.0]"
+elk.direction: RIGHT
+
+node outer {
+	portConstraints: FIXED_ORDER
+	portLabels.placement: "OUTSIDE NEXT_TO_PORT_IF_POSSIBLE" 
+	portLabels.treatAsGroup: true
+	nodeSize.constraints: "PORTS PORT_LABELS MINIMUM_SIZE"
+	elk.direction: RIGHT
+	
+	port a {
+		layout[ size: 20, 10 ]
+		^port.side: WEST
+		^port.index: 2
+		
+		label "afoo"
+	}
+	
+	port b {
+		layout[ size: 20, 10 ]
+		^port.side: WEST
+		^port.index: 1
+		
+		label "bfoo"
+		label "baz"
+		label "bar"
+	}
+	
+	port c {
+		layout[ size: 20, 10 ]
+		^port.side: WEST
+		^port.index: 0
+		
+		label "dfoo"
+		label "baz"
+	}
+	
+	node inner {
+		layout[ size: 50, 20 ]
+		
+		port b
+	}
+	
+	edge outer.a -> inner.b
+}
+
+node sibling
+
+edge sibling -> outer.b

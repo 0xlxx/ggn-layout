@@ -1,0 +1,29 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+/**
+ * A node that has both inside and outside self loops. Due to KIPRA-1731,
+ * this resulted in an unsatisfied assertion. As it is now, the diagram
+ * should be laid out correctly.
+ */
+algorithm: layered
+
+node N1 {
+	layout [ size: 60, 30 ]
+	insideSelfLoops.activate: true
+	port P1
+	port P2
+	
+	node N2
+}
+edge E1: N1.P1 -> N1.P2 {
+	yo: true
+}
+edge E2: N1.P2 -> N1.P1 

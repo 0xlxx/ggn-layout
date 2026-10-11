@@ -1,0 +1,103 @@
+/*******************************************************************************
+ * Copyright (c) 2022 Kiel University and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+/*
+// elkex:category
+Interactive > Layered
+
+// elkex:label
+Hierarchy with all directions (Pseudo Positions)
+
+// elkex:doc
+Pseudo positions are set which emulate what would be done by the interactiveLayout property.
+
+*/
+
+// elkex:graph
+elk.direction: RIGHT
+
+
+node n1 {
+	layout [ size: 60, 30 ]
+	elk.direction: DOWN
+  cycleBreaking.strategy: INTERACTIVE
+  layering.strategy: INTERACTIVE
+  crossingMinimization.semiInteractive: true
+  separateConnectedComponents: false
+  label "n1"
+
+	node n11 {
+    layout [ size: 60, 30 ]
+    layout [position: 0, 100] // y coordinate since DOWN
+		elk.direction: UP
+    cycleBreaking.strategy: INTERACTIVE
+    layering.strategy: INTERACTIVE
+    crossingMinimization.semiInteractive: true
+    separateConnectedComponents: false
+    label "n11"
+
+		node n111 {
+      label "n111"
+		}
+		node n112 {
+      label "n112"
+		}
+		edge n111 -> n112
+	}
+	node n12 {
+		layout [position: 0, 0]
+    label "n12"
+	}
+}
+node n2 {
+  label "n2"
+}
+node n3 {
+  label "n3"
+}
+node n4 {
+  label "n4"
+}
+node n5 {
+  label "n5"
+}
+node n6 {
+	layout [ size: 60, 30 ]
+	separateConnectedComponents: false
+  cycleBreaking.strategy: INTERACTIVE
+  layering.strategy: INTERACTIVE
+	elk.direction: LEFT
+  label "n6"
+
+	node n61 {
+    layout [ size: 60, 30 ]
+    layout [position: 100, 0] // x-coordinate for LEFT layout
+		elk.direction: RIGHT
+    label "n61"
+
+		node n611 {
+      label "n611"
+		}
+		node n612 {
+      label "n612"
+		}
+	}
+	node n62 {
+    layout [position: 0, 0]
+    label "n62"
+	}
+}
+
+edge n2 -> n6
+edge n1 -> n6
+edge n4 -> n6
+edge n1 -> n3
+edge n6 -> n3
+edge n2 -> n5
+edge n5 -> n1

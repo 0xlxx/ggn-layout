@@ -1,0 +1,22 @@
+[
+  {
+    "file": "test-resources/elk-models/tests/layered/compaction_oned/selfloop/selfloop_crash.elkt",
+    "reason": "elkjs \u4e0e ELK Java 0.12.0 \u5206\u6b67, ggn\u2248jar (\u4ee5 jar \u4e3a\u51c6\u51bb\u7ed3\u6392\u9664 elkjs \u5dee\u5206)"
+  },
+  {
+    "file": "test-resources/elk-models/tests/layered/connected_components/compound03.elkt",
+    "reason": "elkjs \u4e0e ELK Java 0.12.0 \u5206\u6b67, ggn\u2248jar (\u4ee5 jar \u4e3a\u51c6\u51bb\u7ed3\u6392\u9664 elkjs \u5dee\u5206)"
+  },
+  {
+    "file": "test-resources/elk-models/tests/layered/splines/north_south_ports_1.elkt",
+    "reason": "elkjs \u4e0e ELK Java 0.12.0 \u5206\u6b67, ggn\u2248jar (\u4ee5 jar \u4e3a\u51c6\u51bb\u7ed3\u6392\u9664 elkjs \u5dee\u5206)"
+  },
+  {
+    "file": "test-resources/elk-models/tests/layered/splines/three_edges_inverted_ports_2.elkt",
+    "reason": "elkjs \u4e0e ELK Java 0.12.0 \u5206\u6b67, ggn\u2248jar (\u4ee5 jar \u4e3a\u51c6\u51bb\u7ed3\u6392\u9664 elkjs \u5dee\u5206)"
+  },
+  {
+    "file": "test-resources/elk-models/tickets/layered/608_unnecessaryCrossingMinimization.elkt",
+    "reason": "elkjs \u4e0e ELK Java 0.12.0 \u5206\u6b67, ggn\u2248jar (\u4ee5 jar \u4e3a\u51c6\u51bb\u7ed3\u6392\u9664 elkjs \u5dee\u5206)"
+  }
+]

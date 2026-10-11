@@ -1,0 +1,101 @@
+/*******************************************************************************
+ * Copyright (c) 2021-2022 Kiel University and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+/*
+// elkex:category
+Interactive > Layered
+
+// elkex:label
+Hierarchy With All Directions.
+
+// elkex:doc
+This can only be used within an editor that configures two consecutive layout runs, e.g. KIELER, Keith
+but not Elklive.
+ 
+The interactiveLayout property allows to move nodes in diagram view that supports this (e.g. Klighd VSCode extension).
+Internally it sets via a GraphVisitor all other necessary properties, such as interactive and interactive strategies
+for the different phases.
+
+*/
+
+// elkex:graph
+interactiveLayout: true
+elk.direction: RIGHT
+
+node n1 {
+	layout [ size: 60, 30 ]
+	interactiveLayout: true
+	elk.direction: DOWN
+	separateConnectedComponents: false
+  label "n1"
+
+	node n11 {
+		layout [ size: 60, 30 ]
+		interactiveLayout: true
+		elk.direction: UP
+    label "n11"
+
+		node n111 {
+      label "n111"
+		}
+		node n112 {
+      label "n112"
+		}
+		edge n111 -> n112
+	}
+	node n12 {
+		crossingMinimization.positionChoiceConstraint: 0
+    label "n12"
+	}
+}
+node n2 {
+  label "n2"
+}
+node n3 {
+  label "n3"
+}
+node n4 {
+  label "n4"
+}
+node n5 {
+  label "n5"
+}
+node n6 {
+	layout [ size: 60, 30 ]
+	interactiveLayout: true
+	separateConnectedComponents: false
+	elk.direction: LEFT
+  label "n6"
+
+	node n61 {
+		layout [ size: 60, 30 ]
+		interactiveLayout: true
+		elk.direction: RIGHT
+    label "n61"
+
+		node n611 {
+      label "n611"
+		}
+		node n612 {
+      label "n612"
+		}
+	}
+	node n62 {
+		layering.layerChoiceConstraint: 1
+    label "n62"
+	}
+}
+
+edge n2 -> n6
+edge n1 -> n6
+edge n4 -> n6
+edge n1 -> n3
+edge n6 -> n3
+edge n2 -> n5
+edge n5 -> n1

@@ -1,0 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
+// Causes a NullPointerException.
+
+algorithm: layered
+
+node node1 {
+	layout [ size: 400, 200 ]
+	portConstraints: FIXED_POS
+	
+	port port11 { layout [ position: 50, 200 ] }
+	port port12 { layout [ position: 100, 200 ] }
+	port port13 { layout [ position: 150, 200 ] }
+	port port14 { layout [ position: 200, 200 ] }
+}
+
+edge node1.port11 -> node1.port13
+edge node1.port12 -> node1.port13

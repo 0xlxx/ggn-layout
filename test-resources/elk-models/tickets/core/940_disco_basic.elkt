@@ -1,0 +1,17 @@
+graph root
+node group {
+	algorithm: org.eclipse.elk.disco
+	node g1 {
+		layout [ size: 60, 40 ]
+	}
+	node g2 {
+		layout [ size: 80, 60 ]
+	}
+	node g3 {
+		layout [ size: 50, 50 ]
+	}
+}
+node a {
+	layout [ size: 40, 30 ]
+}
+edge a -> group
