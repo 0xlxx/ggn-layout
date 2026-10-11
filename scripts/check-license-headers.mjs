@@ -20,8 +20,11 @@ import path from 'node:path'
 const SOURCE_DIRS = ['src', 'shared']
 const SPDX_SOURCE = 'SPDX-License-Identifier: EPL-2.0'
 const ATTRIBUTION = 'Portions derived from the Eclipse Layout Kernel (ELK)'
-const DIST_SPDX = 'SPDX-License-Identifier: EPL-2.0 AND MIT'
-const PACKAGE_LICENSE = '(MIT AND EPL-2.0)'
+// 许可口径的单一真源是 package.json 的 `license` 字段：banner / LICENSE / README /
+// THIRD_PARTY_NOTICES 全部由它派生，门禁不再各写一份字面量。否则 banner 与元数据
+// 会各按自己的字符串校验，中间那条边没人守，就能静默漂移（本轮复审的 P1-1 即此类）。
+const PACKAGE_LICENSE = JSON.parse(readFileSync('package.json', 'utf8')).license
+const DIST_SPDX = `SPDX-License-Identifier: ${PACKAGE_LICENSE}`
 const DIST_EXTS = ['.js', '.cjs', '.d.ts', '.d.cts']
 
 /**
@@ -83,9 +86,8 @@ if (existsSync('dist')) {
 
 // ── 许可口径一致性：元数据 / LICENSE / README / NOTICE 必须同一口径 ──
 
-const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
-if (pkg.license !== PACKAGE_LICENSE) {
-  problems.push(`package.json 的 license 是 \`${pkg.license}\`，期望 \`${PACKAGE_LICENSE}\``)
+if (typeof PACKAGE_LICENSE !== 'string' || PACKAGE_LICENSE.length === 0) {
+  problems.push('package.json 缺少 `license` 字段 —— 它是许可口径的单一真源')
 }
 for (const [file, marker] of [
   ['LICENSE', PACKAGE_LICENSE],

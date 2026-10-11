@@ -1,8 +1,14 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'tsdown'
 
-// 每个输出 chunk 顶部保留归属声明. minify 会吃掉源码里的注释, 必须走 banner 才能落到 dist.
-// 与 THIRD_PARTY_NOTICES.md / package.json 的 `(MIT AND EPL-2.0)` 口径保持一致:
+// 许可口径的单一真源是 package.json 的 `license` 字段: banner 与各文档都由它派生,
+// 不再各写一份字面量, 以免两边静默漂移 (见 scripts/check-license-headers.mjs 的交叉校验).
 // 本包是 ELK 的衍生作品, 派生部分 EPL-2.0、GGN 新增部分 MIT, 消费方两者都要满足.
+const { license: LICENSE_SPDX } = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
+) as { license: string }
+
+// 每个输出 chunk 顶部保留归属声明. minify 会吃掉源码里的注释, 必须走 banner 才能落到 dist.
 const LICENSE_BANNER = `/**
  * ggn-layout — TypeScript port of the Eclipse Layout Kernel (ELK) layered layout algorithms.
  *
@@ -10,7 +16,7 @@ const LICENSE_BANNER = `/**
  * Eclipse Public License 2.0 (EPL-2.0); GGN-original portions are licensed under MIT.
  * See LICENSES/EPL-2.0.txt, LICENSE and THIRD_PARTY_NOTICES.md.
  *
- * SPDX-License-Identifier: EPL-2.0 AND MIT
+ * SPDX-License-Identifier: ${LICENSE_SPDX}
  */`
 
 // 61 个 GGN_* debug 开关 define 为 undefined (与默认未设置完全等价) → bundler 消除 dead debug 分支 (R40 bundle 瘦身).

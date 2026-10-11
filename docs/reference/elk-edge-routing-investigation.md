@@ -185,7 +185,7 @@
 样本与脚本来自一次会话内的临时分析（未入库），步骤如下：
 
 ```text
-1) 抓事件      GET http://127.0.0.1:5198/api/events → 过滤 runId
+1) 抓事件      GET http://<host>:<port>/api/events → 过滤 runId
 2) 重放        宿主应用 reducer → createScene/updateElements → 元素集
 3) 量尺寸      kernel measureNode() → 节点 width/height
 4) 导 ELK JSON  id + children(size) + edges(sources/targets) + layoutOptions（ROOT 坐标 + NETWORK_SIMPLEX + edgeNodeBetweenLayers=14）

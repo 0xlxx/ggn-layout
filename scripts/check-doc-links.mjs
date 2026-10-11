@@ -60,6 +60,7 @@ const FORBIDDEN = [
   { pattern: /\/tmp\/ggn/, hint: '临时文件路径' },
   { pattern: /packages\//, hint: '宿主 monorepo 内部路径' },
   { pattern: /@ggn\//, hint: '宿主 monorepo 内部包名' },
+  { pattern: /127\.0\.0\.1|localhost/, hint: '本机回环地址' },
 ]
 const leaks = []
 for (const file of markdown) {
