@@ -1,0 +1,21 @@
+# 保持 GitHub Actions 与依赖不腐化 (GitHub 会下线旧 runner 的 action 运行时,
+# 例如 checkout@v4 已于 2026 报 Node 20 弃用).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types: ['minor', 'patch']
