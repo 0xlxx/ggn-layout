@@ -1,0 +1,64 @@
+name: Bug 报告
+description: 布局结果、API 行为或产物解析不符合预期
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        安全漏洞请**不要**在这里报告，走 [私密漏洞通道](https://github.com/0xlxx/ggn-layout/security/advisories/new)。
+
+  - type: input
+    id: version
+    attributes:
+      label: ggn-layout 版本
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: runtime
+    attributes:
+      label: 运行时
+      description: Node / Bun / 浏览器 + 版本，以及包管理器
+      placeholder: Node 22.18.0 / Bun 1.3.14
+    validations:
+      required: true
+
+  - type: dropdown
+    id: entrypoint
+    attributes:
+      label: 使用的入口
+      options:
+        - ggn-layout（根入口）
+        - ggn-layout/api
+        - ggn-layout/core
+        - ggn-layout/options
+        - ggn-layout/layered
+        - ggn-layout/layout-worker
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 最小复现
+      description: 请贴出可直接运行的代码 + 输入图 JSON；能缩到 2~3 个节点最好
+      render: ts
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望 vs 实际
+      description: 实际输出请贴关键片段；若对照的是 elkjs/ELK，请注明版本
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 其他上下文
+      description: 报错堆栈、`LayoutError.code`、截图等（可选）
+    validations:
+      required: false

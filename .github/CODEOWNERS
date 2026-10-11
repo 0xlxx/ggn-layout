@@ -1,0 +1,8 @@
+# 默认 owner：所有路径的 PR 需要 @0xlxx 评审。
+* @0xlxx
+
+# 发布链路与许可证口径的改动请显式加审。
+/.github/workflows/ @0xlxx
+/LICENSE @0xlxx
+/LICENSES/ @0xlxx
+/THIRD_PARTY_NOTICES.md @0xlxx

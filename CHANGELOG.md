@@ -12,6 +12,12 @@
   `publint` 与 `@arethetypeswrong/cli` 锁定到具体版本。
 - 第三方许可声明补全：`THIRD_PARTY_NOTICES.md` 增加 ELK 版权归属、SPDX 标识
   （`EPL-2.0 OR GPL-3.0-or-later`）与 `elkt` 测试数据的来源与版权。
+- CI/发布链路加固：GitHub Actions 由可变 tag 改为 **pin commit SHA**；`prepublishOnly`
+  追加 `check:pkg`（`publint` + 严格版类型解析门禁），手工发布不再绕过包元数据检查。
+- 类型解析门禁改为 `scripts/check-attw.mjs`：只豁免 `node10`（EOL）列的 `NoResolution`，
+  此前用 `--ignore-rules no-resolution` 属于整体抑制，会让真实子路径错误一并变绿。
+- 补齐仓库治理文件：`SECURITY.md`（私密漏洞上报 + 威胁模型）、`CONTRIBUTING.md`、
+  `.github/CODEOWNERS`、PR 模板与 Bug issue 模板。
 
 ## [0.1.0]
 
