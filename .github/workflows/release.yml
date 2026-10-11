@@ -11,8 +11,9 @@ on:
         default: true
 
 # npm Trusted Publishing (OIDC) + provenance 需要 id-token: write.
+# contents: write 用于打 tag 后创建 GitHub Release（跳过发布时也照样建）。
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 # 发布不可并发: 同 ref 排队而非取消.
@@ -27,6 +28,9 @@ jobs:
     environment: npm
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # `gh release create --generate-notes` 需要历史与既有 tag 才能算变更集。
+          fetch-depth: 0
 
       - name: Guard — 发布来源与版本号
         run: |
@@ -58,14 +62,18 @@ jobs:
       # 发布前的产物门禁: 完整入口可跑非 layered 算法 + layered 子入口可用 + 体积分层.
       - run: bun run smoke:pack
 
-      # 只在「真的会发布」时拦截重复版本；dry-run 不产生任何发布，
-      # 因此要放行，否则无法在已发布版本上演练 `npm publish --dry-run --provenance` 这一步。
-      - name: Guard — 该版本尚未发布
-        if: github.event_name == 'push' || inputs.dry-run == false
+      # 版本已在 registry 时不再硬失败，而是跳过发布、只建 GitHub Release。
+      # 这样两种情形都能走通：① 给历史版本补 tag（内容早已发布，重跑只会红）；
+      # ② tag 推上去后才失败、需要重跑工作流。
+      - name: 探测该版本是否已发布
+        id: published
         run: |
           version="$(node -p "require('./package.json').version")"
           if npm view "ggn-layout@${version}" version >/dev/null 2>&1; then
-            echo "ggn-layout@${version} 已存在于 registry, 拒绝重复发布"; exit 1
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "ggn-layout@${version} 已在 registry —— 跳过 npm publish，只建 GitHub Release。"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Publish (dry run)
@@ -81,5 +89,17 @@ jobs:
           npm publish --dry-run --provenance --tag dryrun
 
       - name: Publish
-        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry-run == false)
+        if: >-
+          (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry-run == false))
+          && steps.published.outputs.found == 'false'
         run: npm publish --provenance
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
+            gh release create "${GITHUB_REF_NAME}" \
+              --title "${GITHUB_REF_NAME}" \
+              --generate-notes

@@ -5,8 +5,15 @@
 
 ## [Unreleased]
 
+## [0.1.1]
+
 ### 变更
 
+- **许可口径修正**：`package.json` 的 `license` 由 `MIT` 改为 `(MIT AND EPL-2.0)`。本包是
+  ELK 的衍生作品（`src/**` 中 294 个文件为 1:1 移植，属 EPL-2.0），此前只标 MIT 与事实不符。
+  同时给全部 `src/**` 文件补 SPDX 头（ELK 衍生 → `EPL-2.0`、GGN 自有 → `MIT`）、给每个
+  `dist` 产物加归属 banner，并新增 `check:license` 门禁（CI + `prepublishOnly`）防止新增文件漏标。
+- 发布工程加固：`prepublishOnly` 末尾追加打包产物冒烟（`smoke:pack`）；显式声明
 - 发布工程加固：`prepublishOnly` 末尾追加打包产物冒烟（`smoke:pack`）；显式声明
   `publishConfig`（`registry=https://registry.npmjs.org/`、`access=public`）；CI 中的
   `publint` 与 `@arethetypeswrong/cli` 锁定到具体版本。
@@ -24,7 +31,7 @@
   新增 `check:docs` 门禁：以 `npm pack` 的真实清单校验随包文档的相对链接，防止回归。
 - **修复发布链路阻断缺陷**：`npm pack --json` 在 npm 12 由**数组**改为**按包名索引的对象**，
   而 `smoke:pack` 仍按数组解构，导致 `release.yml`（Node 24 + `npm@latest`）在冒烟步骤直接失败。
-  新增 `scripts/npm-pack-json.mjs` 归一化两种结构，并在 CI 增加 `pack-npm-latest` 作业用
+  新增 `scripts/npm-utils.mjs` 的 `parsePackJson()` 归一化两种结构，并在 CI 增加 `pack-npm-latest` 作业用
   「发布同款环境」复跑产物门禁，避免 CI 绿而 release 红。
 - `release.yml` 的「该版本尚未发布」守卫改为只在真正发布时生效：`workflow_dispatch` 的
   `dry-run` 现在能完整演练到 `npm publish --dry-run --provenance` 这一步。
@@ -32,6 +39,20 @@
   于是 `prepublishOnly` 里嵌套的 `npm pack` 在 `--dry-run` 下**静默不产出 tarball**，
   连带 `smoke:pack` / `check:pkg` 失败。新增 `scripts/npm-utils.mjs` 的 `npmEnv()`
   隔离 `npm_config_dry_run` / `npm_config_provenance` 后再嵌套调用 npm。
+- **修复 `check:pkg` 的同类环境泄漏**：`check:pkg` 里裸写的 `npx --yes publint` 同样继承
+  `npm_config_dry_run=true`，导致 `npm publish --dry-run` 的 `prepublishOnly` 卡在
+  `ENOENT .../_npx/<hash>/package.json`（npx 只建目录不装包）。改为 `scripts/check-publint.mjs`，
+  与其余三处统一走 `npmEnv()`。
+- **修复 `check:attw` 的 64 KiB 截断偶发**：Node 同步 spawn 在输出超过管道容量时可能截断 stdout，
+  attw 的 `--format json` 约 130 KB，实测 20 次挂 5 次且总是恰好截到 65536 字节。新增
+  `captureStdout()` 把子进程 stdout 直接重定向到文件、绕开管道，`check-attw` / `check-doc-links` /
+  `smoke:pack` 三处统一改用。
+- **发布工作流不再因重复版本变红**：`release.yml` 探测到该版本已在 registry 时跳过 `npm publish`、
+  但仍创建 GitHub Release；`workflow_dispatch` 的 dry-run 改用一次性版本号
+  `0.0.0-dryrun.<run_id>` 演练，使演练可以真正跑完。
+- 仓库清理：内部开发过程文档（`PROGRESS.md`、`AGENTS.md`、`plans/`、`docs/clusters/` 等）移出公开仓，
+  并清除文档里泄漏的本机绝对路径。`docs/PORTING.md`、`docs/reference/**`、`SKILL.md` 等
+  面向使用者/贡献者的文档保留。
 
 ## [0.1.0]
 
@@ -58,4 +79,5 @@
   `ModelOrderBarycenterHeuristic` 的传递关联记录方向与 ELK Java 相反（见 `docs/PORTING.md` §6.17）。
 
 [Unreleased]: https://github.com/0xlxx/ggn-layout/compare/v0.1.0...HEAD
+[0.1.1]: https://github.com/0xlxx/ggn-layout/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/0xlxx/ggn-layout/releases/tag/v0.1.0
