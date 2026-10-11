@@ -1,3 +1,17 @@
+## [2026-10-11 工单 mo-barycenter-comparator: 比较器不自洽 → 层内顺序跨 JS 引擎漂移]
+- **失败**: GitHub CI (ubuntu-latest, Node 22 / V8)
+  `tests/unit/ModelOrderBarycenterHeuristicTest.test.ts` —
+  `force=false 且无 MODEL_ORDER 时与 BarycenterHeuristic 输出一致`: V8 `[0,3,1,2]` vs JSC `[0,2,3,1]`。
+- **阶段**: P3 排序 (`ModelOrderBarycenterHeuristic.minimizeLayer`)。
+- **根因**: ELK Java 返回 -1 时记录 `updateBiggerAndSmallerAssociations(n1, n2)` (方向与返回符号相反);
+  关联表被比较过程累积改写 → 同一对节点前后返回 -1/+1, 比较器非自洽。Java `Collections.sort`
+  (TimSort) 恰好容忍, 但 JS 引擎 `Array#sort` 路径不同 → 同一输入输出漂移 (重心值本身一致)。
+- **修复**: 记录方向改为与返回符号一致 (`compareBasedOnBarycenter` 4 处 + 模型序分支 2 处);
+  `src/p3order/ModelOrderBarycenterHeuristic.ts` 就地注释 + PORTING.md §6.17 说明**有意偏离** ELK。
+- **验证**: Node 22 全量 4804 通过 (含 `tests/oracle/generated` jar oracle); Bun/JSC 全量通过;
+  新增 `比较器自洽` 用例在旧实现下失败 (回归防线有效性已实证); typecheck/build/pack 通过。
+- **陷阱表**: 新增 PORTING.md §6.17 (比较器自洽性)。
+
 ## [2026-08-13] worker 版本: createLayoutWorker + layout-worker 宿主
 
 ### 决策背景

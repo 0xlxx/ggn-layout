@@ -29,7 +29,7 @@ console.log(output.children, output.edges?.[0]?.sections)
 ## API 契约要点
 
 - **主入口**：`layoutElkJson(input, options?)` 是面向消费方的高层 API；输入是标准图 JSON，返回全新对象。复合能力：`layoutJsonBatch`（批量+逐项隔离）、`diffLayout`/`layoutJsonDiff`（布局差异）、`control: { signal, onProgress }`（进度+合作式取消）。
-- **纯函数**：不会修改传入的 `input`；同一输入与同一选项在相同版本下保持确定性，默认 `randomSeed` 为 `1`。
+- **纯函数**：不会修改传入的 `input`；同一输入与同一选项在相同版本下保持确定性（跨 JS 引擎/Node 版本结果一致，见 `docs/PORTING.md` §6.17），默认 `randomSeed` 为 `1`。
 - **失败方式**：非法输入或不支持的算法抛出结构化 `LayoutError`，可读取 `code`、`path`、`retryable` 和可选 `phase/details`。
 - **输出形态**：`responseFormat` 三档——`full`（默认，完整保真 JSON）、`concise`（只留节点几何 + 边端点，省 token）、`summary`（扁平摘要 `{nodes, edges}`，不含 root 自身、只含已路由边）。`pick` 仅在 `full` 下追加保留的节点字段。
 - **类型收紧**：`direction` 为 `'RIGHT'|'LEFT'|'DOWN'|'UP'` 字面量联合（持 `string` 变量的旧调用需收窄类型）；新增 `LayoutInput`/`LayoutOutput`/`LayoutSummary` 类型（命名不含 ELK）。

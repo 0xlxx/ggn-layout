@@ -133,7 +133,7 @@ describe('ModelOrderBarycenterHeuristic 单元/性质', () => {
     expect(cmp(n2, n1)).toBe(1)
   })
 
-  it('传递依赖: 首次比较后反向比较与 Java 一致 (biggerThan/smallerThan 关联)', () => {
+  it('传递依赖: 比较器自洽, 反向比较取反 (biggerThan/smallerThan 关联; 有意偏离 ELK Java)', () => {
     const { nodes, portDist, cr } = twoNodeGraph()
     const cm = makeCrossMin(cr, new JavaRandom(1), portDist, nodes, true)
     const [n1, n2] = nodes[1]!
@@ -141,10 +141,36 @@ describe('ModelOrderBarycenterHeuristic 单元/性质', () => {
     n2.setProperty(MODEL_ORDER, 2)
     const cmp = (cm as any).barycenterStateComparator
     expect(cmp(n1, n2)).toBe(-1)
-    // Java: value<0 时 updateBiggerAndSmallerAssociations(n1, n2) 记录 biggerThan[n1]∋n2;
-    // 反向比较经 compareBasedOnTansitiveDependencies 命中 biggerThan[n1]∋n2 → 返回 -1.
-    // (ELK 用插入排序容忍这种偏序/全序冲突; ggn 1:1 复刻.)
-    expect(cmp(n2, n1)).toBe(-1)
+    // ELK Java 在返回 -1 时记录 biggerThan[n1]∋n2 (方向与返回符号相反), 反向比较经
+    // compareBasedOnTansitiveDependencies 命中该关联会再次返回 -1 — 即同一对节点前后符号相反,
+    // 违反 Comparator 契约, 使 Array#sort 结果随 JS 引擎/版本漂移 (V8 vs JSC).
+    // ggn 有意按返回符号记录关联 (见 ModelOrderBarycenterHeuristic 注释 / PORTING.md §6.17):
+    // 反向比较必须取反, 比较器自洽 → 跨引擎确定性.
+    expect(cmp(n2, n1)).toBe(1)
+  })
+
+  it('比较器自洽: 随机图上 cmp(a,b) === -cmp(b,a) (跨引擎确定性回归防线)', () => {
+    const seed = 5
+    const { graph } = randomLayeredGraph(seed, { numLayers: 3, nodesPerLayer: 4 })
+    const nodes = graph.toNodeArray()
+    for (const n of nodes[1]!) n.setProperty(MODEL_ORDER, n.id)
+    const { portDist, cr } = setup(nodes)
+    portDist.calculatePortRanksForLayer(nodes[0]!, PortType.OUTPUT)
+    const cm = new ModelOrderBarycenterHeuristic(cr, new JavaRandom(seed) as any, portDist, nodes)
+    initInitializables([cm], nodes)
+    // 先真排一次, 让比较过程把传递关联表填满; 缺陷只在关联表被复用后暴露
+    // (Java 记录方向与返回符号相反 → 同一对节点第二次比较返回相反符号).
+    cm.minimizeLayer([...nodes[1]!], false, false, true)
+    const cmp = (cm as any).barycenterStateComparator as (a: LNode, b: LNode) => number
+    const layer = nodes[1]!
+    for (const a of layer) {
+      for (const b of layer) {
+        if (a === b) continue
+        const ab = Math.sign(cmp(a, b))
+        const ba = Math.sign(cmp(b, a))
+        expect(ab, `cmp 不自洽: ${a.id} vs ${b.id} → ${ab}/${ba}`).toBe(-ba)
+      }
+    }
   })
 
   it('比较器: 模型序相同 → 回退 barycenter', () => {

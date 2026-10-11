@@ -119,6 +119,7 @@
     "check:bench:nonlayered": "bun scripts/perf-nonlayered.mjs --quick --json bench-results/current-nonlayered.json && bun scripts/check-bench-regression.mjs --baseline bench-results/baseline-nonlayered.json --current bench-results/current-nonlayered.json --min-delta-ms 40",
     "test:run": "vitest run",
     "test:ci": "vitest run --exclude 'tests/oracle/generated/**'",
+    "test:cross-engine": "bun ./node_modules/vitest/vitest.mjs run --config vitest.cross-engine.config.ts",
     "check:bundle": "bunx tsdown && node scripts/check-bundle-budget.mjs"
   },
   "keywords": [

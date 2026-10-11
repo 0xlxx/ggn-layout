@@ -61,11 +61,12 @@ export class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
             value = 0
           }
         }
+        // ★ 有意偏离 ELK Java: 关联记录方向必须与返回符号一致 (见下方 compareBasedOnBarycenter 注释).
         if (value < 0) {
-          this.updateBiggerAndSmallerAssociations(n1, n2)
+          this.updateBiggerAndSmallerAssociations(n2, n1)
           return value
         } else if (value > 0) {
-          this.updateBiggerAndSmallerAssociations(n2, n1)
+          this.updateBiggerAndSmallerAssociations(n1, n2)
           return value
         }
       }
@@ -132,6 +133,15 @@ export class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
   /**
    * 按 barycenter 排序节点并更新它们的传递依赖.
    *
+   * ★ 与 ELK Java 的有意差异: Java 在返回 -1 时把 n1 记为 "更大"
+   * (`updateBiggerAndSmallerAssociations(n1, n2)`), 与其自身返回值符号相反; 由于关联表在比较
+   * 过程中被累积改写, 同一对节点第二次比较会返回相反符号 → 比较器不自洽 (违反 Comparator 契约).
+   * Java `Collections.sort` (TimSort) 恰好容忍该缺陷, 但 JS 引擎的 `Array#sort` 实现不同,
+   * 同一输入会得到不同层内排列 (Node/V8 `[0,3,1,2]` vs Bun/JSC `[0,2,3,1]`)。
+   * 此处按返回符号记录 (返回 -1 记 `(n2, n1)`), 保证比较器自洽 → 跨引擎确定。
+   * 全量 jar oracle (tests/oracle/generated) 修正前后逐位一致, 即仅消除 ELK 本身的 UB 行为。
+   * 详见 docs/PORTING.md §6.17。
+   *
    * @param n1 第一个节点
    * @param n2 第二个节点
    * @returns -1, 0, 1 (见 Comparator 约定)
@@ -142,16 +152,16 @@ export class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
     if (s1.barycenter !== null && s2.barycenter !== null) {
       const value = compareDoubles(s1.barycenter, s2.barycenter)
       if (value < 0) {
-        this.updateBiggerAndSmallerAssociations(n1, n2)
-      } else if (value > 0) {
         this.updateBiggerAndSmallerAssociations(n2, n1)
+      } else if (value > 0) {
+        this.updateBiggerAndSmallerAssociations(n1, n2)
       }
       return value
     } else if (s1.barycenter !== null) {
-      this.updateBiggerAndSmallerAssociations(n1, n2)
+      this.updateBiggerAndSmallerAssociations(n2, n1)
       return -1
     } else if (s2.barycenter !== null) {
-      this.updateBiggerAndSmallerAssociations(n2, n1)
+      this.updateBiggerAndSmallerAssociations(n1, n2)
       return 1
     }
     return 0

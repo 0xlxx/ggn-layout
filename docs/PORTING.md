@@ -196,6 +196,23 @@ P1 断环 (cycleBreaking) → P2 分层 (layering + NodePromotion) → P3 排序
   BK 输入受 label 占位 (padding.top=26) 影响; getExternalPortPosition 基于 dummy → P1 y=61 vs 73
   → 标签 y 差 12. 需对齐 BK 对 label 占位/dummy 位置的 cell 语义 (系统性, 68 图回归 + oracle 重生成).
 
+### 6.17 比较器自洽性 (ModelOrderBarycenterHeuristic; 与 ELK Java 的**有意**差异)
+- ELK Java `ModelOrderBarycenterHeuristic` 在返回 -1 时调用 `updateBiggerAndSmallerAssociations(n1, n2)`
+  (把 n1 记成 "更大"), 与返回值符号**相反** (`compareBasedOnBarycenter` 4 处 + 模型序分支 2 处)。
+  关联表在比较过程中被累积改写 → 同一对节点第二次比较经 `compareBasedOnTansitiveDependencies`
+  返回**相反符号** → 比较器不自洽 (违反 `Comparator` 契约, 非传递)。
+- 后果: Java `Collections.sort` (TimSort) 恰好容忍该缺陷; JS 各引擎 `Array#sort` 实现不同 →
+  **同一输入输出随引擎漂移**。实证 (tests/unit/ModelOrderBarycenterHeuristicTest.test.ts:274
+  `force=false 且无 MODEL_ORDER 时与 BarycenterHeuristic 输出一致`): 重心值完全相同
+  (p0=0.508, p2=1.695, p3=2.069, p1=2.405) 但 Node 22/V8 得 `[0,3,1,2]`, Bun/JSC 得 `[0,2,3,1]`。
+- ggn 修法: **按返回符号记录关联** (返回 -1 记 `updateBiggerAndSmallerAssociations(n2, n1)`),
+  使比较器自洽 → 跨引擎确定。回归防线: 比较器自洽用例 (随机图 `cmp(a,b) === -cmp(b,a)`) +
+  CI `cross-engine` job 用 Bun/JSC 复跑纯算法单测 (`bun run test:cross-engine`,
+  `vitest.cross-engine.config.ts`); 主门禁 `verify` job 钉住 Node 22 (V8)。
+  elkjs 差分测试需 `Worker` (Bun 无) → Bun 侧只跑不依赖 elkjs 的 `tests/unit`。
+- 影响面: 全量 jar oracle (`tests/oracle/generated`, 4804 用例) 修正前后**逐位一致**;
+  唯一行为变化是消除 ELK 自身的 UB (上游此处语义未定义, 不属于可移植语义)。
+
 ## 7. 验证命令速查
 
 ```bash
