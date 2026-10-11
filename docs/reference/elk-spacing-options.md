@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 移植 ELK Java「Spacing Options」指南——间距成对语义、base value、个体间距覆盖与 margin/padding 正交关系，对应到 TS 的 `Spacings` 表与 `LayeredSpacingsBuilder`。
 
 ## 1. 背景与来源（为什么有这份文档）

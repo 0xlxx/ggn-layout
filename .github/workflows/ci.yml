@@ -50,9 +50,8 @@ jobs:
       - run: bun run build
       # 产物级门禁: 打包 → 安装到干净消费方 → 全入口 ESM/CJS 冒烟 + layered 体积分层 + 下游 bundler 冒烟.
       - run: bun run smoke:pack
-      - run: npx --yes publint@0.3.25
-      # 仅豁免 node10 (EOL) 列；node16/bundler 列的任何解析问题都会让门禁变红.
-      - run: node scripts/check-attw.mjs
+      # 包元数据门禁: publint + 严格类型解析 (仅豁免 node10/EOL 列) + 随包文档链接.
+      - run: bun run check:pkg
 
   # 第二套 JS 引擎 (JavaScriptCore) 复跑纯算法单测: 比较器不自洽 / 依赖 Array#sort 引擎特性
   # 这类缺陷只在双引擎下暴露 (docs/PORTING.md §6.17)。elkjs 差分测试需要 Worker, Bun 不支持,

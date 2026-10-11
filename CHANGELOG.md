@@ -18,6 +18,10 @@
   此前用 `--ignore-rules no-resolution` 属于整体抑制，会让真实子路径错误一并变绿。
 - 补齐仓库治理文件：`SECURITY.md`（私密漏洞上报 + 威胁模型）、`CONTRIBUTING.md`、
   `.github/CODEOWNERS`、PR 模板与 Bug issue 模板。
+- 修复随包文档的 14 处包内断链：`docs/reference/**` 的 `../README.md` 实际指向不存在的
+  `docs/README.md`（改为 `../../README.md`）、`../docs/API.md` 改为 `../API.md`、两个指向本仓不存在的
+  `docs/design/*` 的链接改为纯文本、README 里的 `release.yml` 改为绝对 GitHub URL。
+  新增 `check:docs` 门禁：以 `npm pack` 的真实清单校验随包文档的相对链接，防止回归。
 
 ## [0.1.0]
 

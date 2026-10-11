@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 移植 ELK Java「JSON Format」图格式指南——节点 / 端口 / 标签 / 边 / 边段五种基本元素与导入导出 API，并注明本移植的针对性差异（校验、超边、输出形态）。
 
 ## 1. 背景与来源（为什么有这份文档）

@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 移植 ELK Java 0.12.0 布局选项接口（CoreOptions / LayeredOptions）到本项目的权威对照表——选项键、TS Property、类型、默认值一一对应；供 `kernel:layout` 接线与消费方查表。
 
 ## 1. 背景与来源（为什么有这份文档）

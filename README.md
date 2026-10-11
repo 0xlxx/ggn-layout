@@ -75,9 +75,11 @@ bun run build
 npm publish
 ```
 
-`prepublishOnly` 会依次执行类型检查、测试、构建与打包产物冒烟（`smoke:pack`）。正式发布会走
-[`.github/workflows/release.yml`](.github/workflows/release.yml)：打 `v*` tag 后由
-GitHub Actions 以 npm Trusted Publishing（OIDC）发布并附带 provenance 证明。
+`prepublishOnly` 会依次执行类型检查、测试、构建、打包产物冒烟（`smoke:pack`）与包元数据门禁
+（`check:pkg`：`publint` + 子路径类型解析 + 随包文档链接）。正式发布会走
+[`.github/workflows/release.yml`](https://github.com/0xlxx/ggn-layout/blob/main/.github/workflows/release.yml)
+（该文件不随包发布）：打 `v*` tag 后由 GitHub Actions 以 npm Trusted Publishing（OIDC）发布并附带
+provenance 证明。
 手工发布仅在 Actions 不可用时使用。
 
 ## 许可证

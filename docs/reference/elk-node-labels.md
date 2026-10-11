@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-09-10
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 对照 ELK 官方博文《Node Labels》（2025-08-22），记录 GGN kernel 的标签预留策略、与官方建议的逐条符合度、以及有意偏离（reservation-only label）的理由与风险控制。
 
 ## 1. 官方建议（博文要点）

@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 移植 ELK Java「Layout Options」机制指南——`IProperty` / `IPropertyHolder` 的读 / 写 / 查语义、同 id 不同默认值、内部属性约定，与 TS 移植的 `Property` / `MapPropertyHolder` 一一对应。
 
 ## 1. 背景与来源（为什么有这份文档）

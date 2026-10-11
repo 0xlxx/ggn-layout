@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-09-06
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 枚举 elkjs 0.12.0 的对外特性（算法 / 能力旗标 / JSON 图格式 / 选项 / API 面），逐项对照 ggn-layout（`本仓库`）的测试覆盖，给出覆盖结论与差距清单。
 
 ## 1. 范围与方法
@@ -10,7 +10,7 @@
 - 参照对象：npm `elkjs@0.12.0`（仓库根 `node_modules/elkjs`，GWT 编译 ELK Java 0.12.0）。
   运行时枚举：`knownLayoutAlgorithms()` 11 个算法、`knownLayoutOptions()` 235 项、`knownLayoutCategories()` 8 类。
 - 被测对象：`ggn-layout`（ELK Java 0.12.0 1:1 TS 移植；声明契约 = 结果层 API `layoutElkJson`，
-  见 [README](../README.md) 与 GOAL-COMPLETE「等价 elkjs：输入/输出标准 ELK JSON」）。
+  见 [README](../../README.md) 与 GOAL-COMPLETE「等价 elkjs：输入/输出标准 ELK JSON」）。
 - 方法：elkjs 运行时枚举特性面 → grep 实现与测试文件 → 抽样实跑套件确认全绿。
 - 抽样实跑（2026-09-06，vitest）：core-providers + layout-elk-json 23/23；self-loops + short-opt-keys +
   worker + coords-modes + api-validation 62/62；mrtree/radial/rectpacking/spore/topdownpacking/vertiflex/disco 63/63。

@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 移植 ELK Java 官方「算法结构 / 直接使用算法」指南到本项目——布局阶段、中间处理器、算法装配、Provider 入口四大接口概念与 TS 移植一一对应，供维护者按同一套结构理解与扩展算法。
 
 ## 1. 背景与来源（为什么有这份文档）
@@ -16,7 +16,7 @@
 本指南把这两份文档**移植并做针对性修改**：原文档面向 Java（`ILayoutPhase` / `ILayoutProcessor` /
 `AlgorithmAssembler` / `AbstractLayoutProvider`），本文映射到本仓库的 TS 实现，并注明差异（见 §8）。
 
-> 配套：[ELK 布局选项接口参考](./elk-layout-options.md)（选项键 / 默认值）、[API 文档](../docs/API.md)、
+> 配套：[ELK 布局选项接口参考](./elk-layout-options.md)（选项键 / 默认值）、[API 文档](../API.md)、
 > 模块清单 `docs/MODULES.tsv`。
 
 ## 2. 核心概念：布局阶段 vs 中间处理器

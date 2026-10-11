@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-09-10
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [文档索引](../../README.md)
 > **Objective**: 回答「图里拐角很多」的三个问题——ggn-layout 是否劣于原生 ELK Java、是否存在最优参数、算法层还有多少优化空间——并给出可执行建议与复现路径。
 
 ## 1. 问题与样本
@@ -211,5 +211,5 @@ Java oracle 命令（ELK 0.12.0 + 未签名 layered jar）：
 
 - [ELK 间距选项指南](./elk-spacing-options.md)：间距成对语义与覆盖规则
 - [ELK 布局选项接口参考](./elk-layout-options.md)：`LayeredOptions` 键与默认值
-- [GGN 渲染参数规格](../design/ggn-render-params.md)：edge 渲染参数与圆角语义
-- [Agent 开发过程可视化事件协议](../design/agent-development-event-protocol.md)：`contains` 与层级语义
+- GGN 渲染参数规格（edge 渲染参数与圆角语义）——随 GGN 主仓库维护，本仓不含该文档。
+- Agent 开发过程可视化事件协议（`contains` 与层级语义）——同上，随 GGN 主仓库维护。
