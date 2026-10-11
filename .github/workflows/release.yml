@@ -144,9 +144,11 @@ jobs:
         run: |
           mkdir -p .meta
           tar -xzf "$TARBALL" -C .meta package/package.json
+          name="$(node -p "require('./.meta/package/package.json').name")"
           version="$(node -p "require('./.meta/package/package.json').version")"
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "tarball 版本: ${version}"
+          echo "tarball: ${name}@${version}"
 
       # 版本已在 registry 时不再硬失败，而是跳过发布、只建 GitHub Release。
       # 这样两种情形都能走通：① 给历史版本补 tag（内容早已发布，重跑只会红）；
@@ -154,29 +156,97 @@ jobs:
       - name: 探测该版本是否已发布
         id: published
         run: |
-          if npm view "ggn-layout@${{ steps.meta.outputs.version }}" version >/dev/null 2>&1; then
+          if npm view "${{ steps.meta.outputs.name }}@${{ steps.meta.outputs.version }}" version >/dev/null 2>&1; then
             echo "found=true" >> "$GITHUB_OUTPUT"
-            echo "ggn-layout@${{ steps.meta.outputs.version }} 已在 registry —— 跳过 npm publish，只建 GitHub Release。"
+            echo "${{ steps.meta.outputs.name }}@${{ steps.meta.outputs.version }} 已在 registry —— 跳过 npm publish，只建 GitHub Release。"
           else
             echo "found=false" >> "$GITHUB_OUTPUT"
           fi
 
       # 已发布版本的重跑只允许「补建 Release」。必须证明 registry 里的内容就是当前 tag
       # 指向的提交，否则会生成一张与 npm 不符的 Release。
-      - name: 校验已发布版本的 gitHead 与当前提交一致
+      #
+      # 来源提交有两个信息源，按可信度取用：
+      #   1. SLSA provenance（`dist.attestations.url` 指向的 bundle）—— GitHub OIDC 签发、
+      #      签名不可伪造，commit 记在 `resolvedDependencies[].digest.gitCommit`。
+      #   2. `gitHead` —— npm 发布时从本地 `.git` 推断，未签名，仅在没有 provenance 时兜底。
+      #
+      # 为何不能只认 gitHead：发布 job 已与 checkout 解耦（见上方 publish job 注释），npm
+      # 无从得知提交，`npm publish <tarball>` 产出的版本 gitHead 为空（0.1.2 实测），只认
+      # gitHead 会让这条防线对这类版本永久失效。签名的 provenance 反而更可信。
+      #
+      # 本步骤**内联**、不调用仓库里的脚本：publish job 持有 id-token，执行随仓库发布的脚本
+      # 等于把 npm 身份交给该提交的代码，正是拆分 job 要避免的。
+      - name: 校验已发布版本的来源提交与当前提交一致
         if: steps.published.outputs.found == 'true' && github.event_name == 'push'
+        env:
+          PKG: ${{ steps.meta.outputs.name }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
-          head="$(npm view "ggn-layout@${{ steps.meta.outputs.version }}" gitHead 2>/dev/null || true)"
-          if [ -z "${head}" ]; then
-            echo "registry 未记录 ggn-layout@${{ steps.meta.outputs.version }} 的 gitHead —— 无法证明与当前提交一致, 拒绝建 Release"
-            exit 1
-          fi
-          if [ "${head}" != "${GITHUB_SHA}" ]; then
-            echo "registry gitHead=${head} != 当前提交 ${GITHUB_SHA}"
-            echo "该 tag 指向的提交与已发布内容不一致 —— 拒绝建 Release"
-            exit 1
-          fi
-          echo "gitHead 与当前提交一致: ${head}"
+          node <<'NODE'
+          const { execFileSync } = require('node:child_process')
+
+          const spec = `${process.env.PKG}@${process.env.VERSION}`
+          const expected = process.env.EXPECTED_SHA
+
+          // 直读 registry；发布 job 已 setup-node，npm 一定可用。
+          const npmView = (field) => {
+            try {
+              return execFileSync('npm', ['view', spec, field], {
+                encoding: 'utf8',
+                stdio: ['ignore', 'pipe', 'ignore'],
+              }).trim()
+            } catch {
+              return ''
+            }
+          }
+
+          // 源 1：签名的 SLSA provenance。
+          const fromSlsaProvenance = async () => {
+            const url = npmView('dist.attestations.url')
+            if (!url) return null
+            const res = await fetch(url)
+            if (!res.ok) return null
+            const bundle = await res.json()
+            for (const entry of bundle.attestations ?? []) {
+              const envelope = entry?.bundle?.dsseEnvelope
+              if (!envelope?.payload) continue
+              let statement
+              try {
+                statement = JSON.parse(Buffer.from(envelope.payload, 'base64').toString('utf8'))
+              } catch {
+                continue
+              }
+              if (statement.predicateType !== 'https://slsa.dev/provenance/v1') continue
+              for (const dep of statement.predicate?.buildDefinition?.resolvedDependencies ?? []) {
+                if (dep?.digest?.gitCommit) return { sha: dep.digest.gitCommit, source: 'SLSA provenance (signed)' }
+              }
+            }
+            return null
+          }
+
+          // 源 2：未签名的 gitHead，兜底。
+          const fromGitHead = () => {
+            const sha = npmView('gitHead')
+            return sha ? { sha, source: 'registry gitHead (unsigned)' } : null
+          }
+
+          ;(async () => {
+            const resolved = (await fromSlsaProvenance()) ?? fromGitHead()
+            if (!resolved) {
+              console.error(`✗ registry 未记录 ${spec} 的来源提交（既无 SLSA provenance 也无 gitHead）`)
+              console.error('  无法证明已发布内容与当前提交一致 —— 拒绝建 Release')
+              process.exit(1)
+            }
+            if (resolved.sha !== expected) {
+              console.error(`✗ ${spec} 来源提交 ${resolved.sha} != 当前提交 ${expected}`)
+              console.error('  该 tag 指向的提交与已发布内容不一致 —— 拒绝建 Release')
+              process.exit(1)
+            }
+            console.log(`✓ ${spec} 来源提交与当前提交一致: ${resolved.sha}（来源: ${resolved.source}）`)
+          })()
+          NODE
 
       - name: Publish (dry run)
         if: github.event_name == 'workflow_dispatch' && inputs.dry-run
