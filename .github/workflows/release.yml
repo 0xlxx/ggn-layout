@@ -26,8 +26,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Trusted Publishing (OIDC) 需要 npm CLI ≥ 11.5.1；Node 24 自带 npm 11。
+          node-version: 24
           registry-url: https://registry.npmjs.org
+
+      - name: Ensure npm CLI supports trusted publishing
+        run: npm install -g npm@latest && npm --version
 
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
