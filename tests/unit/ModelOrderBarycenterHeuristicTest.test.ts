@@ -149,13 +149,17 @@ describe('ModelOrderBarycenterHeuristic 单元/性质', () => {
     expect(cmp(n2, n1)).toBe(1)
   })
 
-  it('比较器自洽: 随机图上 cmp(a,b) === -cmp(b,a) (跨引擎确定性回归防线)', () => {
+  it('比较器自洽: 随机图上 cmp(a,b) === -cmp(b,a) (回归防线, 旧实现必失败)', () => {
     const seed = 5
     const { graph } = randomLayeredGraph(seed, { numLayers: 3, nodesPerLayer: 4 })
     const nodes = graph.toNodeArray()
     for (const n of nodes[1]!) n.setProperty(MODEL_ORDER, n.id)
     const { portDist, cr } = setup(nodes)
     portDist.calculatePortRanksForLayer(nodes[0]!, PortType.OUTPUT)
+    // 必须走 forceNodeModelOrder 的插入排序路径: 该路径下比较过程会把传递关联表填满,
+    // 缺陷 (记录方向与返回符号相反) 才会在复用关联表时暴露。force=false 的 layer.sort 路径
+    // 在旧实现下恰好以「自洽的表」收尾, 拦不住回归 (elkg/Java 中 force=false 分支同样不可达)。
+    graph.setProperty(CROSSING_MINIMIZATION_FORCE_NODE_MODEL_ORDER, true)
     const cm = new ModelOrderBarycenterHeuristic(cr, new JavaRandom(seed) as any, portDist, nodes)
     initInitializables([cm], nodes)
     // 先真排一次, 让比较过程把传递关联表填满; 缺陷只在关联表被复用后暴露

@@ -77,7 +77,7 @@
 | 进度/取消 | `control: { onProgress, signal }`；worker progress | `bdd/api-composite`、`api/worker.test` | ✅（形态不同） |
 | `terminateWorker()` | `createLayoutWorker` 取消 = terminate | `api/worker.test.ts`（正常/并发/progress/取消/错误还原） | ✅（形态不同） |
 | 构造 `defaultLayoutOptions` | options 参数逐次传入 | api 层 | ✅（等价物不同形态） |
-| 构造 `algorithms` 子集 | `ggn-layout/layered` 子入口 + register-all（tree-shaking） | `tests/contract/api-exports` | ✅（等价物） |
+| 构造 `algorithms` 子集 | `ggn-layout/layered` 子入口 + register-all（tree-shaking） | `tests/contract/api-exports`；产物门禁 `bun run smoke:pack` | ✅（等价物） |
 | `knownLayoutAlgorithms()/Options/Categories()` | 无（`algorithms.ts` 仅校验用白名单） | — | ⚠️ 差距 G1 |
 | `layout(_, {logging})` | 无 logging 参数；近似 = onProgress / trace | — | ⚠️ 差距 G2 |
 | `layout(_, {measureExecutionTime})` | 无 | — | ⚠️ 差距 G2 |

@@ -8,8 +8,35 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # 覆盖 engines.node 声明的低支持线 (20) 与曾在排序行为上出现过差异的 22.
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run test:ci
+      - run: bun run build
+      # 产物级门禁: 打包 → 安装到干净消费方 → 全入口 ESM/CJS 冒烟 + layered 体积分层断言.
+      - run: bun run smoke:pack
+
+  # 包元数据 (exports 条件 / types 解析 / sideEffects) 门禁: 类型与入口只在打包后才成立.
+  package-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -18,13 +45,11 @@ jobs:
           bun-version: 1.3.14
       - uses: actions/setup-node@v7
         with:
-          # 钉住 engines.node 的低支持线, 也让 V8 排序实现可复现 (曾出现 Node 22 与 Node 26 结果不同)
           node-version: 22
       - run: bun install --frozen-lockfile
-      - run: bun run typecheck
-      - run: bun run test:ci
       - run: bun run build
-      - run: npm pack --dry-run
+      - run: npx --yes publint
+      - run: npx --yes @arethetypeswrong/cli --pack .
 
   # 第二套 JS 引擎 (JavaScriptCore) 复跑纯算法单测: 比较器不自洽 / 依赖 Array#sort 引擎特性
   # 这类缺陷只在双引擎下暴露 (docs/PORTING.md §6.17)。elkjs 差分测试需要 Worker, Bun 不支持,

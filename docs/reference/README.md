@@ -2,7 +2,7 @@
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-09-10
-> **Parent**: [文档索引](../README.md)
+> **Parent**: [项目说明](../../README.md)
 > **Objective**: 参考资料 目录的入口索引（按文档职责与状态汇总）。
 
 

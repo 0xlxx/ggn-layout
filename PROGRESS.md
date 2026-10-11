@@ -8,9 +8,30 @@
   (TimSort) 恰好容忍, 但 JS 引擎 `Array#sort` 路径不同 → 同一输入输出漂移 (重心值本身一致)。
 - **修复**: 记录方向改为与返回符号一致 (`compareBasedOnBarycenter` 4 处 + 模型序分支 2 处);
   `src/p3order/ModelOrderBarycenterHeuristic.ts` 就地注释 + PORTING.md §6.17 说明**有意偏离** ELK。
-- **验证**: Node 22 全量 4804 通过 (含 `tests/oracle/generated` jar oracle); Bun/JSC 全量通过;
-  新增 `比较器自洽` 用例在旧实现下失败 (回归防线有效性已实证); typecheck/build/pack 通过。
+- **可达性**: 该类只在 `forceNodeModelOrder=true` 时构造, 该路径走自实现 `insertionSort` (引擎无关);
+  出现引擎漂移的 `layer.sort` 路径经公共 API 不可达。故本次修正**无可观测行为收益**, 属契约性防御修正
+  (详见 PORTING.md §6.17)。
+- **验证**: 全量套件 Node 22 4804 passed | 18 skipped (其中 `tests/oracle/generated` 单跑 1023 passed |
+  11 skipped, 修正前后逐位一致); 新增 `比较器自洽` 用例已实测**在旧实现下必失败** (force=true 路径);
+  Node 20 上 `test:ci` 245 files / 3781 passed; typecheck/build/pack 通过。
 - **陷阱表**: 新增 PORTING.md §6.17 (比较器自洽性)。
+
+## [2026-10-11 工单 publish-artifact-integrity: 打包产物完整入口退化 + 发布工程补齐]
+- **失败**: `ggn-layout@0.1.0` 发布前产物冒烟 —
+  `import { layoutElkJson } from 'ggn-layout'` 后跑非 layered 算法 (box/stress/mrtree/…) 全部抛
+  `布局算法 'X' 未注册`; 只有 `/layered` 子入口可用。root/layered 产物体量差从 ≈195 KB 塌到 ≈6 KB。
+- **根因**: `package.json` 声明白名单式 `sideEffects: ["./dist/layout-worker.js", "./dist/layout-worker.cjs"]`,
+  rolldown 据此把 `src/api/index.ts` 的裸副作用 `import './register-all.js'` 整块摇掉。
+- **修复**: `sideEffects` 只声明 `true` (放弃白名单枚举); 新增 `bun run smoke:pack` 产物门禁
+  (pack → 临时消费方 → ESM/CJS 双入口运行 + 体积分层断言 + 下游 bundler 冒烟), 接进 CI `verify`
+  与 `release` 流程; release 补 environment/concurrency/版本护栏/dry-run; CI 加 Node 20×22 矩阵 +
+  `package-lint` (publint + attw); examples 改自引用 `ggn-layout` 包名; dependabot 改 `bun` 生态;
+  tsdown config 注释固化「不得用白名单 sideEffects」的约束。
+- **验证**: `smoke:pack` 修复后通过 (full 752 KB / layered 551 KB / gap 201 KB + bundler 冒烟);
+  两类坏构建实测**被拦截**——(a) 白名单 `sideEffects` → 构建期注册被摇掉; (b) 含
+  `**/register-all.*` 的"看起来正确"白名单 → 构建期通过, 但下游 `bun build --minify` 后
+  bundle 从 732 KB 塌到 542 KB 且运行失败 (正是加 bundler 冒烟的原因)。
+  PROGRESS/PORTING §6.18/CHANGELOG 同步。
 
 ## [2026-08-13] worker 版本: createLayoutWorker + layout-worker 宿主
 

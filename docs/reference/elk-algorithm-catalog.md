@@ -7,7 +7,7 @@
 
 ## 1. 为什么有这份文档
 
-`本仓库` 是 ELK Java 0.12.0 的 1:1 TypeScript 移植，已注册 14 个算法（`src/register-all.ts`）。
+`本仓库` 是 ELK Java 0.12.0 的 1:1 TypeScript 移植，已注册 14 个算法（`src/api/register-all.ts`）。
 用户与 LLM 通过 JSONL `layout.algorithm`（短名）选算法，但协议只暴露白名单子集，其余仅 layout 内部可用。
 本文把「算法模块 → 官方用途 → 适用场景 → 协议是否暴露 → 如何与其他模块协作」一次性讲清，
 避免每次选型都要翻源码。配套：[算法实现指南（结构/接口）](./elk-algorithm-guide.md) ·

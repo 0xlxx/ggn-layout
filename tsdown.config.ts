@@ -77,5 +77,9 @@ export default defineConfig({
   fixedExtension: false,
   clean: true,
   minify: true,
+  // 注意: package.json 不得声明「白名单式」的 sideEffects 数组 —— 构建期 rolldown 会据此把
+  // 其他模块判为无副作用, 从而把 src/api/index.ts 的裸副作用 `import './register-all.js'`
+  // 整块摇掉, 完整入口退化成 layered 入口 (非 layered 算法全部「未注册」). 该回归由
+  // `bun run smoke:pack` (CI 中执行) 拦截; 细节见 docs/PORTING.md §6.18.
   define: GGN_DEFINE,
 })

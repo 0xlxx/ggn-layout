@@ -201,17 +201,51 @@ P1 断环 (cycleBreaking) → P2 分层 (layering + NodePromotion) → P3 排序
   (把 n1 记成 "更大"), 与返回值符号**相反** (`compareBasedOnBarycenter` 4 处 + 模型序分支 2 处)。
   关联表在比较过程中被累积改写 → 同一对节点第二次比较经 `compareBasedOnTansitiveDependencies`
   返回**相反符号** → 比较器不自洽 (违反 `Comparator` 契约, 非传递)。
-- 后果: Java `Collections.sort` (TimSort) 恰好容忍该缺陷; JS 各引擎 `Array#sort` 实现不同 →
-  **同一输入输出随引擎漂移**。实证 (tests/unit/ModelOrderBarycenterHeuristicTest.test.ts:274
-  `force=false 且无 MODEL_ORDER 时与 BarycenterHeuristic 输出一致`): 重心值完全相同
-  (p0=0.508, p2=1.695, p3=2.069, p1=2.405) 但 Node 22/V8 得 `[0,3,1,2]`, Bun/JSC 得 `[0,2,3,1]`。
+- 后果: 比较器不自洽 (违反 `Comparator`/`Array#sort` 的比较器契约) 时, 排序结果由**引擎的排序实现**
+  决定。实证 (`ModelOrderBarycenterHeuristicTest.test.ts` 的 `force=false 且无 MODEL_ORDER 时与
+  BarycenterHeuristic 输出一致`): 重心值完全相同 (p0=0.508, p2=1.695, p3=2.069, p1=2.405)
+  但 Node 22/V8 得 `[0,3,1,2]`, Bun/JSC 得 `[0,2,3,1]`。
+  (Java `Collections.sort`/TimSort 对不自洽比较器并不保证"容忍"——规范上可抛
+  `IllegalArgumentException: Comparison method violates its general contract!`。此处未在本仓库
+  实测 Java 行为, 仅作源码级推断。)
+- **可达性**: 生产代码里 `ModelOrderBarycenterHeuristic` 仅在
+  `CROSSING_MINIMIZATION_FORCE_NODE_MODEL_ORDER === true` 时构造 (见 `src/p3order/graph-info-holder.ts`),
+  而 `force=true` 走自实现的 `insertionSort` (引擎无关); `layer.sort` 那条出现引擎漂移的路径
+  经公共 API **不可达** (ELK Java `GraphInfoHolder` 同样只在 force 时构造该类)。
+  `force=true` 路径上传递关联表实测不影响排序结果 (20000 随机图, 0 次非零命中) —— 因此本改动
+  **无任何可观测行为收益, 只是把契约违规消除掉**, 属防御性修正。
 - ggn 修法: **按返回符号记录关联** (返回 -1 记 `updateBiggerAndSmallerAssociations(n2, n1)`),
-  使比较器自洽 → 跨引擎确定。回归防线: 比较器自洽用例 (随机图 `cmp(a,b) === -cmp(b,a)`) +
+  使比较器自洽。回归防线: 比较器自洽用例 (随机图 `cmp(a,b) === -cmp(b,a)`, 走 `force=true` 插入排序
+  路径 —— 该用例在旧实现下**必失败**, 已实证) +
   CI `cross-engine` job 用 Bun/JSC 复跑纯算法单测 (`bun run test:cross-engine`,
-  `vitest.cross-engine.config.ts`); 主门禁 `verify` job 钉住 Node 22 (V8)。
+  `vitest.cross-engine.config.ts`); 主门禁 `verify` job 覆盖 Node 20/22 (V8)。
   elkjs 差分测试需 `Worker` (Bun 无) → Bun 侧只跑不依赖 elkjs 的 `tests/unit`。
-- 影响面: 全量 jar oracle (`tests/oracle/generated`, 4804 用例) 修正前后**逐位一致**;
+- 影响面: jar oracle (`tests/oracle/generated`) 单跑 1023 用例, 修正前后**逐位一致**;
+  全量套件 (4804 passed) 亦全绿。
   唯一行为变化是消除 ELK 自身的 UB (上游此处语义未定义, 不属于可移植语义)。
+
+### 6.18 构建期 tree-shaking 不得吃掉算法注册副作用 (ggn-layout 拆包期回归)
+- 症状: `ggn-layout@0.1.0` 的**完整入口**只剩 layered: `import { layoutElkJson } from 'ggn-layout'`
+  后跑 box/fixed/random/stress/force/rectpacking/topdownpacking/spore*/radial/vertiflex/disco/mrtree
+  这 13 个算法, 全部抛 `LayoutError: 布局算法 'X' 未注册`。`ggn-layout/layered` 正常。
+- 根因: `src/api/index.ts` 用**裸副作用** `import './register-all.js'` 注册非 layered provider;
+  而 `package.json` 一旦声明**白名单式** `sideEffects` (只列 `./dist/layout-worker.*`), rolldown 就把
+  `register-all` 判为无副作用模块并整块摇掉 → 完整入口退化成 layered 入口。
+  (rolldown 的 `treeshake.moduleSideEffects` 优先级高于 `package.json.sideEffects`, 但 tsdown 内部
+  会覆盖该输入选项, 实测无法在 tsdown config 里兜住。)
+- 修法: `sideEffects` 只声明为 **`true`** (语义: 本包文件可能有副作用), 不再用白名单枚举。
+  逐条件 `exports` + `.d.ts`/`.d.cts` 拆分不受影响; layered 子入口的体积分层由**入口模块图**保证
+  (`dist/api/layered.js` 根本不 import provider chunk), 不依赖该字段。
+- 为什么不能用白名单: 即便把 `**/register-all.*` 写进去 (可让**构建期**保留注册), 下游打包器仍会
+  在 consumer 侧把承载注册的 chunk 判为无副作用并摇掉 —— 实测 `bun build --minify` 后
+  `layoutElkJson` 单独 import 的应用跑非 layered 算法依旧「未注册」(bundle 从 732 KB 塌到 542 KB)。
+  即: 该 chunk 的副作用无法用文件级白名单表达, 只能保守声明。
+- 回归防线: `bun run smoke:pack` (`scripts/smoke-packed.mjs`) —— `npm pack` → 装进临时消费方 →
+  ESM/CJS 双跑完整入口的非 layered 算法 + `/layered` + 断言 `full - layered ≥ 100 KB`
+  (健康值 ≈ 201 KB; 退化成 layered 入口时该差值塌到 ≈ 6 KB) + **下游 bundler 冒烟**
+  (`bun build --minify` 打包只 import `layoutElkJson` 的消费方, 再运行非 layered 算法)。
+  CI `verify` job 与 release 流程均执行。已实证: 白名单式 `sideEffects` 会让该门禁失败
+  (构建期白名单在体积分层步触发, 消费侧白名单在下游 bundler 步触发)。
 
 ## 7. 验证命令速查
 

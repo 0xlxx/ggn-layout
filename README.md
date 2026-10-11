@@ -24,12 +24,13 @@ console.log(output.children, output.edges?.[0]?.sections)
 - [`docs/API-QUICKREF.md`](docs/API-QUICKREF.md)：单页速查，适合首次调用和 AI agent。
 - [`docs/API.md`](docs/API.md)：完整输入、输出、坐标模式和验证说明。
 - [`llms.txt`](llms.txt)：机器优先的入口、路径和错误契约索引。
-- [`examples/`](examples/)：可用 `bunx tsx` 直接运行的 basic、nested、coords-modes 示例。
+- [`examples/`](examples/)：可用 `bun examples/basic.ts` 直接运行的 basic、nested、coords-modes 示例。
 
 ## API 契约要点
 
 - **主入口**：`layoutElkJson(input, options?)` 是面向消费方的高层 API；输入是标准图 JSON，返回全新对象。复合能力：`layoutJsonBatch`（批量+逐项隔离）、`diffLayout`/`layoutJsonDiff`（布局差异）、`control: { signal, onProgress }`（进度+合作式取消）。
-- **纯函数**：不会修改传入的 `input`；同一输入与同一选项在相同版本下保持确定性，且跨 JS 引擎与 Node 版本结果一致，默认 `randomSeed` 为 `1`。
+- **纯函数**：不会修改传入的 `input`；同一输入与同一选项在同一版本下结果确定，默认 `randomSeed` 为 `1`。
+  CI 在 V8（Node 20/22）与 JavaScriptCore（Bun）双引擎上复跑纯算法单测，用于拦截「结果依赖引擎排序实现」的顺序漂移；跨引擎断言的范围是那批纯算法用例，不等同于对全部输出做逐位比对。
 - **失败方式**：非法输入或不支持的算法抛出结构化 `LayoutError`，可读取 `code`、`path`、`retryable` 和可选 `phase/details`。
 - **输出形态**：`responseFormat` 三档——`full`（默认，完整保真 JSON）、`concise`（只留节点几何 + 边端点，省 token）、`summary`（扁平摘要 `{nodes, edges}`，不含 root 自身、只含已路由边）。`pick` 仅在 `full` 下追加保留的节点字段。
 - **类型收紧**：`direction` 为 `'RIGHT'|'LEFT'|'DOWN'|'UP'` 字面量联合（持 `string` 变量的旧调用需收窄类型）；新增 `LayoutInput`/`LayoutOutput`/`LayoutSummary` 类型（命名不含 ELK）。
@@ -58,10 +59,12 @@ bun install
 bun run typecheck
 bun run test:ci
 bun run build
+bun run smoke:pack   # 打包产物门禁: 装进临时消费方跑完整/layered 双入口 (ESM+CJS)
 ```
 
 `test:ci` 会跳过体量很大的 `tests/oracle/generated/**` 批次，但覆盖其余单元、BDD
-和契约测试。完整测试可用 `bun run test:run`。
+和契约测试。完整测试可用 `bun run test:run`。第二套引擎（JavaScriptCore/Bun）用
+`bun run test:cross-engine`；包元数据用 `npx publint` 与 `npx @arethetypeswrong/cli --pack .` 检查。
 
 ## 发布
 

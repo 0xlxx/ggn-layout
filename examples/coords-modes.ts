@@ -1,5 +1,5 @@
 // 运行：bunx tsx examples/coords-modes.ts
-import { layoutElkJson } from '../src/public.js'
+import { layoutElkJson } from 'ggn-layout'
 
 const input = {
   id: 'root',

@@ -70,10 +70,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "sideEffects": [
-    "./dist/layout-worker.js",
-    "./dist/layout-worker.cjs"
-  ],
+  "sideEffects": true,
   "files": [
     "dist",
     "docs/API.md",
@@ -82,11 +79,14 @@
     "examples",
     "llms.txt",
     "THIRD_PARTY_NOTICES.md",
-    "src/api/layout-input.schema.json"
+    "src/api/layout-input.schema.json",
+    "CHANGELOG.md",
+    "LICENSES"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json --noEmit && node scripts/check-process-env-defines.mjs && tsdown",
-    "prepublishOnly": "npm run build",
+    "smoke:pack": "node scripts/smoke-packed.mjs",
+    "prepublishOnly": "npm run typecheck && npm run test:ci && npm run build",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
     "typecheck:src": "tsc -p tsconfig.build.json --noEmit",
@@ -124,9 +124,12 @@
   },
   "keywords": [
     "graph-layout",
+    "graph",
+    "layout",
     "elk",
     "layered",
-    "sugiyama"
+    "sugiyama",
+    "typescript"
   ],
   "license": "MIT",
   "repository": {
