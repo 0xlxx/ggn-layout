@@ -23,7 +23,7 @@
 ## 用法
 
 ```ts
-import { layoutElkJson } from '@ggn/layout'
+import { layoutElkJson } from 'ggn-layout'
 
 const input = {
   id: 'root',
@@ -136,8 +136,8 @@ SSOT 依据：ELK Java 0.12.0 `ShapeCoords.java`/`EdgeCoords.java` 枚举 + elkj
 
 ## 发布边界与 JSON Schema
 
-包提供四个入口：@ggn/layout（兼容根入口）、@ggn/layout/api（高层 API）、
-@ggn/layout/core（内部模型）和 @ggn/layout/options（稳定选项门面）。
+包提供四个入口：ggn-layout（兼容根入口）、ggn-layout/api（高层 API）、
+ggn-layout/core（内部模型）和 ggn-layout/options（稳定选项门面）。
 普通消费方优先从根入口或 api 导入；不要依赖 core 的内部属性与模型作为稳定契约。
 
 机器可读的 LayoutInput JSON Schema 位于 src/api/layout-input.schema.json，遵循

@@ -1,6 +1,6 @@
 # 增量布局使用指南 (Incremental Layout)
 
-> 适用: `@ggn/layout` JSON API (`layoutElkJson`)。场景: 图结构编辑后重布局, 要求节点尽量保持
+> 适用: `ggn-layout` JSON API (`layoutElkJson`)。场景: 图结构编辑后重布局, 要求节点尽量保持
 > 在上一轮位置 (编辑器拖拽、实时协作、CI 可视化等)。
 >
 > 参考实现: `demo-vite/main.ts` (增量布局 Playground, 浏览器可跑); 行为验收:
@@ -22,7 +22,7 @@ ELK 交互式布局把「上一轮布局输出坐标」作为本轮输入, 配�
 ## 2. 最小流程
 
 ```ts
-import { layoutElkJson } from '@ggn/layout'
+import { layoutElkJson } from 'ggn-layout'
 
 const INCREMENTAL_OPTS = {
   'org.eclipse.elk.layered.layering.strategy': 'INTERACTIVE',
@@ -94,9 +94,9 @@ function totalMove(out: ElkNode, prev: Map<string, { x: number; y: number }>): n
 1000+ 节点或高频重布局时, 把布局移到 Web Worker:
 
 ```ts
-import { createLayoutWorker } from '@ggn/layout'
+import { createLayoutWorker } from 'ggn-layout'
 // Vite: 直接打包宿主脚本为独立 worker chunk
-import LayoutWorker from '@ggn/layout/layout-worker?worker'
+import LayoutWorker from 'ggn-layout/layout-worker?worker'
 
 const client = createLayoutWorker(() => new LayoutWorker())
 const out = await client.layout(input, { layoutOptions: INCREMENTAL_OPTS })  // 异步 Promise
@@ -105,7 +105,7 @@ client.dispose()  // 终止 worker
 ```
 
 要点:
-- 包导出 `@ggn/layout/layout-worker` 子路径 (宿主脚本: 收消息 → `layoutElkJson` → 回传),
+- 包导出 `ggn-layout/layout-worker` 子路径 (宿主脚本: 收消息 → `layoutElkJson` → 回传),
   客户端 `createLayoutWorker` 提供 requestId 并发、`onProgress` 阶段进度透传。
 - **取消 = 终止 worker**: 布局是同步纯函数, abort 消息必然排在 layout 消息之后、永远无效;
   传工厂函数时取消后自动重建 worker, 后续请求继续可用 (demo 实测: 布局耗时 ~6ms vs 主线程同款,

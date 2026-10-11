@@ -1,4 +1,4 @@
-# ELK 算法实现指南（结构 / 接口，ELK Java 0.12.0 → @ggn/layout）
+# ELK 算法实现指南（结构 / 接口，ELK Java 0.12.0 → ggn-layout）
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14

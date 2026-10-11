@@ -1,4 +1,4 @@
-# ELK 布局选项接口参考（ELK Java 0.12.0 → @ggn/layout）
+# ELK 布局选项接口参考（ELK Java 0.12.0 → ggn-layout）
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14

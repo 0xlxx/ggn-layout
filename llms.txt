@@ -1,4 +1,4 @@
-# @ggn/layout
+# ggn-layout
 
 - 包简介：将标准图 JSON 布局为带节点几何、端口位置和边 sections 的新 JSON。
 - 首选入口：`layoutElkJson(input, options?)`；普通任务不要直接组装内部图模型。

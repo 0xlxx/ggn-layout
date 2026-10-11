@@ -3,7 +3,7 @@
 ## 入口
 
 ```ts
-import { layoutElkJson, LayoutError, LayoutErrorCode } from '@ggn/layout'
+import { layoutElkJson, LayoutError, LayoutErrorCode } from 'ggn-layout'
 const output = layoutElkJson(input, options?)
 ```
 

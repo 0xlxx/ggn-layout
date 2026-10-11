@@ -1,5 +1,5 @@
 # MODULES.tsv — layout 管线模块清单 (对齐 Bun LIFETIMES.tsv 思路)
-# 包名：@ggn/layout（目录 packages/layout；2026-09 由 elk-layout 更名，唯一使命 = ELK Java 0.12.0 1:1 移植）
+# 包名：ggn-layout（目录 packages/layout；2026-09 由 elk-layout 更名，唯一使命 = ELK Java 0.12.0 1:1 移植）
 #
 # 用途: 并行 agent 先查表再动手, 不各自猜。登记每个管线阶段: Java 类 ↔ TS 模块 ↔
 #       移植状态 ↔ 算法不变量 ↔ 测试文件 ↔ 根因簇。

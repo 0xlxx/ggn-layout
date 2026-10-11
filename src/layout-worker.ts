@@ -2,8 +2,8 @@
  * layout worker 宿主脚本.
  *
  * 由应用打包为独立 worker 入口:
- *   Vite: import LayoutWorker from '@ggn/layout/layout-worker?worker'
- *   Node (worker_threads): new Worker(new URL('@ggn/layout/dist/layout-worker.js', import.meta.url))
+ *   Vite: import LayoutWorker from 'ggn-layout/layout-worker?worker'
+ *   Node (worker_threads): new Worker(new URL('ggn-layout/dist/layout-worker.js', import.meta.url))
  *
  * 导出纯 handler (handleWorkerMessage) 便于单元测试; 浏览器环境自动注册 self.onmessage.
  * 布局在 worker 线程同步执行 (layoutElkJson 纯同步), 阶段进度经 postMessage 透传主线程.

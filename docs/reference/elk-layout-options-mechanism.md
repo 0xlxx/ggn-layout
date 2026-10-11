@@ -1,4 +1,4 @@
-# ELK 布局选项机制指南（IProperty / PropertyHolder，ELK Java → @ggn/layout）
+# ELK 布局选项机制指南（IProperty / PropertyHolder，ELK Java → ggn-layout）
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14
@@ -32,7 +32,7 @@ property holder 按 id 存取——这正是「算法可以覆盖全局默认值
 ### 设置（setProperty）
 
 ```ts
-import { Property, MapPropertyHolder } from '@ggn/layout/core'
+import { Property, MapPropertyHolder } from 'ggn-layout/core'
 
 // 机制示例：选项 = Property 常量（id + 默认值）
 const FEEDBACK_EDGES = new Property<boolean>('org.eclipse.elk.layered.feedbackEdges', false)

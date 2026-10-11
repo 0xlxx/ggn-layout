@@ -18,7 +18,7 @@ description: 当需要在 TypeScript/JavaScript 中对标准图 JSON 做确定�
 ## 最小示例
 
 ```ts
-import { layoutElkJson } from '@ggn/layout'
+import { layoutElkJson } from 'ggn-layout'
 
 const output = layoutElkJson({
   id: 'root',

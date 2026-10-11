@@ -167,7 +167,7 @@ bun run check:defines   # 门禁: src/shared 的 process.env.X 必须全部被 t
 
 ## Bundle 专项
 
-- layered-only 入口 `@ggn/layout/layered`（`src/api/layered.ts`）：不注册非 layered → tree-shake 掉 mrtree/disco/force/radial/rectpacking/spore/topdown/vertiflex。
+- layered-only 入口 `ggn-layout/layered`（`src/api/layered.ts`）：不注册非 layered → tree-shake 掉 mrtree/disco/force/radial/rectpacking/spore/topdown/vertiflex。
 - registry 模式：`src/api/registry.ts`（registerAlg/getAlg）+ `src/api/register-all.ts`（完整入口副作用注册）。
 - 发布构建 `tsdown`：minify + define 61 个 `process.env.GGN_*`（bun --define 不支持 process.env.X）。
 - 预算: layered-only 530KB raw / 135KB gzip（350KB 对 layered 内核过于激进，已调整评估）。

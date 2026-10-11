@@ -3,7 +3,7 @@
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-09-10
 > **Parent**: [文档索引](../README.md)
-> **Objective**: 回答「图里拐角很多」的三个问题——@ggn/layout 是否劣于原生 ELK Java、是否存在最优参数、算法层还有多少优化空间——并给出可执行建议与复现路径。
+> **Objective**: 回答「图里拐角很多」的三个问题——ggn-layout 是否劣于原生 ELK Java、是否存在最优参数、算法层还有多少优化空间——并给出可执行建议与复现路径。
 
 ## 1. 问题与样本
 
@@ -58,7 +58,7 @@
 - 12/12 条边在归一化容器偏移后逐点一致。
 
 > 坐标模式差异（非路由差异）：Java 的 JSON 导出器输出**父相对坐标**（ELK 内部表示），
-> `@ggn/layout` 按 `json.shapeCoords=ROOT` 投影为绝对坐标。两者相差一个容器偏移
+> `ggn-layout` 按 `json.shapeCoords=ROOT` 投影为绝对坐标。两者相差一个容器偏移
 > `(376.3, 17)`，归一化后完全一致。kernel 依赖 ROOT 绝对坐标，不要改这条投影。
 
 ## 4. 参数矩阵（同一张图，19 条边）
@@ -189,7 +189,7 @@
 2) 重放        @ggn/agent reduceAgentEvents → createScene/updateElements → 元素集
 3) 量尺寸      kernel measureNode() → 节点 width/height
 4) 导 ELK JSON  id + children(size) + edges(sources/targets) + layoutOptions（ROOT 坐标 + NETWORK_SIMPLEX + edgeNodeBetweenLayers=14）
-5) 双侧跑布局   @ggn/layout layoutElkJson()  vs  Java oracle（同一份 JSON）
+5) 双侧跑布局   ggn-layout layoutElkJson()  vs  Java oracle（同一份 JSON）
 6) 比指标      逐边折点/端点（ε=0.01）+ 弯点数 + 总边长 + 交叉对
 ```
 

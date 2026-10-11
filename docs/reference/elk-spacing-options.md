@@ -1,4 +1,4 @@
-# ELK 间距选项指南（Spacing Options，ELK Java → @ggn/layout）
+# ELK 间距选项指南（Spacing Options，ELK Java → ggn-layout）
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14

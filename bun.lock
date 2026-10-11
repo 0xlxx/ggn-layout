@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@ggn/layout",
+      "name": "ggn-layout",
       "dependencies": {
         "cac": "^7.0.0",
       },

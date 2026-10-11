@@ -2,7 +2,7 @@
  * layout Web Worker 客户端 (布局算法在后台线程执行, 不阻塞主线程).
  *
  * 用法 (Vite 应用):
- *   import LayoutWorker from '@ggn/layout/layout-worker?worker'
+ *   import LayoutWorker from 'ggn-layout/layout-worker?worker'
  *   const client = createLayoutWorker(() => new LayoutWorker())
  *   const out = await client.layout(input, { direction: 'RIGHT' })
  *

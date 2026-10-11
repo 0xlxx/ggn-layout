@@ -1,5 +1,5 @@
 {
-  "name": "@ggn/layout",
+  "name": "ggn-layout",
   "version": "0.1.0",
   "description": "ELK Layered 1:1 TypeScript 移植 (模型/算法/变量名与 ELK 源码一致)",
   "type": "module",
@@ -105,9 +105,6 @@
   "homepage": "https://github.com/0xlxx/ggn-layout#readme",
   "bugs": {
     "url": "https://github.com/0xlxx/ggn-layout/issues"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "engines": {
     "node": ">=20"

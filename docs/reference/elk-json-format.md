@@ -1,4 +1,4 @@
-# ELK JSON 图格式指南（ELK Java → @ggn/layout）
+# ELK JSON 图格式指南（ELK Java → ggn-layout）
 
 > **Status**: 🟢 Active
 > **Last Updated**: 2026-08-14

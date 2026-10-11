@@ -17,3 +17,6 @@ stryker-cell-tmp
 meta.json
 
 *.class
+
+# npm pack 产物
+*.tgz

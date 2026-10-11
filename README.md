@@ -1,19 +1,19 @@
-# @ggn/layout
+# ggn-layout
 
 把标准图 JSON 布局成带节点几何、端口位置和边 `sections` 的新 JSON；普通消费方只需要一个纯函数入口。
 
 ## 安装
 
 ```sh
-npm install @ggn/layout
+npm install ggn-layout
 # 或
-pnpm add @ggn/layout
+pnpm add ggn-layout
 ```
 
 ## 最小示例
 
 ```ts
-import { layoutElkJson } from '@ggn/layout'
+import { layoutElkJson } from 'ggn-layout'
 const input = { id: 'root', children: [{ id: 'A' }, { id: 'B' }], edges: [{ id: 'A-to-B', sources: ['A'], targets: ['B'] }] }
 const output = layoutElkJson(input)
 console.log(output.children, output.edges?.[0]?.sections)
@@ -40,12 +40,12 @@ console.log(output.children, output.edges?.[0]?.sections)
 
 按使用层级选择发布入口：
 
-- @ggn/layout：兼容根入口，包含高层 API 与历史内部导出。
-- @ggn/layout/api：高层布局 API、校验、错误和布局输入/输出类型。
-- @ggn/layout/core：引擎内部模型与低层组装原语。
-- @ggn/layout/options：稳定选项类型、HIERARCHY_HANDLING 以及算法识别工具。
+- ggn-layout：兼容根入口，包含高层 API 与历史内部导出。
+- ggn-layout/api：高层布局 API、校验、错误和布局输入/输出类型。
+- ggn-layout/core：引擎内部模型与低层组装原语。
+- ggn-layout/options：稳定选项类型、HIERARCHY_HANDLING 以及算法识别工具。
 
-普通消费方优先使用 @ggn/layout 或 @ggn/layout/api；只有需要引擎级能力时才使用 core。
+普通消费方优先使用 ggn-layout 或 ggn-layout/api；只有需要引擎级能力时才使用 core。
 
 ## 开发
 
@@ -63,10 +63,13 @@ bun run build
 
 ```sh
 bun run build
-npm publish --access public
+npm publish
 ```
 
-`prepublishOnly` 会再次构建发布产物。
+`prepublishOnly` 会再次构建发布产物。正式发布会走
+[`.github/workflows/release.yml`](.github/workflows/release.yml)：打 `v*` tag 后由
+GitHub Actions 以 npm Trusted Publishing（OIDC）发布并附带 provenance 证明。
+手工发布仅在 Actions 不可用时使用。
 
 ## 许可证
 

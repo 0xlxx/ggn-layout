@@ -200,13 +200,13 @@ P1 断环 (cycleBreaking) → P2 分层 (layering + NodePromotion) → P3 排序
 
 ```bash
 # 单模块
-bun run --filter @ggn/layout test tests/elk-java-unit/<File>.test.ts
+bun run test tests/elk-java-unit/<File>.test.ts
 # 阶段 diff (ggn vs jar)
 bun scripts/stage-diff.mjs diff
 # 696 无回归硬门禁
-bun run --filter @ggn/layout verify:696
+bun run verify:696
 # 全量 elk-java-unit (排除 realworld_batch 防超时)
-cd packages/layout && ./node_modules/.bin/vitest run tests/elk-java-unit --exclude 'tests/elk-official/generated/realworld_batch.test.ts'
+./node_modules/.bin/vitest run tests/elk-java-unit --exclude 'tests/elk-official/generated/realworld_batch.test.ts'
 # 分批变异 (低 CPU)
 bun scripts/mutate-batch.mjs <batch>
 ```

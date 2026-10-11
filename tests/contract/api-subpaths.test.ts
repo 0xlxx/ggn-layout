@@ -6,7 +6,7 @@
  */
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import type { ElkLayoutOptions } from '@ggn/layout/options'
+import type { ElkLayoutOptions } from 'ggn-layout/options'
 
 const schema = JSON.parse(readFileSync(new URL('../../src/api/layout-input.schema.json', import.meta.url), 'utf8')) as {
   $schema?: string
@@ -25,7 +25,7 @@ type OptionsFacade = {
 let optionsFacade: OptionsFacade
 let usedSelfReference = true
 try {
-  optionsFacade = await import('@ggn/layout/options')
+  optionsFacade = await import('ggn-layout/options')
 } catch (error) {
   usedSelfReference = false
   console.warn('[api-subpaths] package self-reference unavailable; using ../../src/options.ts fallback', error)
@@ -71,10 +71,10 @@ describe('layout-input.schema.json', () => {
 describe('README 子路径文档', () => {
   it('提到根入口与三个发布子路径', () => {
     for (const subpath of [
-      '@ggn/layout',
-      '@ggn/layout/api',
-      '@ggn/layout/core',
-      '@ggn/layout/options',
+      'ggn-layout',
+      'ggn-layout/api',
+      'ggn-layout/core',
+      'ggn-layout/options',
     ]) {
       expect(readme).toContain(subpath)
     }
