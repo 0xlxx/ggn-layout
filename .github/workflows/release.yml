@@ -70,7 +70,15 @@ jobs:
 
       - name: Publish (dry run)
         if: github.event_name == 'workflow_dispatch' && inputs.dry-run
-        run: npm publish --dry-run --provenance
+        # dry-run 用一次性预发布版本号: npm 即使 --dry-run 也会去 registry 查重,
+        # 若沿用 package.json 里已发布的版本, 演练必然以
+        # "You cannot publish over the previously published versions" 收尾,
+        # Actions 上永远是一条红的. 换成本次 run 独有、不可能存在的版本号后,
+        # 演练能一路走完(含 registry 查询与 provenance 前置校验)且不产生任何残留.
+        # 预发布版本号还必须显式给 --tag, 否则 npm 直接拒绝.
+        run: |
+          npm pkg set version="0.0.0-dryrun.${{ github.run_id }}"
+          npm publish --dry-run --provenance --tag dryrun
 
       - name: Publish
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry-run == false)

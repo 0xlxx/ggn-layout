@@ -19,7 +19,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { npmEnv, parsePackJson } from './npm-utils.mjs'
+import { captureStdout, npmEnv, parsePackJson } from './npm-utils.mjs'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const workDir = mkdtempSync(join(tmpdir(), 'ggn-layout-smoke-'))
@@ -113,13 +113,13 @@ try {
   if (!existsSync(join(repoRoot, 'dist', 'index.js'))) {
     throw new Error('dist/index.js 不存在 —— 请先 `bun run build`')
   }
-  const packOutput = execFileSync('npm', ['pack', '--json', '--pack-destination', workDir], {
+  // 父级 npm(如 `npm publish --dry-run`) 会注入 npm_config_dry_run,
+  // 不剥离的话这里的 pack 会静默不产出 tarball；走 captureStdout 而非管道，
+  // 以免包变大后 `--json` 清单被 64 KiB 管道截断。
+  const packOutput = captureStdout('npm', ['pack', '--json', '--pack-destination', workDir], {
     cwd: repoRoot,
-    encoding: 'utf8',
-    // 父级 npm(如 `npm publish --dry-run`) 会注入 npm_config_dry_run,
-    // 不剥离的话这里的 pack 会静默不产出 tarball.
     env: npmEnv(),
-  })
+  }).stdout
   const [{ filename }] = parsePackJson(packOutput)
   const tarball = join(workDir, filename)
 

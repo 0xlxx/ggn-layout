@@ -6,14 +6,13 @@
  * 确保 npm 用户 / AI agent 在 tarball 里点开的相对链接都能落地。
  * 指向仓库内部（未随包发布）的文件必须改成绝对 URL 或去掉链接。
  */
-import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
-import { npmEnv, parsePackJson } from './npm-utils.mjs'
+import { captureStdout, npmEnv, parsePackJson } from './npm-utils.mjs'
 
 const [tarball] = parsePackJson(
-  execFileSync('npm', ['pack', '--dry-run', '--json'], { encoding: 'utf8', env: npmEnv() }),
+  captureStdout('npm', ['pack', '--dry-run', '--json'], { env: npmEnv() }).stdout,
 )
 const files = new Set(tarball.files.map((entry) => entry.path))
 

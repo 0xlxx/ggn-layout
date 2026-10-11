@@ -6,26 +6,25 @@
  * 会让将来任何子路径 `exports` 写错也一并变绿。本脚本只豁免明确的
  * `node10`（EOL，且本包 engines.node >= 20）列，其余列出现任何问题一律 fail。
  */
-import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 
-import { npmEnv } from './npm-utils.mjs'
+import { captureStdout, npmEnv } from './npm-utils.mjs'
 
 const ATTW_VERSION = '0.18.5'
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
 
-let raw
-try {
-  raw = execFileSync(
-    'npx',
-    ['--yes', `@arethetypeswrong/cli@${ATTW_VERSION}`, '--pack', '.', '--format', 'json'],
-    // attw 会自己走打包流程, 同样要隔离父级 npm 的 dry-run/provenance 配置.
-    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], env: npmEnv() },
-  )
-} catch (error) {
-  // 有 node10 问题时 attw 以非零码退出，但 stdout 仍是完整 JSON。
-  if (!error.stdout) throw error
-  raw = error.stdout
+// attw 会自己走打包流程, 要隔离父级 npm 的 dry-run/provenance 配置;
+// 输出约 130 KB, 必须绕开 execFileSync 的管道, 否则会以 ~25% 概率被截断到 64 KiB。
+// 有 node10 问题时 attw 以非零码退出, 但 stdout 仍是完整 JSON, captureStdout 照常返回。
+const { stdout: raw } = captureStdout(
+  'npx',
+  ['--yes', `@arethetypeswrong/cli@${ATTW_VERSION}`, '--pack', '.', '--format', 'json'],
+  { env: npmEnv() },
+)
+
+if (raw.trim() === '') {
+  console.error(`✗ attw ${ATTW_VERSION} 没有输出任何内容，无法解析分析结果`)
+  process.exit(1)
 }
 
 const { packageVersion, problems = [] } = JSON.parse(raw).analysis
