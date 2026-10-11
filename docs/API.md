@@ -136,12 +136,16 @@ SSOT 依据：ELK Java 0.12.0 `ShapeCoords.java`/`EdgeCoords.java` 枚举 + elkj
 
 ## 发布边界与 JSON Schema
 
-包提供四个入口：ggn-layout（兼容根入口）、ggn-layout/api（高层 API）、
-ggn-layout/core（内部模型）和 ggn-layout/options（稳定选项门面）。
+包提供六个 JS 入口：ggn-layout（兼容根入口）、ggn-layout/api（高层 API）、
+ggn-layout/core（内部模型）、ggn-layout/options（稳定选项门面）、
+ggn-layout/layered（仅分层算法）和 ggn-layout/layout-worker（Web Worker 外壳）。
 普通消费方优先从根入口或 api 导入；不要依赖 core 的内部属性与模型作为稳定契约。
+六个入口均同时提供 ESM（`import`）与 CJS（`require`）产物，类型分别由 `.d.ts`
+与 `.d.cts` 承载。
 
-机器可读的 LayoutInput JSON Schema 位于 src/api/layout-input.schema.json，遵循
-JSON Schema draft-07，覆盖递归 children、单源单目标 edges、端口/标签和开放扩展字段。
+机器可读的 LayoutInput JSON Schema 通过 `ggn-layout/layout-input.schema.json`
+子路径导出（源码位于 src/api/layout-input.schema.json），遵循 JSON Schema draft-07，
+覆盖递归 children、单源单目标 edges、端口/标签和开放扩展字段。
 运行时契约以 validateLayoutInput 为准，schema 供工具与 AI agent 消费。
 
 ## 参考文档（移植自 ELK Java 0.12.0，位于仓库根 docs/reference/）

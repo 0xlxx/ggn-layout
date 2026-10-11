@@ -44,8 +44,12 @@ console.log(output.children, output.edges?.[0]?.sections)
 - ggn-layout/api：高层布局 API、校验、错误和布局输入/输出类型。
 - ggn-layout/core：引擎内部模型与低层组装原语。
 - ggn-layout/options：稳定选项类型、HIERARCHY_HANDLING 以及算法识别工具。
+- ggn-layout/layered：仅分层算法（ELK Layered）入口，不打包其余算法。
+- ggn-layout/layout-worker：Web Worker 外壳，`import` 即自动接管 `self.onmessage`。
+- ggn-layout/layout-input.schema.json：机器可读的 LayoutInput JSON Schema（draft-07）。
 
 普通消费方优先使用 ggn-layout 或 ggn-layout/api；只有需要引擎级能力时才使用 core。
+六个 JS 入口都提供 ESM + CJS 双份产物与各自的 `.d.ts`/`.d.cts` 类型。
 
 ## 开发
 

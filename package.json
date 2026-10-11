@@ -5,39 +5,75 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./api": {
-      "types": "./dist/api/index.d.ts",
-      "import": "./dist/api/index.js",
-      "require": "./dist/api/index.cjs"
+      "import": {
+        "types": "./dist/api/index.d.ts",
+        "default": "./dist/api/index.js"
+      },
+      "require": {
+        "types": "./dist/api/index.d.cts",
+        "default": "./dist/api/index.cjs"
+      }
     },
     "./core": {
-      "types": "./dist/internal.d.ts",
-      "import": "./dist/internal.js",
-      "require": "./dist/internal.cjs"
+      "import": {
+        "types": "./dist/internal.d.ts",
+        "default": "./dist/internal.js"
+      },
+      "require": {
+        "types": "./dist/internal.d.cts",
+        "default": "./dist/internal.cjs"
+      }
     },
     "./options": {
-      "types": "./dist/options.d.ts",
-      "import": "./dist/options.js",
-      "require": "./dist/options.cjs"
+      "import": {
+        "types": "./dist/options.d.ts",
+        "default": "./dist/options.js"
+      },
+      "require": {
+        "types": "./dist/options.d.cts",
+        "default": "./dist/options.cjs"
+      }
     },
     "./layered": {
-      "types": "./dist/api/layered.d.ts",
-      "import": "./dist/api/layered.js",
-      "require": "./dist/api/layered.cjs"
+      "import": {
+        "types": "./dist/api/layered.d.ts",
+        "default": "./dist/api/layered.js"
+      },
+      "require": {
+        "types": "./dist/api/layered.d.cts",
+        "default": "./dist/api/layered.cjs"
+      }
     },
     "./layout-worker": {
-      "types": "./dist/layout-worker.d.ts",
-      "import": "./dist/layout-worker.js",
-      "require": "./dist/layout-worker.cjs"
-    }
+      "import": {
+        "types": "./dist/layout-worker.d.ts",
+        "default": "./dist/layout-worker.js"
+      },
+      "require": {
+        "types": "./dist/layout-worker.d.cts",
+        "default": "./dist/layout-worker.cjs"
+      }
+    },
+    "./layout-input.schema.json": "./src/api/layout-input.schema.json",
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "./dist/layout-worker.js",
+    "./dist/layout-worker.cjs"
+  ],
   "files": [
     "dist",
     "docs/API.md",
@@ -109,14 +145,12 @@
     "@stryker-mutator/vitest-runner": "^9.6.1",
     "@types/node": "20",
     "@vitest/ui": "^4.1.10",
+    "cac": "^7.0.0",
     "elkjs": "^0.12.0",
     "glob": "^13.0.6",
     "tsdown": "^0.22.2",
     "typescript": "^6.0.3",
     "vite": "^7.3.0",
     "vitest": "^4.1.10"
-  },
-  "dependencies": {
-    "cac": "^7.0.0"
   }
 }

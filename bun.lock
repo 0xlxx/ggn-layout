@@ -4,14 +4,12 @@
   "workspaces": {
     "": {
       "name": "ggn-layout",
-      "dependencies": {
-        "cac": "^7.0.0",
-      },
       "devDependencies": {
         "@stryker-mutator/core": "^9.6.1",
         "@stryker-mutator/vitest-runner": "^9.6.1",
         "@types/node": "20",
         "@vitest/ui": "^4.1.10",
+        "cac": "^7.0.0",
         "elkjs": "^0.12.0",
         "glob": "^13.0.6",
         "tsdown": "^0.22.2",
