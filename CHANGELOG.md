@@ -26,6 +26,8 @@
   而 `smoke:pack` 仍按数组解构，导致 `release.yml`（Node 24 + `npm@latest`）在冒烟步骤直接失败。
   新增 `scripts/npm-pack-json.mjs` 归一化两种结构，并在 CI 增加 `pack-npm-latest` 作业用
   「发布同款环境」复跑产物门禁，避免 CI 绿而 release 红。
+- `release.yml` 的「该版本尚未发布」守卫改为只在真正发布时生效：`workflow_dispatch` 的
+  `dry-run` 现在能完整演练到 `npm publish --dry-run --provenance` 这一步。
 
 ## [0.1.0]
 

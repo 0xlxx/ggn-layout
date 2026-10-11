@@ -58,7 +58,10 @@ jobs:
       # 发布前的产物门禁: 完整入口可跑非 layered 算法 + layered 子入口可用 + 体积分层.
       - run: bun run smoke:pack
 
+      # 只在「真的会发布」时拦截重复版本；dry-run 不产生任何发布，
+      # 因此要放行，否则无法在已发布版本上演练 `npm publish --dry-run --provenance` 这一步。
       - name: Guard — 该版本尚未发布
+        if: github.event_name == 'push' || inputs.dry-run == false
         run: |
           version="$(node -p "require('./package.json').version")"
           if npm view "ggn-layout@${version}" version >/dev/null 2>&1; then
