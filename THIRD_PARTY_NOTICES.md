@@ -8,7 +8,11 @@ from the Eclipse Layout Kernel (ELK).
 - Project: Eclipse Layout Kernel (ELK)
 - Website: https://www.eclipse.org/elk/
 - Source: https://github.com/eclipse/elk
-- License: Eclipse Public License 2.0 (EPL-2.0)
+- License: Eclipse Public License 2.0 (EPL-2.0)；SPDX 标识 `EPL-2.0 OR GPL-3.0-or-later`
+- Copyright: 版权归各上游作者/雇主所有（上游 [NOTICE.md](https://github.com/eclipse/elk/blob/master/NOTICE.md)：
+  "All content is the property of the respective authors or their employers."）。
+  分层算法的源码头为 `Copyright (c) 2010, 2015 Kiel University and others.`；
+  其余被移植模块的版权年代与持有人以对应上游源码头为准。
 
 EPL-2.0 全文见 [`LICENSES/EPL-2.0.txt`](LICENSES/EPL-2.0.txt)。
 
@@ -35,3 +39,7 @@ EPL-2.0 全文见 [`LICENSES/EPL-2.0.txt`](LICENSES/EPL-2.0.txt)。
 Some files under `test-resources/` are graph models and expected outputs that
 originate from ELK test suites or public research/industry model collections.
 Their original attribution and license terms remain with the upstream sources.
+
+具体地，`tests/oracle/**` 的 `elkt` 测试图数据源自 ELK 官方测试集
+（Copyright (c) 2018 Kiel University 及贡献者），该数据集未随 `elkjs` 或
+ELK v0.12.0 发布包分发；期望坐标由 `elkjs` 0.12.0 运行时生成并校验。

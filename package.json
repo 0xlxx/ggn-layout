@@ -86,7 +86,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json --noEmit && node scripts/check-process-env-defines.mjs && tsdown",
     "smoke:pack": "node scripts/smoke-packed.mjs",
-    "prepublishOnly": "npm run typecheck && npm run test:ci && npm run build",
+    "prepublishOnly": "npm run typecheck && npm run test:ci && npm run build && npm run smoke:pack",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
     "typecheck:src": "tsc -p tsconfig.build.json --noEmit",
@@ -132,6 +132,10 @@
     "typescript"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/0xlxx/ggn-layout.git"

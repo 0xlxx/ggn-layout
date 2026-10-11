@@ -5,6 +5,14 @@
 
 ## [Unreleased]
 
+### 变更
+
+- 发布工程加固：`prepublishOnly` 末尾追加打包产物冒烟（`smoke:pack`）；显式声明
+  `publishConfig`（`registry=https://registry.npmjs.org/`、`access=public`）；CI 中的
+  `publint` 与 `@arethetypeswrong/cli` 锁定到具体版本。
+- 第三方许可声明补全：`THIRD_PARTY_NOTICES.md` 增加 ELK 版权归属、SPDX 标识
+  （`EPL-2.0 OR GPL-3.0-or-later`）与 `elkt` 测试数据的来源与版权。
+
 ## [0.1.0]
 
 首个公开发布（从 GGN monorepo 拆出的独立包）。
