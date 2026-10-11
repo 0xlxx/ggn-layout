@@ -19,6 +19,8 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { parsePackJson } from './npm-pack-json.mjs'
+
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const workDir = mkdtempSync(join(tmpdir(), 'ggn-layout-smoke-'))
 const consumerDir = join(workDir, 'consumer')
@@ -115,7 +117,7 @@ try {
     cwd: repoRoot,
     encoding: 'utf8',
   })
-  const [{ filename }] = JSON.parse(packOutput)
+  const [{ filename }] = parsePackJson(packOutput)
   const tarball = join(workDir, filename)
 
   // 2) 安装到干净消费方目录, 走真实 exports 解析 (而非直接 import dist 相对路径)

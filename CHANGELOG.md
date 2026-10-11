@@ -22,6 +22,10 @@
   `docs/README.md`（改为 `../../README.md`）、`../docs/API.md` 改为 `../API.md`、两个指向本仓不存在的
   `docs/design/*` 的链接改为纯文本、README 里的 `release.yml` 改为绝对 GitHub URL。
   新增 `check:docs` 门禁：以 `npm pack` 的真实清单校验随包文档的相对链接，防止回归。
+- **修复发布链路阻断缺陷**：`npm pack --json` 在 npm 12 由**数组**改为**按包名索引的对象**，
+  而 `smoke:pack` 仍按数组解构，导致 `release.yml`（Node 24 + `npm@latest`）在冒烟步骤直接失败。
+  新增 `scripts/npm-pack-json.mjs` 归一化两种结构，并在 CI 增加 `pack-npm-latest` 作业用
+  「发布同款环境」复跑产物门禁，避免 CI 绿而 release 红。
 
 ## [0.1.0]
 
