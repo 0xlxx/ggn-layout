@@ -1,3 +1,18 @@
+ggn-layout is distributed under the SPDX expression `(MIT AND EPL-2.0)`.
+
+- Portions derived from the Eclipse Layout Kernel (ELK) -- every file under `src/` and
+  `shared/` -- are licensed under the Eclipse Public License 2.0 (EPL-2.0).
+  Full text: LICENSES/EPL-2.0.txt
+- All other content (build/release engineering, documentation, examples, package metadata)
+  is licensed under the MIT License, whose full text follows below.
+- EPL-2.0 source-availability statement: the Source Code Form corresponding to each
+  published release is available under EPL-2.0 in the source repository at
+  https://github.com/0xlxx/ggn-layout (tag `v<version>` of the release).
+
+See THIRD_PARTY_NOTICES.md for the full attribution and the exact source range.
+
+--------------------------------------------------------------------------------
+
 MIT License
 
 Copyright (c) 2026 GGN contributors

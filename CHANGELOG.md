@@ -10,9 +10,18 @@
 ### 变更
 
 - **许可口径修正**：`package.json` 的 `license` 由 `MIT` 改为 `(MIT AND EPL-2.0)`。本包是
-  ELK 的衍生作品（`src/**` 中 294 个文件为 1:1 移植，属 EPL-2.0），此前只标 MIT 与事实不符。
-  同时给全部 `src/**` 文件补 SPDX 头（ELK 衍生 → `EPL-2.0`、GGN 自有 → `MIT`）、给每个
-  `dist` 产物加归属 banner，并新增 `check:license` 门禁（CI + `prepublishOnly`）防止新增文件漏标。
+  ELK 的衍生作品，此前只标 MIT 与事实不符。落地方式：`src/**` 与 `shared/**` 的全部 315 个
+  `.ts` 文件统一加 `SPDX-License-Identifier: EPL-2.0` 头 + ELK 归属行（**不再逐文件混标** ——
+  首版整改把 `src/api/**` 一律当 GGN 自有标 MIT，其中 `src/api/core-providers.ts` 实为 ELK
+  `org.eclipse.elk.core.util` 的 fixed/random/box provider 移植，属错标）；`dist` 每个产物加
+  归属 banner；`LICENSE`、`README.md`、`THIRD_PARTY_NOTICES.md` 与 `package.json` 统一到同一口径；
+  新增 `check:license` 门禁（源码 SPDX 头 + 非 `.ts` 文件登记 + dist banner + 四份口径文件一致性）
+  并接入 CI 与 `prepublishOnly`。
+- 补齐 EPL-2.0 的源码可得性与归属义务：`THIRD_PARTY_NOTICES.md` 增加 §3.1(a) 源码可得性声明
+  （每个发布 tag 的对应源码以 EPL-2.0 提供于本仓），不再只指向上游 `eclipse/elk`；并停止把
+  294 个文件的上游版权年代统一改写成 `2010, 2015`（上游逐文件不同），改为声明持有人 + 来源登记。
+- 补 `shared/**` 的归属登记与门禁覆盖：`shared/elkgraph-builder.ts`（ELK `ElkGraphImporter` /
+  `LGraphUtil` 建图逻辑移植）此前既无 SPDX 头也不在 CI 扫描范围内，而它确实进入发布产物。
 - 发布工程加固：`prepublishOnly` 末尾追加打包产物冒烟（`smoke:pack`）；显式声明
   `publishConfig`（`registry=https://registry.npmjs.org/`、`access=public`）；CI 中的
   `publint` 与 `@arethetypeswrong/cli` 锁定到具体版本。

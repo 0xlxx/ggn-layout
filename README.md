@@ -84,5 +84,11 @@ provenance 证明。
 
 ## 许可证
 
-MIT。项目是 Eclipse Layout Kernel (ELK) Layered 的 TypeScript 移植，
-移植来源、测试数据和第三方许可说明见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
+本包以 **`(MIT AND EPL-2.0)`** 分发（SPDX 表达式，与 `package.json` 的 `license` 一致）：
+
+- `src/**` 与 `shared/**` 的实现是 Eclipse Layout Kernel (ELK) v0.12.0 的 1:1 TypeScript 移植，
+  以 **EPL-2.0** 授权；全文见 [`LICENSES/EPL-2.0.txt`](LICENSES/EPL-2.0.txt)。
+- 其余内容（构建/发布工程、文档、示例、包元数据）为 GGN 原创，以 **MIT** 授权；
+  全文见 [`LICENSE`](LICENSE)。
+- 包内同时含两种许可的代码，消费方需**同时**满足 MIT 与 EPL-2.0 的义务。
+  移植来源、测试数据与逐项归属见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。

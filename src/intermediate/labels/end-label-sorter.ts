@@ -1,13 +1,12 @@
 /*
- * Copyright (c) 2010, 2015 Kiel University and others.
  * Copyright (c) 2026 GGN contributors.
+ * Portions derived from the Eclipse Layout Kernel (ELK), Copyright (c) Kiel University and others.
  *
- * This file is part of ggn-layout, a TypeScript port of the Eclipse Layout
- * Kernel (ELK, https://github.com/eclipse/elk). It is derived from ELK and is
- * made available under the terms of the Eclipse Public License 2.0.
+ * This file is part of ggn-layout, a TypeScript port of ELK v0.12.0.
+ * Upstream attribution and source range: see THIRD_PARTY_NOTICES.md.
  *
  * SPDX-License-Identifier: EPL-2.0
- * License text: LICENSES/EPL-2.0.txt — see also THIRD_PARTY_NOTICES.md.
+ * License text: LICENSES/EPL-2.0.txt.
  */
 /**
  * EndLabelSorter (对应 ELK intermediate.EndLabelSorter).

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 GGN contributors.
+ * Portions derived from the Eclipse Layout Kernel (ELK), Copyright (c) Kiel University and others.
+ *
+ * This file is part of ggn-layout, a TypeScript port of ELK v0.12.0.
+ * Upstream attribution and source range: see THIRD_PARTY_NOTICES.md.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt.
+ */
 /** 共享建图核心 — 无 node 依赖, scripts (elkt-build) 与 demo (layout-build) 共用.
  * 单一来源: parseElkt 结构 / ELK JSON → LGraph, 消除浏览器 fork 不一致 (审查报告 §2.1-2.3).
  */

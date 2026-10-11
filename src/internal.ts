@@ -1,11 +1,12 @@
 /*
  * Copyright (c) 2026 GGN contributors.
+ * Portions derived from the Eclipse Layout Kernel (ELK), Copyright (c) Kiel University and others.
  *
- * This file is part of ggn-layout. It is original work of the GGN project and
- * is made available under the terms of the MIT License.
+ * This file is part of ggn-layout, a TypeScript port of ELK v0.12.0.
+ * Upstream attribution and source range: see THIRD_PARTY_NOTICES.md.
  *
- * SPDX-License-Identifier: MIT
- * License text: LICENSE.
+ * SPDX-License-Identifier: EPL-2.0
+ * License text: LICENSES/EPL-2.0.txt.
  */
 /**
  * 内部移植模型入口，不对外承诺兼容。
