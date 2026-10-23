@@ -1,0 +1,7 @@
+# Project-specific generated files. Patterns use shell glob syntax.
+# The pre-commit hook already skips lock files, binary files, dist/build/coverage,
+# node_modules, VitePress cache/dist, minified files, source maps and snapshots.
+
+# Typedoc output and VitePress build caches.
+docs/public/api/typedoc/**
+meta.json

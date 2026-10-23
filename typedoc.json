@@ -1,0 +1,20 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "ggn-layout API",
+  "entryPoints": ["src/public.ts"],
+  "entryPointStrategy": "resolve",
+  "tsconfig": "tsconfig.json",
+  "out": "docs/public/api/typedoc",
+  "readme": "none",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "categorizeByGroup": true,
+  "navigationLinks": {
+    "文档": "../..",
+    "GitHub": "https://github.com/0xlxx/ggn-layout"
+  },
+  "sourceLinkTemplate": "https://github.com/0xlxx/ggn-layout/blob/main/{path}#L{line}",
+  "cleanOutputDir": true
+}
