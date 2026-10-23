@@ -5,9 +5,8 @@
  * 断言 (@Test(ElkNode), when='layout'): 当 PARTITIONING_ACTIVATE 且节点带 partition 属性时,
  *   低 partition 节点的最右坐标必须小于高 partition 节点的最左坐标 (按 partition 顺序从左到右).
  *
- * ggn 缺口: ggn 未实现 partition 机制 (PARTITIONING_ACTIVATE / PARTITIONING_PARTITION 属性
- * 及 PartitionPreprocessor/PartitionMidprocessor/PartitionPostprocessor 均不存在) →
- * 分区布局不会发生, 断言无法触发 → it.skip, 不伪造通过.
+ * ggn 已移植 PARTITIONING_ACTIVATE / PARTITIONING_PARTITION 及
+ * PartitionPreprocessor / PartitionMidprocessor / PartitionPostprocessor。
  */
 import { describe, expect, it } from 'vitest'
 import { resolveModels, limitModels, runAll, summarizeFailures } from './framework/runner.js'
@@ -21,12 +20,12 @@ const MODELS = limitModels([
 /** 对应 Java testPartitionOrderInGraph: 同一图内按 partition 从小到大检查坐标不重叠. */
 function checkPartitionOrderInGraph(g: LGraph): string[] {
   const problems: string[] = []
-  if (!g.getProperty<boolean>('org.eclipse.elk.layered.partitioning.activate')) return problems
+  if (!g.getProperty<boolean>('org.eclipse.elk.partitioning.activate')) return problems
 
   const partitionToNodes = new Map<number, LNode[]>()
   for (const node of g.getLayerlessNodes()) {
-    if (node.hasProperty('org.eclipse.elk.layered.partitioning.partition')) {
-      const p = node.getProperty<number>('org.eclipse.elk.layered.partitioning.partition')
+    if (node.hasProperty('org.eclipse.elk.partitioning.partition')) {
+      const p = node.getProperty<number>('org.eclipse.elk.partitioning.partition')
       const arr = partitionToNodes.get(p) ?? []
       arr.push(node)
       partitionToNodes.set(p, arr)
@@ -71,9 +70,7 @@ const LAYOUT_ASSERTS = [
 ]
 
 describe('PartitionTest (ELK Java 移植, tests/layered/partitioning)', () => {
-  // ggn 未实现 partition 机制: PARTITIONING_ACTIVATE/PARTITIONING_PARTITION 属性不存在,
-  // 分区布局不会发生, Java 的 partition 坐标断言无法触发. 保留移植断言, 待 ggn 实现后启用.
-  it.skip(`Partition 布局后坐标断言: 全部 ${MODELS.length} 图 (ggn 未实现 partition 机制)`, () => {
+  it(`Partition 布局后坐标断言: 全部 ${MODELS.length} 图`, () => {
     const results = runAll(MODELS, LAYOUT_ASSERTS)
     const failed = results.filter(r => r.problems.length > 0 || r.error)
     expect(failed.length, summarizeFailures(results, 'Partition 布局后坐标断言')).toBe(0)
