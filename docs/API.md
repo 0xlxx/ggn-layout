@@ -48,11 +48,24 @@ layoutElkJson(input, {
   randomSeed: 1,                                 // 默认 1
   hierarchyHandling: 'INCLUDE_CHILDREN' | 'SEPARATE' | 'OFF', // 默认 OFF
   layoutOptions: { 'org.eclipse.elk.xxx': value }, // 额外图级属性
+  leafBaseline: true,                            // 默认 false；GGN 扩展，见下
 })
 ```
 
 - 图级 `layoutOptions`（`org.eclipse.elk.*` 完整 id）也可直接放 `input.layoutOptions`。
 - 嵌套图：子节点 `children` + 子容器 `edges`（边挂在 LCA 容器，与 elkjs 一致）。
+- `leafBaseline`（**GGN 扩展**，默认 `false`）：布局完成后把**所有叶子节点的底边对齐到同一条
+  水平线**，并自底向上按「布局器原本给出的内边距」重算各容器高度。分层布局按层给纵轴，嵌套越深
+  的叶子被逐层内边距推得越低，ELK 没有跨层基线约束（`nodePlacement.*` / `alignment` 各档实测都不改变
+  这一点），所以在 API 层做这个后处理。约束与边界：
+  - 只在横向布局（`RIGHT`/`LEFT`）生效；纵向布局的纵轴是分层轴，拉平会破坏层结构，此时忽略该选项。
+  - 横轴（`x`/`width`）逐位不变；容器的上/下内边距沿用布局结果本身（不解析 `padding` 字符串），
+    因此对任何 provider 的输出都成立。
+  - 这是**节点几何**后处理：边 `sections` 仍是布局器按旧几何算出的结果，不再与对齐后的端点吻合。
+    适合「边只表达顺序、不参与绘制」的成分图（如句法结构图），需要边贴合节点时请勿开启。
+  - 若「所有叶子底边共线」会让本来错开的节点压在一起（例如同层且横轴区间重叠的兄弟），
+    该后处理整棵树**原样返回**，宁可不对齐也不制造布局器没有的节点重叠。
+  - 不传该选项时，这条代码路径完全不执行，输出与之前逐位一致。
 
 ## 输出语义（对齐 elkjs）
 
@@ -126,6 +139,8 @@ SSOT 依据：ELK Java 0.12.0 `ShapeCoords.java`/`EdgeCoords.java` 枚举 + elkj
 
 ## 已知限制 / 待查
 
+- **`leafBaseline` 只调整节点几何**：开启后边 `sections` 仍是旧几何，不再与对齐后的节点端点吻合
+  （见上文选项说明）；需要边贴合节点时不要开启。
 - **无 labels 的同构节点平局**：对完全对称的输入（如两个相同尺寸、相同端口的节点都连向同一目标，且无 labels/非对称属性打破平局），ggn 引擎与 elkjs/jar 的平局打破可能不同（节点槽位交换，如 carTracking 无 labels 时 N38/N39）。带 labels 或非对称输入不受影响（标准真实输入验证全对齐）。待查：P3 断环/排序的平局差异（JavaRandom 本身与 java.util.Random 已逐项验证一致）。
 
 ## P0 API 契约（2026-08-12）

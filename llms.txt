@@ -4,9 +4,11 @@
 - 首选入口：`layoutElkJson(input, options?)`；普通任务不要直接组装内部图模型。
 - 一句话用法：`const output = layoutElkJson({ id: 'root', children: [{ id: 'A' }, { id: 'B' }], edges: [{ id: 'e1', sources: ['A'], targets: ['B'] }] })`。
 - 纯度：入口只读输入并返回新对象；默认 `randomSeed` 为 `1`，同版本同选项结果确定。
-- 选项：`direction`（`RIGHT|LEFT|DOWN|UP`）、`randomSeed`、`hierarchyHandling`、`layoutOptions`、`responseFormat`（`full|concise|summary`，默认 `full`）、`pick`（仅 full 下追加保留的节点字段）。
+- 选项：`direction`（`RIGHT|LEFT|DOWN|UP`）、`randomSeed`、`hierarchyHandling`、`layoutOptions`、`responseFormat`（`full|concise|summary`，默认 `full`）、`pick`（仅 full 下追加保留的节点字段）、`leafBaseline`（GGN 扩展，默认 `false`：所有叶子底边对齐到一条线，容器自底向上重算；只对横向布局生效，边 `sections` 不再与节点端点吻合）。
+- 对齐语义：分层布局按层给纵轴（同层居中 + 逐层内边距下推），嵌套深的叶子更低、底边参差；ELK 无跨层基线约束，故 `leafBaseline` 在布局后于 API 层重算纵轴（横轴不动）。若共线会让同层、横轴重叠的兄弟压叠，则原样返回。
 - 输出形态：`full` 完整保真 JSON；`concise` 只留节点 id/x/y/width/height + 边 id/sources/targets/端点（无 bendPoints，未路由边保留结构）；`summary` 扁平摘要（不含 root，只含已路由单源单目标边）。
 - 文档：`README.md`（安装与最小示例）、`docs/API-QUICKREF.md`（单页契约）、`docs/API.md`（完整技术说明）。
+- 文档站：`bun run docs:dev`；静态构建 `bun run docs:build`；API 由 TypeDoc 从 `src/public.ts` 生成。在线入口：https://0xlxx.github.io/ggn-layout/
 - 移植参考（ELK Java 0.12.0 接口/指南，位于仓库根 `docs/reference/`）：[选项目录](docs/reference/elk-layout-options.md)、[算法结构/接口指南](docs/reference/elk-algorithm-guide.md)、[选项机制指南](docs/reference/elk-layout-options-mechanism.md)、[JSON 图格式指南](docs/reference/elk-json-format.md)、[间距选项指南](docs/reference/elk-spacing-options.md)。
 - 示例：`examples/basic.ts`、`examples/nested.ts`、`examples/coords-modes.ts`；运行 `bun examples/basic.ts`。
 - 入口边界：消费方和 AI agent 用包根 `ggn-layout`（或 `ggn-layout/api`）等已发布的子路径入口；`ggn-layout/core` 仅引擎级维护使用。

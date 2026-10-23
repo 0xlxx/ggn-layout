@@ -28,6 +28,7 @@ import { getEdgeEndpoints } from '../graph/lgraph-util.js'
 import { DIRECTION, HIERARCHY_HANDLING } from '../options/layered-options.js'
 import { getAlg } from './registry.js'
 import { buildLGraphFromParsed, elkJsonToParsed, shortOptKeys, type ParsedGraph } from '../../shared/elkgraph-builder.js'
+import { alignLeafBaseline } from './leaf-baseline.js'
 import { assertValidLayoutInput } from './validate.js'
 import { LayoutError, LayoutErrorCode } from './errors.js'
 import type { LayoutControl, LayoutPhase } from './control.js'
@@ -95,6 +96,12 @@ export interface ElkLayoutOptions {
   responseFormat?: 'full' | 'concise' | 'summary'
   /** full 输出中额外保留的节点字段；id 与布局几何字段始终保留。仅作用于 full；concise/summary 已固定裁剪，忽略 pick。 */
   pick?: readonly string[]
+  /** GGN 扩展（默认关闭）：把所有叶子节点的**底边**对齐到同一条水平线，并自底向上重算各组块
+   * 的高度（横轴不动、内边距沿用布局器给的）。只在横向布局（`RIGHT`/`LEFT`）下生效 —— 纵向布局的
+   * 纵轴承担分层顺序，拉平会破坏层结构，此时忽略该选项。
+   * 已知边界：这是**节点几何**后处理，边 `sections` 仍是布局器按旧几何算出的结果，不再与对齐后的
+   * 端点吻合；只适合「边不参与绘制」的场景。 */
+  leafBaseline?: boolean
   /** 同步布局的阶段进度与合作式取消控制。 */
   control?: LayoutControl
   /** black-box（非 layered provider 子树）布局完成后回调——每个 black-box 节点布局完立即同步调用
@@ -651,8 +658,9 @@ export function layoutElkJson(input: LayoutInput, options?: ElkLayoutOptions): L
       )
     }
     runCoreProviders(workingInput, new Map([[workingInput.id, rootAlg]]), options?.onBlackBoxLaidOut)
-    applyCoordsModes(workingInput, readCoordsModes(workingInput, options), workingInput)
     ensureRootGeometry(workingInput)
+    maybeAlignLeafBaseline(workingInput, options, blackBoxIds)
+    applyCoordsModes(workingInput, readCoordsModes(workingInput, options), workingInput)
     enterPhase(control, 'extract', 4, graphId)
     enterPhase(control, 'format', 5, graphId)
     return formatLayoutOutput(workingInput as LayoutOutput, options)
@@ -701,10 +709,47 @@ export function layoutElkJson(input: LayoutInput, options?: ElkLayoutOptions): L
   // 黑盒子树 (core provider 已布局) 从输入合并回输出: 子节点/内部边不进 layered 图,
   // 但最终输出必须包含 (ELK RecursiveGraphLayoutEngine 结果含全部原始元素).
   if (blackBoxIds.size > 0) mergeBlackBoxSubtrees(out, workingInput, blackBoxIds)
+  // GGN 扩展叶子基线对齐: 必须在坐标投影之前 — 后处理按相对父节点坐标做算术, 投影成
+  // 全局坐标后再改会把子节点与父节点各算一遍 (见 leaf-baseline.ts). 黑盒子树按原子叶子
+  // 参与 (opaqueIds), 不穿透其内部几何.
+  maybeAlignLeafBaseline(out, options, blackBoxIds, workingInput)
   // 坐标模式投影 (shapeCoords/edgeCoords; 默认 = elkjs 默认, 仅 ROOT 触发投影).
   applyCoordsModes(out, readCoordsModes(workingInput, options), workingInput)
   enterPhase(control, 'format', 5, graphId)
   return formatLayoutOutput(out as LayoutOutput, options)
+}
+
+/**
+ * 有效布局方向: API 选项 > layoutOptions (完整 id / elk.* 短 id / 裸名) > 默认 RIGHT
+ * (取值优先级对齐 buildGraph).
+ */
+function effectiveDirection(root: ElkNode, options?: ElkLayoutOptions): string {
+  if (options?.direction !== undefined) return options.direction
+  const merged: Record<string, unknown> = {
+    ...(options?.layoutOptions ?? {}),
+    ...(root.layoutOptions ?? {}),
+  }
+  for (const key of ['org.eclipse.elk.direction', 'elk.direction', 'direction']) {
+    const value = merged[key]
+    if (typeof value === 'string') return value
+  }
+  return 'RIGHT'
+}
+
+/**
+ * GGN 扩展 `leafBaseline`: 把所有叶子节点的底边拉到同一条线上 (见 leaf-baseline.ts).
+ *
+ * 只对横向布局 (RIGHT/LEFT) 生效 —— 纵向布局里纵轴就是分层轴, 拉平会破坏层结构, 故忽略.
+ * 关掉时这条路径完全不执行, 输出与不传该选项逐位一致.
+ *
+ * `opaqueIds` (黑盒子树) 原样传下去: 它们内部几何由自己的 provider 决定, 不能被穿透拉平
+ * (见 leaf-baseline.ts 顶部说明).
+ */
+function maybeAlignLeafBaseline(root: ElkNode, options?: ElkLayoutOptions, opaqueIds?: ReadonlySet<string>, directionSource?: ElkNode): void {
+  if (options?.leafBaseline !== true) return
+  const direction = effectiveDirection(directionSource ?? root, options).toUpperCase()
+  if (direction === 'DOWN' || direction === 'UP') return
+  alignLeafBaseline(root, opaqueIds)
 }
 
 function ensureRootGeometry(output: ElkNode, graph?: LGraph): void {
