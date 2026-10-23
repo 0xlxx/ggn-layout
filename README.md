@@ -21,6 +21,11 @@ console.log(output.children, output.edges?.[0]?.sections)
 
 ## 文档导航
 
+- **文档站源码**：`docs/`（VitePress + TypeDoc）。
+- **本地开发**：`bun run docs:dev`。
+- **构建静态站点**：`bun run docs:build`，输出 `docs/.vitepress/dist/`。
+- **生成 API 原文**：`bun run docs:api`，输出 `docs/public/api/typedoc/`。
+- **在线站点**：[https://0xlxx.github.io/ggn-layout/](https://0xlxx.github.io/ggn-layout/)（由 GitHub Pages workflow 发布）。
 - [`docs/API-QUICKREF.md`](docs/API-QUICKREF.md)：单页速查，适合首次调用和 AI agent。
 - [`docs/API.md`](docs/API.md)：完整输入、输出、坐标模式和验证说明。
 - [`llms.txt`](llms.txt)：机器优先的入口、路径和错误契约索引。
@@ -33,6 +38,7 @@ console.log(output.children, output.edges?.[0]?.sections)
   CI 在 V8（Node 20/22）与 JavaScriptCore（Bun）双引擎上复跑纯算法单测，用于拦截「结果依赖引擎排序实现」的顺序漂移；跨引擎断言的范围是那批纯算法用例，不等同于对全部输出做逐位比对。
 - **失败方式**：非法输入或不支持的算法抛出结构化 `LayoutError`，可读取 `code`、`path`、`retryable` 和可选 `phase/details`。
 - **输出形态**：`responseFormat` 三档——`full`（默认，完整保真 JSON）、`concise`（只留节点几何 + 边端点，省 token）、`summary`（扁平摘要 `{nodes, edges}`，不含 root 自身、只含已路由边）。`pick` 仅在 `full` 下追加保留的节点字段。
+- **可选纵轴后处理**：`leafBaseline: true`（默认关）把所有叶子节点的底边对齐到同一条水平线，容器自底向上按原内边距重新包裹孩子 —— 用于句法结构图这类「词要排在一条线上」的场景。只在横向布局生效，横轴不动，且边 `sections` 仍是旧几何；若对齐会让本来错开的节点压在一起（例如没有排序边、同层的兄弟），则原样返回不做任何修改。
 - **类型收紧**：`direction` 为 `'RIGHT'|'LEFT'|'DOWN'|'UP'` 字面量联合（持 `string` 变量的旧调用需收窄类型）；新增 `LayoutInput`/`LayoutOutput`/`LayoutSummary` 类型（命名不含 ELK）。
 - **命名说明**：公共入口沿用标准 JSON 生态中的 `layoutElkJson` 与相关类型；新增公共符号、文件名和技能名不使用 `ELK`/`Elk`，以避免把实现来源误当成调用层级。
 - **边界**：内部 `LGraph`、`LNode`、provider 和属性模型不属于消费方公共契约；历史 `src/index.ts` 仅作为仓库兼容入口保留。

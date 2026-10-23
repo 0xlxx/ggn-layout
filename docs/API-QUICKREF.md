@@ -28,6 +28,7 @@ const output = layoutElkJson(input)
 | `layoutOptions` | `Record<string, unknown>` | 额外图级属性；API 选项覆盖输入根节点属性 |
 | `responseFormat` | `full`（默认）/ `concise` / `summary` | `full` 完整保真；`concise` 只留几何与端点；`summary` 扁平摘要 |
 | `pick` | 仅 `full` 生效 | 追加保留的节点字段；`id` 与几何字段始终保留 |
+| `leafBaseline` | 默认 `false` | GGN 扩展：把所有叶子底边对齐到一条线，容器自底向上重算；只对横向布局生效，且边 `sections` 不再与节点吻合；会产生节点重叠时原样返回 |
 
 坐标模式可放入 `layoutOptions`：`org.eclipse.elk.json.shapeCoords` / `edgeCoords` 支持 `ROOT`、`PARENT`、`CONTAINER`、`INHERIT`（具体含义见完整 API 文档）。
 
@@ -64,3 +65,7 @@ const output = layoutElkJson(input)
 - **输出保真**：输入节点、端口、标签和自定义字段尽量保留，并补充节点几何与边 `sections`；内部 dummy 节点不会输出。
 - **hyperedge**：空端点、多端点和悬空端点被拒绝；请拆成单源单目标普通边。
 - **坐标系**：默认节点坐标相对父容器、边坐标相对最低公共祖先；`ROOT` 模式可投影为全局坐标。
+- **`leafBaseline`**：GGN 扩展的纵轴后处理，默认关闭。开启时叶子底边共线、容器自底向上重新包裹孩子，
+  **横轴一个数都不动**；只对横向布局（`RIGHT`/`LEFT`）生效，且边 `sections` 保持旧几何（不再与节点端点吻合）。
+  若「所有叶子底边共线」会让本来错开的节点压在一起（例如同层且横轴重叠的兄弟），该后处理**原样返回**，
+  宁可不对齐也不制造布局器没有的节点重叠。

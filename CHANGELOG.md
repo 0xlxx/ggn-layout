@@ -5,8 +5,34 @@
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-10-23
+
+### 新增（无破坏性改动）
+
+- `layoutElkJson(input, { leafBaseline: true })`：GGN 扩展的纵轴后处理，把所有叶子节点的**底边**对齐到
+  同一条水平线，并自底向上按「布局器原本给出的内边距」重算各容器高度。分层布局按层给纵轴，嵌套越深的
+  叶子被逐层内边距推得越低；ELK 没有跨层基线约束（`nodePlacement.*` / `alignment` 各档实测都不改变这一
+  点），因此该能力放在 API 层而非算法层实现。**默认关闭**，不传该选项时输出与 0.1.2 逐位一致。
+  约束：只对横向布局（`RIGHT`/`LEFT`）生效；横轴（`x`/`width`）不变；只调整节点几何，边 `sections`
+  仍是布局器按旧几何算出的结果（不再与对齐后的端点吻合），适合「边不参与绘制」的成分图。
+  「叶子共线」在树形输入下是闭式解（一次后序递推，无需 QP）；仅当该约束会让同层、横轴重叠的兄弟
+  互相压叠时，后处理**原样返回**，绝不制造布局器没有的节点重叠。
+
+### 修复
+
+- **非正方形 `nodeSize.minimum` 在 DOWN/UP 下把容器撑成正方形**：容器节点的显式最小尺寸此前既被
+  合并进嵌套图 minimum（导入期原方向值），又被 `LabelAndNodeSizeProcessor` 以方向变换后的值应用到
+  容器尺寸 —— 同一个 minimum 在 canonical 的两个轴上各生效一次，`400×100` 的容器会变成 `400×400`。
+  现在容器（有嵌套图的节点）的最小尺寸只由嵌套图 resize 应用一次，叶子节点保持原逻辑。新增
+  `tests/api/minimum-size-direction.test.ts` 覆盖四方向；`content_centered_with_external_ports`、
+  `304_wrongMinimumNodeSize` 等 jar oracle 用例逐点一致。
+
 ### 工程 / 发布链路（不影响制品内容）
 
+- 新增 VitePress 文档站：按“整体架构 → 算法 → 参数 → API → 最佳实践”组织内容，覆盖 14 个算法、
+  Layered P1–P5、compound graph、分区、模型序、交互布局，以及 empty/junction node 等调优技巧。
+  API 页面由 TypeDoc 从 `src/public.ts` 生成，`docs:build` 会先重建 API 再构建静态站点。
+- 新增 GitHub Pages 文档工作流和 CI 文档构建门禁，SEO/TypeDoc 静态产物不进入 git 工作树。
 - `release.yml` 校验「已发布版本来源提交」时改为**优先读签名的 SLSA provenance**
   （`resolvedDependencies[].digest.gitCommit`），`gitHead` 仅作无 provenance 时的兜底。发布 job
   与 checkout 解耦后 npm 无从推断 `gitHead`，`0.1.2` 在 registry 上的 `gitHead` 因此为空；只认
@@ -147,7 +173,8 @@
 - 已知有意差异：为消除比较器不自洽导致的层内顺序跨 JS 引擎漂移，
   `ModelOrderBarycenterHeuristic` 的传递关联记录方向与 ELK Java 相反（见 `docs/PORTING.md` §6.17）。
 
-[Unreleased]: https://github.com/0xlxx/ggn-layout/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/0xlxx/ggn-layout/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/0xlxx/ggn-layout/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/0xlxx/ggn-layout/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/0xlxx/ggn-layout/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/0xlxx/ggn-layout/releases/tag/v0.1.0

@@ -15,6 +15,9 @@ scripts/elk-java-debug/xtext-lib/
 .elk-cache
 stryker-cell-tmp
 meta.json
+docs/.vitepress/cache
+docs/.vitepress/dist
+docs/public/api/typedoc
 
 *.class
 

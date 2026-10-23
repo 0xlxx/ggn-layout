@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""Reject staged files larger than 5,000 estimated tokens."""
+
+from __future__ import annotations
+
+import fnmatch
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+TOKEN_LIMIT = 5_000
+BYTES_PER_TOKEN = 4
+BYTE_LIMIT = TOKEN_LIMIT * BYTES_PER_TOKEN
+
+LOCK_FILES = {
+    "bun.lock",
+    "bun.lockb",
+    "package-lock.json",
+    "npm-shrinkwrap.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    "Cargo.lock",
+    "composer.lock",
+    "Gemfile.lock",
+    "Pipfile.lock",
+    "poetry.lock",
+    "uv.lock",
+    "go.sum",
+    "flake.lock",
+    "mix.lock",
+    "pubspec.lock",
+}
+
+GENERATED_DIRS = {
+    ".ggn",
+    ".next",
+    ".nuxt",
+    ".output",
+    ".stryker-tmp",
+    "__snapshots__",
+    "bench-results",
+    "build",
+    "coverage",
+    "coverage-ui",
+    "dist",
+    "gen",
+    "generated",
+    "node_modules",
+    "out",
+    "playwright-report",
+    "reports",
+    "stryker-tmp",
+    "test-results",
+    "test-screenshots",
+    "vendor",
+}
+
+GENERATED_FILES = (
+    "*.g.dart",
+    "*.gen.*",
+    "*.generated.*",
+    "*.lock",
+    "*.lockb",
+    "*.map",
+    "*.min.css",
+    "*.min.js",
+    "*.pb.go",
+    "*.pb.ts",
+    "*.snap",
+    "*.tsbuildinfo",
+    "*_pb2.py",
+)
+
+GENERATED_PATH_FRAGMENTS = (
+    "/.vitepress/cache/",
+    "/.vitepress/dist/",
+)
+
+
+def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[bytes]:
+    return subprocess.run(
+        ["git", *args],
+        check=check,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+
+def staged_paths() -> list[str]:
+    result = git("diff", "--cached", "--name-only", "--diff-filter=ACMR", "-z")
+    return [os.fsdecode(path) for path in result.stdout.split(b"\0") if path]
+
+
+def staged_mode(path: str) -> str:
+    result = git("ls-files", "-s", "-z", "--", path)
+    record = result.stdout.split(b"\0", 1)[0]
+    return record.split(b" ", 1)[0].decode("ascii") if record else ""
+
+
+def repo_ignore_patterns() -> tuple[str, ...]:
+    ignore_file = Path(__file__).resolve().with_name("token-limit-ignore")
+    if not ignore_file.is_file():
+        return ()
+    patterns = []
+    for line in ignore_file.read_text(encoding="utf-8").splitlines():
+        pattern = line.strip()
+        if pattern and not pattern.startswith("#"):
+            patterns.append(pattern)
+    return tuple(patterns)
+
+
+PROJECT_IGNORE_PATTERNS = repo_ignore_patterns()
+
+
+def is_ignored(path: str) -> bool:
+    normalized = path.replace(os.sep, "/")
+    name = normalized.rsplit("/", 1)[-1]
+    parts = normalized.split("/")[:-1]
+    fragment_path = f"/{normalized}/"
+
+    if name in LOCK_FILES:
+        return True
+    if any(part in GENERATED_DIRS for part in parts):
+        return True
+    if any(fragment in fragment_path for fragment in GENERATED_PATH_FRAGMENTS):
+        return True
+    if any(fnmatch.fnmatchcase(name, pattern) for pattern in GENERATED_FILES):
+        return True
+    return any(
+        fnmatch.fnmatchcase(normalized, pattern)
+        for pattern in PROJECT_IGNORE_PATTERNS
+    )
+
+
+def main() -> int:
+    if os.environ.get("SKIP_TOKEN_LIMIT") == "1":
+        print("token-limit: skipped by SKIP_TOKEN_LIMIT=1", file=sys.stderr)
+        return 0
+
+    offenders = []
+    for path in staged_paths():
+        if is_ignored(path):
+            continue
+        if staged_mode(path) not in {"100644", "100755"}:
+            continue
+
+        size_result = git("cat-file", "-s", f":{path}", check=False)
+        if size_result.returncode != 0:
+            continue
+        size = int(size_result.stdout.strip())
+        if size <= BYTE_LIMIT:
+            continue
+
+        blob_result = git("cat-file", "blob", f":{path}", check=False)
+        if blob_result.returncode != 0 or b"\0" in blob_result.stdout:
+            continue
+        offenders.append((path, size))
+
+    if not offenders:
+        return 0
+
+    use_color = sys.stderr.isatty() and not os.environ.get("NO_COLOR")
+    red = "\033[31m" if use_color else ""
+    yellow = "\033[33m" if use_color else ""
+    reset = "\033[0m" if use_color else ""
+
+    print(
+        f"{red}提交被阻止：以下暂存文件超过 5,000 个估算令牌"
+        f"（令牌 = 字节数 / 4，向上取整）。{reset}",
+        file=sys.stderr,
+    )
+    print(file=sys.stderr)
+    for path, size in offenders:
+        tokens = (size + BYTES_PER_TOKEN - 1) // BYTES_PER_TOKEN
+        print(
+            f"  {path}\n"
+            f"    {tokens:,} tokens / {size:,} bytes"
+            f"（上限 {TOKEN_LIMIT:,} tokens / {BYTE_LIMIT:,} bytes）",
+            file=sys.stderr,
+        )
+
+    print(
+        f"\n{yellow}请拆分文件后再提交，不要只删内容来绕过限制：{reset}\n"
+        "  1. 每个文件只保留一个职责；先把类型、常量、纯函数、适配器和测试"
+        "移到同目录的独立文件。\n"
+        "  2. 代码入口保留为小型 index/re-export；实现按子域拆成多个模块，"
+        "避免把同一个大文件机械切成无意义片段。\n"
+        "  3. Markdown 按 H2/H3 主题拆成多个文档，并新增一个短索引页互相链接；"
+        "原文件只保留概述和目录。\n"
+        "  4. UML/PlantUML/draw 数据按图或子系统拆文件，用 include/链接组合，"
+        "不要把所有图塞进一个源文件。\n"
+        "  5. 拆分后重新 `git add` 所有新文件，并确认旧文件已缩小或只剩入口。\n"
+        "\n"
+        "锁文件、二进制文件和常见生成目录会自动跳过。"
+        "确属已审查的例外可临时使用 `SKIP_TOKEN_LIMIT=1 git commit`。",
+        file=sys.stderr,
+    )
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
