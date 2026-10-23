@@ -333,7 +333,12 @@ function processNodeLabels(node: LNode, ctx: CellCtx): void {
       ? node.getProperty(NODE_SIZE_CONSTRAINTS)
       : graph?.getProperty(NODE_SIZE_CONSTRAINTS) ?? []
     // MINIMUM_SIZE 约束: 节点尺寸 = max(计算值, nodeSize.minimum) (ELK NodeLabelAndSizeUtilities).
-    if (constraints.includes('MINIMUM_SIZE')) {
+    //
+    // 容器节点（有嵌套图）**不在这里**套 minimum：它的尺寸由 HierarchicalNodeResizingProcessor
+    // 等价逻辑 (resizeParentNode) 用 nested minimum 决定，而 nested minimum 存的是导入期
+    // 原方向值（不随方向变换）。这里再套一次已转置的节点级 minimum，等于同一个 minimum 在
+    // canonical 的两个轴上各生效一次 —— DOWN/UP 下 400×100 的容器被撑成 400×400。
+    if (constraints.includes('MINIMUM_SIZE') && node.getNestedGraph() === null) {
       // ELK NodeLabelAndSizeUtilities.getMinimumNodeSize: 只读**节点级** nodeSize.minimum,
       // 不回退图级 (NodeLabelAndSizeUtilities.java:226). 图级 minimum 由 calculateMinimumGraphSize
       // 用于嵌套图 resize, 子节点继承图级 minimum 是错的 — content_centered 实证: 嵌套图 minimum
